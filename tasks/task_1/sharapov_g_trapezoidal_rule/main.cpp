@@ -109,7 +109,6 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_PI_4) {
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-
     MPI_Init(&argc, &argv);
 
     int ProcRank;
