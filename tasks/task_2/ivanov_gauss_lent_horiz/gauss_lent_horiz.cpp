@@ -1,11 +1,12 @@
+// Copyright 2023 Ivanov Nikita
 #include <vector>
 #include <random>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
-#include "gauss_lent_horiz.h"
+#include "task_2/ivanov_gauss_lent_horiz/gauss_lent_horiz.h"
 #define ESTIMATE 0.00000001
 
-int get_slice(int size, int proc_count, int rank){
+int get_slice(int size, int proc_count, int rank) {
     int q = size / proc_count;
     if (size % proc_count)
         q++;
@@ -17,7 +18,7 @@ int get_slice(int size, int proc_count, int rank){
     return slice;
 }
 
-std::vector<double> Gauss(std::vector<double> matrix, int size){
+std::vector<double> Gauss(std::vector<double> matrix, int size) {
     boost::mpi::communicator world;
     int rank = world.rank();
     int comm_size = world.size();
@@ -34,7 +35,7 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
     // прямой проход
     int row = 0;
     for (int i = 0; i < size - 1; i++) {
-        if (i == rows[row]){  // если эта строка текущего процесса
+        if (i == rows[row]) {  // если эта строка текущего процесса
             boost::mpi::broadcast(world, &matrix.data()[rows[row] * (size + 1)], size + 1, rank);
             for (int j = 0; j <= size; j++) {
                 tmp[j] = matrix[rows[row] * (size + 1) + j];
@@ -65,7 +66,7 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
     // Обратный ход
     row = nrows - 1;
     for (int i = size - 1; i > 0; i--) {
-        if (row >= 0){
+        if (row >= 0) {
             if (i == rows[row]) {
                 Xi[i] /= matrix[i * (size + 1) + i];
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, rank);
@@ -90,13 +91,13 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
     return Xi;
 }
 
-bool check_result(std::vector<double> matrix, std::vector<double> x, int size){
+bool check_result(std::vector<double> matrix, std::vector<double> x, int size) {
     for (int i = 0; i < size; i++) {
         double sum = 0;
         for (int j = 0; j < size; j++) {
             sum += matrix[i * (size + 1) + j] * x[j];
         }
-        if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE){
+        if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE) {
             std::cout << "sum = " << sum << " real = " << matrix[i * (size + 1) + size] << std::endl;
             return false;
         }
@@ -104,7 +105,7 @@ bool check_result(std::vector<double> matrix, std::vector<double> x, int size){
     return true;
 }
 
-std::vector<double> create_random_matrix(int size){
+std::vector<double> create_random_matrix(int size) {
     std::random_device rd;
     std::uniform_int_distribution<int> unif(-100, 100);
     std::vector<double> matrix((size + 1) * size);

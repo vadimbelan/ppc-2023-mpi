@@ -4,7 +4,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/environment.hpp>
-#include "gauss_lent_horiz.h"
+#include "task_2/ivanov_gauss_lent_horiz/gauss_lent_horiz.h"
 
 TEST(Parallel_Gauss, test_1) {
     boost::mpi::communicator world;
