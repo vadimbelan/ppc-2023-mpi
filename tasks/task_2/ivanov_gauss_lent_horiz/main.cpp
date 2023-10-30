@@ -2,77 +2,84 @@
 #include <gtest/gtest.h>
 #include <vector>
 #include <boost/mpi/communicator.hpp>
-#include <boost/mpi/environment.hpp>
 #include <boost/mpi/collectives.hpp>
+#include <boost/mpi/environment.hpp>
 #include "gauss_lent_horiz.h"
 
 TEST(Parallel_Gauss, test_1) {
     boost::mpi::communicator world;
-    std::vector<double> a{
-        2, -2,  1, -3,
-        1,  3, -2,  1,
-        3, -1, -1,  2
+    int size = 4;
+    std::vector<double> matrix{
+            4, 2,  2,  3, -20,
+            -5, 4, -3,  5,  20,
+            2, 5,  5,  3,  20,
+            3, 5,  5, -2, -10
     };
 
-    std::vector<double> res;
-    res = Gauss(a, 3);
-    for (auto it = res.begin(); it != res.end(); it++)
-        std::cout << *it << " ";
+    std::vector<double> x;
+    x = Gauss(matrix, size);
+
+    ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 TEST(Parallel_Gauss, test_2) {
-//    boost::mpi::communicator world;
-//    int row = 0;
-//    int size = 3;
-//    std::vector<double> a{1, 2, 3, 4};
-//    std::vector<double> tmp(size);
-//    if (world.rank() == 0) {
-//        a[0] = 0;
-//        a[1] = -1;
-//        row++;
-////        for (int j = 0; j < size; j++) {
-////            tmp[j] = a[row + j];
-////        }
-//        boost::mpi::broadcast(world, &a.data()[row], 2, 0);
-//    } else {
-//        boost::mpi::broadcast(world, tmp.data(), 2, 0);
-//    }
-//
-////    boost::mpi::broadcast(world , &(a.data()[row]), 2, 0);
-////    boost::mpi::broadcast(world, &a.data()[row], 2, 0);
-//
-//    std::cout << "Process #" << world.rank() << " says " << tmp[0] << ", " << tmp[1] << ", " << tmp[2] << " addr = " << &a[0]
-//              << std::endl;
-//    boost::mpi::communicator world;
-//    std::vector<double> a{
-//            2, -2,  1, -3, 1,
-//            1,  3, -2,  1, 2,
-//            3, -1, -1,  2, 3,
-//            4,  0, -5,  1, 0
-//    };
-//
-//    std::vector<double> res;
-//    res = Gauss(a, 4);
+    boost::mpi::communicator world;
+    int size = 5;
+    std::vector<double> matrix(size * (size + 1));
+    if (world.rank() == 0)
+        matrix = create_random_matrix(size);
+
+    boost::mpi::broadcast(world, matrix.data(), size * (size + 1), 0);
+    std::vector<double> x;
+    x = Gauss(matrix, size);
+
+    if (world.rank() == 0)
+        ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 TEST(Parallel_Gauss, test_3) {
-//    boost::mpi::communicator world;
-//    std::vector<double> a{
-//            2, -2,  1, -3, 1, 0,
-//            1,  3, -2,  1, 2, 4,
-//            3, -1, -1,  2, 3, 5,
-//            4,  0, -5,  1, 0, 6,
-//            1,  1,  1,  1, 1, 1
-//    };
-//
-//    std::vector<double> res;
-//    res = Gauss(a, 5);
+    boost::mpi::communicator world;
+    int size = 10;
+    std::vector<double> matrix(size * (size + 1));
+    if (world.rank() == 0)
+        matrix = create_random_matrix(size);
+
+    boost::mpi::broadcast(world, matrix.data(), size * (size + 1), 0);
+    std::vector<double> x;
+    x = Gauss(matrix, size);
+
+    if (world.rank() == 0)
+        ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 TEST(Parallel_Gauss, test_4) {
+    boost::mpi::communicator world;
+    int size = 20;
+    std::vector<double> matrix(size * (size + 1));
+    if (world.rank() == 0)
+        matrix = create_random_matrix(size);
+
+    boost::mpi::broadcast(world, matrix.data(), size * (size + 1), 0);
+    std::vector<double> x;
+    x = Gauss(matrix, size);
+
+    if (world.rank() == 0)
+        ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 TEST(Parallel_Gauss, test_5) {
+    boost::mpi::communicator world;
+    int size = 40;
+    std::vector<double> matrix(size * (size + 1));
+    if (world.rank() == 0)
+        matrix = create_random_matrix(size);
+
+    boost::mpi::broadcast(world, matrix.data(), size * (size + 1), 0);
+    std::vector<double> x;
+    x = Gauss(matrix, size);
+
+    if (world.rank() == 0)
+        ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 int main(int argc, char** argv) {

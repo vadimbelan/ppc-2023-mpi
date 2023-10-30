@@ -1,7 +1,9 @@
 #include <vector>
+#include <random>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include "gauss_lent_horiz.h"
+#define ESTIMATE 0.00000001
 
 int get_slice(int size, int proc_count, int rank){
     int q = size / proc_count;
@@ -43,10 +45,9 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
         }
 
         for (int j = row; j < nrows; j++) {
-            int row_id = rows[j];
-            double scaling = matrix[row_id * (size + 1) + i] / tmp[i];
+            double scaling = matrix[rows[j] * (size + 1) + i] / tmp[i];
             for (int k = i; k < size + 1; k++) {
-                matrix[row_id * (size + 1) + k] -= scaling * tmp[k];
+                matrix[rows[j] * (size + 1) + k] -= scaling * tmp[k];
             }
         }
     }
@@ -67,7 +68,6 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
         if (row >= 0){
             if (i == rows[row]) {
                 Xi[i] /= matrix[i * (size + 1) + i];
-                std::cout << "Xi = " << Xi[i] << " proc_id = " << rank  << " /= " << matrix[i * (size + 1) + i] << std::endl;
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, rank);
                 row--;
             } else {
@@ -88,4 +88,31 @@ std::vector<double> Gauss(std::vector<double> matrix, int size){
     boost::mpi::broadcast(world, Xi.data(), 1, 0);
 
     return Xi;
+}
+
+bool check_result(std::vector<double> matrix, std::vector<double> x, int size){
+    for (int i = 0; i < size; i++) {
+        double sum = 0;
+        for (int j = 0; j < size; j++) {
+            sum += matrix[i * (size + 1) + j] * x[j];
+        }
+        if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE){
+            std::cout << "sum = " << sum << " real = " << matrix[i * (size + 1) + size] << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<double> create_random_matrix(int size){
+    std::random_device rd;
+    std::uniform_int_distribution<int> unif(-100, 100);
+    std::vector<double> matrix((size + 1) * size);
+    int i, j;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < size + 1; j++) {
+            matrix[i * (size + 1) + j] = unif(rd);
+        }
+    }
+    return matrix;
 }
