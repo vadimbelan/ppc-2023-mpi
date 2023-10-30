@@ -32,10 +32,9 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
     for (int i = 0; i < nrows; i++)
         rows[i] = rank + comm_size * i;
 
-    // прямой проход
     int row = 0;
     for (int i = 0; i < size - 1; i++) {
-        if (i == rows[row]) {  // если эта строка текущего процесса
+        if (i == rows[row]) {
             boost::mpi::broadcast(world, &matrix.data()[rows[row] * (size + 1)], size + 1, rank);
             for (int j = 0; j <= size; j++) {
                 tmp[j] = matrix[rows[row] * (size + 1) + j];
@@ -53,7 +52,6 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
         }
     }
 
-    // Инициализируем X
     row = 0;
     for (int i = 0; i < size; i++) {
         Xi[i] = 0;
@@ -63,7 +61,6 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
         }
     }
 
-    // Обратный ход
     row = nrows - 1;
     for (int i = size - 1; i > 0; i--) {
         if (row >= 0) {
