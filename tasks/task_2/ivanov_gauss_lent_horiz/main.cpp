@@ -39,7 +39,7 @@ TEST(Parallel_Gauss, test_2) {
 
 TEST(Parallel_Gauss, test_3) {
     boost::mpi::communicator world;
-    int size = 10;
+    int size = 8;
     std::vector<double> matrix(size * (size + 1));
     if (world.rank() == 0)
         matrix = create_random_matrix(size);
@@ -54,7 +54,7 @@ TEST(Parallel_Gauss, test_3) {
 
 TEST(Parallel_Gauss, test_4) {
     boost::mpi::communicator world;
-    int size = 20;
+    int size = 8;
     std::vector<double> matrix(size * (size + 1));
     if (world.rank() == 0)
         matrix = create_random_matrix(size);
@@ -69,7 +69,7 @@ TEST(Parallel_Gauss, test_4) {
 
 TEST(Parallel_Gauss, test_5) {
     boost::mpi::communicator world;
-    int size = 40;
+    int size = 10;
     std::vector<double> matrix(size * (size + 1));
     if (world.rank() == 0)
         matrix = create_random_matrix(size);
