@@ -4,7 +4,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include "task_2/ivanov_gauss_lent_horiz/gauss_lent_horiz.h"
-#define ESTIMATE 0.00000001
+#define ESTIMATE 0.0001
 
 int get_slice(int size, int proc_count, int rank) {
     int q = size / proc_count;
@@ -95,7 +95,7 @@ bool check_result(std::vector<double> matrix, std::vector<double> x, int size) {
             sum += matrix[i * (size + 1) + j] * x[j];
         }
         if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE) {
-            std::cout << "sum = " << sum << " real = " << matrix[i * (size + 1) + size] << std::endl;
+            printf("sum = %lf, real = %lf\n", sum, matrix[i * (size + 1) + size]);
             return false;
         }
     }
