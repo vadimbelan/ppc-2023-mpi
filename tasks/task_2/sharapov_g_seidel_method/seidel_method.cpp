@@ -166,6 +166,8 @@ bool seidelMethod(size_t n, double eps) {
             }
             local_condition = true;
         }
+        //  if at least one processor has one row in which Ax - B >= eps
+        //  we will start another for loop = new iteration
         MPI_Allreduce(&local_condition, &condition, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
     }
 
