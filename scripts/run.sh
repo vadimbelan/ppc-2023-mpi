@@ -38,7 +38,7 @@ for file in $FILES_MPI; do
     echo $(basename $file)
     echo "--------------------------------"
     if [[ $OSTYPE == "linux-gnu" ]]; then
-        NUM_PROC=$(cat /proc/cpuinfo|grep processor|wc -l)
+        NUM_PROC=$(cat /proc/cpuinfo | grep 'core id'|wc -l)
     elif [[ $OSTYPE == "darwin"* ]]; then
         NUM_PROC=$(sysctl -a | grep machdep.cpu | grep thread_count | cut -d ' ' -f 2)
     else
