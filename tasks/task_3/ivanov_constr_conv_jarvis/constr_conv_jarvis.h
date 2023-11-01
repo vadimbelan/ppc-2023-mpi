@@ -1,0 +1,8 @@
+//
+// Created by atikin on 01.11.23.
+//
+
+#ifndef PPC_2023_MPI_CONSTR_CONV_JARVIS_H
+#define PPC_2023_MPI_CONSTR_CONV_JARVIS_H
+
+#endif //PPC_2023_MPI_CONSTR_CONV_JARVIS_H
