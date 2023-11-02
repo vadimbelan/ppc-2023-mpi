@@ -6,7 +6,13 @@
 TEST(Seidel_Method_MPI, Test_5) {
     int size = 5;
 
-    bool test = seidelMethod(size, 0.000001);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    double* matrix = nullptr;
+    if (ProcRank == 0) matrix = generateMatrix(size);
+
+    bool test = seidelMethod(matrix, size, 0.000001);
 
     ASSERT_TRUE(test);
 }
@@ -14,7 +20,13 @@ TEST(Seidel_Method_MPI, Test_5) {
 TEST(Seidel_Method_MPI, Test_25) {
     int size = 25;
 
-    bool test = seidelMethod(size, 0.000001);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    double* matrix = nullptr;
+    if (ProcRank == 0) matrix = generateMatrix(size);
+
+    bool test = seidelMethod(matrix, size, 0.000001);
 
     ASSERT_TRUE(test);
 }
@@ -22,7 +34,13 @@ TEST(Seidel_Method_MPI, Test_25) {
 TEST(Seidel_Method_MPI, Test_50) {
     int size = 50;
 
-    bool test = seidelMethod(size, 0.000001);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    double* matrix = nullptr;
+    if (ProcRank == 0) matrix = generateMatrix(size);
+
+    bool test = seidelMethod(matrix, size, 0.000001);
 
     ASSERT_TRUE(test);
 }
@@ -30,7 +48,13 @@ TEST(Seidel_Method_MPI, Test_50) {
 TEST(Seidel_Method_MPI, Test_75) {
     int size = 75;
 
-    bool test = seidelMethod(size, 0.000001);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    double* matrix = nullptr;
+    if (ProcRank == 0) matrix = generateMatrix(size);
+
+    bool test = seidelMethod(matrix, size, 0.000001);
 
     ASSERT_TRUE(test);
 }
@@ -38,7 +62,13 @@ TEST(Seidel_Method_MPI, Test_75) {
 TEST(Seidel_Method_MPI, Test_100) {
     int size = 100;
 
-    bool test = seidelMethod(size, 0.000001);
+    int ProcRank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
+    double* matrix = nullptr;
+    if (ProcRank == 0) matrix = generateMatrix(size);
+
+    bool test = seidelMethod(matrix, size, 0.000001);
 
     ASSERT_TRUE(test);
 }

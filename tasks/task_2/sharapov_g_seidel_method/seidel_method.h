@@ -4,6 +4,6 @@
 
 double* generateMatrix(size_t size);
 void printMatrix(double* matrix, size_t size);
-bool seidelMethod(size_t n, double eps);
+bool seidelMethod(double* matrix, size_t n, double eps);
 
 #endif  // TASKS_TASK_2_SHARAPOV_G_SEIDEL_METHOD_SEIDEL_METHOD_H_

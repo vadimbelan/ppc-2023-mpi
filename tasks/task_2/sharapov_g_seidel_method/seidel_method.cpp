@@ -36,7 +36,7 @@ void printMatrix(double* matrix, size_t size) {
     std::cout << std::endl;
 }
 
-bool seidelMethod(size_t n, double eps) {
+bool seidelMethod(double* matrix, size_t n, double eps) {
     int ProcRank, ProcNum;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
@@ -78,12 +78,9 @@ bool seidelMethod(size_t n, double eps) {
         ProcElemDisp[i] = ProcDisp[i] * (n + 1);
     }
 
-    double* matrix = nullptr;
     if (ProcRank == 0) {
-        matrix = generateMatrix(n);
         MPI_Scatterv(matrix, ProcElem, ProcElemDisp, MPI_DOUBLE, rows,
                     rows_amount * (n + 1), MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        delete[] matrix;
     } else {
         MPI_Scatterv(nullptr, nullptr, nullptr, MPI_DOUBLE, rows, rows_amount * (n + 1), MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
