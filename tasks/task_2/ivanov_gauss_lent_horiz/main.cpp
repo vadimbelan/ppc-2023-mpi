@@ -8,23 +8,22 @@
 
 TEST(Parallel_Gauss, test_1) {
     boost::mpi::communicator world;
-    int size = 4;
-    std::vector<double> matrix{
-            4, 2,  2,  3, -20,
-            -5, 4, -3,  5,  20,
-            2, 5,  5,  3,  20,
-            3, 5,  5, -2, -10
-    };
+    int size = 8;
+    std::vector<double> matrix(size * (size + 1));
+    if (world.rank() == 0)
+        matrix = create_random_matrix(size);
 
+    boost::mpi::broadcast(world, matrix.data(), size * (size + 1), 0);
     std::vector<double> x;
     x = Gauss(matrix, size);
 
-    ASSERT_EQ(check_result(matrix, x, size), true);
+    if (world.rank() == 0)
+        ASSERT_EQ(check_result(matrix, x, size), true);
 }
 
 TEST(Parallel_Gauss, test_2) {
     boost::mpi::communicator world;
-    int size = 5;
+    int size = 8;
     std::vector<double> matrix(size * (size + 1));
     if (world.rank() == 0)
         matrix = create_random_matrix(size);
@@ -54,7 +53,7 @@ TEST(Parallel_Gauss, test_3) {
 
 TEST(Parallel_Gauss, test_4) {
     boost::mpi::communicator world;
-    int size = 8;
+    int size = 10;
     std::vector<double> matrix(size * (size + 1));
     if (world.rank() == 0)
         matrix = create_random_matrix(size);

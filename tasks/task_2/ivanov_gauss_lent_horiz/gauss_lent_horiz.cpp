@@ -32,23 +32,21 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
     for (int i = 0; i < nrows; i++)
         rows[i] = rank + comm_size * i;
 
+
     int row = 0;
     for (int i = 0; i < size - 1; i++) {
         if (i == rows[row]) {
             boost::mpi::broadcast(world, &matrix.data()[rows[row] * (size + 1)], size + 1, rank);
-            for (int j = 0; j <= size; j++) {
+            for (int j = 0; j <= size; j++)
                 tmp[j] = matrix[rows[row] * (size + 1) + j];
-            }
             row++;
-        } else {
+        } else
             boost::mpi::broadcast(world, tmp.data(), size + 1, i % comm_size);
-        }
 
         for (int j = row; j < nrows; j++) {
             double scaling = matrix[rows[j] * (size + 1) + i] / tmp[i];
-            for (int k = i; k < size + 1; k++) {
+            for (int k = i; k < size + 1; k++)
                 matrix[rows[j] * (size + 1) + k] -= scaling * tmp[k];
-            }
         }
     }
 
@@ -68,22 +66,17 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
                 Xi[i] /= matrix[i * (size + 1) + i];
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, rank);
                 row--;
-            } else {
+            } else
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, i % comm_size);
-            }
-        } else {
+        } else
             boost::mpi::broadcast(world, &(Xi.data())[i], 1, i % comm_size);
-        }
 
-        for (int j = 0; j <= row; j++) {
+        for (int j = 0; j <= row; j++)
             Xi[rows[j]] -= matrix[rows[j] * (size + 1) + i] * Xi[i];
-        }
     }
 
     if (rank == 0)
         Xi[0] /= matrix[rows[row] * (size + 1)];
-
-    boost::mpi::broadcast(world, Xi.data(), 1, 0);
 
     return Xi;
 }
@@ -91,13 +84,11 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
 bool check_result(std::vector<double> matrix, std::vector<double> x, int size) {
     for (int i = 0; i < size; i++) {
         double sum = 0;
-        for (int j = 0; j < size; j++) {
+        for (int j = 0; j < size; j++)
             sum += matrix[i * (size + 1) + j] * x[j];
-        }
-        if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE) {
-            printf("sum = %lf, real = %lf\n", sum, matrix[i * (size + 1) + size]);
+
+        if (std::abs(sum - matrix[i * (size + 1) + size]) > ESTIMATE)
             return false;
-        }
     }
     return true;
 }
@@ -107,10 +98,9 @@ std::vector<double> create_random_matrix(int size) {
     std::uniform_int_distribution<int> unif(-100, 100);
     std::vector<double> matrix((size + 1) * size);
     int i, j;
-    for (i = 0; i < size; i++) {
-        for (j = 0; j < size + 1; j++) {
+    for (i = 0; i < size; i++)
+        for (j = 0; j < size + 1; j++)
             matrix[i * (size + 1) + j] = unif(rd);
-        }
-    }
+
     return matrix;
 }
