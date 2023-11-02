@@ -13,18 +13,21 @@ int* marking(bool* picture, size_t n) {
 
     //  declaration of variables
     int *ProcSizes = new int[ProcNum]();
+    int *ProcDisp = new int[ProcNum]();
     for (int i = 0; i < ProcNum; i++) {
         ProcSizes[i] = n / ProcNum + (i < n % ProcNum ? 1 : 0);
+        ProcDisp[i] = i * (n / ProcNum) + std::min<int>(i, n % ProcNum);
     }
 
     int *rows = new int[ProcSizes[ProcRank] * n]();
 
     //  sending rows to corresponding processors
+    int *PackedRows = nullptr;
     if (ProcRank == 0) {
-        int *PackedRows = new int[n * n];
+        PackedRows = new int[n * n]();
         for (int row = 0; row < n; row++) {
             for (int elem = 0; elem < n; elem++) {
-                PackedRows[(ProcSizes[row % ProcNum] * n) + (row / ProcNum) + elem] = picture[(row * n) + elem];
+                PackedRows[(ProcDisp[row % ProcNum] * n) + ((row / ProcNum) * n) + elem] = picture[(row * n) + elem];
             }
         }
 
@@ -32,7 +35,7 @@ int* marking(bool* picture, size_t n) {
 
         for (int row = 0; row < n; row++) {
             for (int elem = 0; elem < n; elem++) {
-                std::cout << PackedRows[row * n + elem];
+                std::cout << PackedRows[row * n + elem] << "\t";
             }
             std::cout << std::endl;
         }
@@ -42,5 +45,7 @@ int* marking(bool* picture, size_t n) {
         std::cout << "";
     }
 
+    delete[] rows;
+    delete[] PackedRows;
     return nullptr;
 }
