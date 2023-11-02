@@ -40,8 +40,9 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
             for (int j = 0; j <= size; j++)
                 tmp[j] = matrix[rows[row] * (size + 1) + j];
             row++;
-        } else
+        } else {
             boost::mpi::broadcast(world, tmp.data(), size + 1, i % comm_size);
+        }
 
         for (int j = row; j < nrows; j++) {
             double scaling = matrix[rows[j] * (size + 1) + i] / tmp[i];
@@ -66,10 +67,12 @@ std::vector<double> Gauss(std::vector<double> matrix, int size) {
                 Xi[i] /= matrix[i * (size + 1) + i];
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, rank);
                 row--;
-            } else
+            } else {
                 boost::mpi::broadcast(world, &(Xi.data())[i], 1, i % comm_size);
-        } else
+            }
+        } else {
             boost::mpi::broadcast(world, &(Xi.data())[i], 1, i % comm_size);
+        }
 
         for (int j = 0; j <= row; j++)
             Xi[rows[j]] -= matrix[rows[j] * (size + 1) + i] * Xi[i];
