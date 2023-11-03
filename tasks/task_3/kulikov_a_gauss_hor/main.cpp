@@ -102,10 +102,10 @@ TEST(Parallel_Gaussian_Filter, Test_Horizontal_Crosses_Small_Sd) {
 
     if (world.rank() == 0) {
         pic = {
-         255, 255, 255, 255, 255, 255,  
+         255, 255, 255, 255, 255, 255,
          255, 255, 255, 255, 255, 255,
          0,     0, 255,   0, 255, 255,
-         255, 255,   0, 255, 255, 255, 
+         255, 255,   0, 255, 255, 255,
          0,    0,  255,   0, 255, 255,
          0,    0,  255,   0, 255, 255
         };
@@ -115,14 +115,14 @@ TEST(Parallel_Gaussian_Filter, Test_Horizontal_Crosses_Small_Sd) {
 
     if (world.rank() == 0) {
         std::vector<uint8_t> sec_filtered = {
-            255, 255, 255, 255, 255, 255,  
+            255, 255, 255, 255, 255, 255,
             255, 254, 254, 254, 254, 255,
             0,     0, 254,   0, 254, 255,
-            255, 254,   0, 254, 254, 255, 
+            255, 254,   0, 254, 254, 255,
             0,     0, 254,   0, 254, 255,
             0,     0, 255,   0, 255, 255
         };
-        
+
         for (int i = 0; i < n + 2; i++) {
             for (int j = 0; j < n + 2; j++) {
                 ASSERT_EQ(filetered_pic[i * (n + 2) + j], sec_filtered[i * (n + 2) + j]);

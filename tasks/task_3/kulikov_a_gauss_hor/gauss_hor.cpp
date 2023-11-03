@@ -8,7 +8,7 @@
 #include <boost/mpi/communicator.hpp>
 #include "task_3/kulikov_a_gauss_hor/gauss_hor.h"
 
-uint32_t getPxSum(std::vector<uint8_t>& pic, int n) {
+uint32_t getPxSum(const std::vector<uint8_t>& pic, int n) {
     uint32_t sum = 0;
     for (int i = 1; i < n - 1; i++)
         for (int j = 1; j < n - 1; j++)
@@ -65,7 +65,7 @@ std::vector<uint8_t> getExtPicture(int n) {
     return pic;
 }
 
-std::vector<uint8_t> getParallelGauss(std::vector<uint8_t>& orig, std::vector<double>& kernel, int n) {
+std::vector<uint8_t> getParallelGauss(const std::vector<uint8_t>& orig, const std::vector<double>& kernel, int n) {
     boost::mpi::communicator world;
     int rank = world.rank(), p = world.size();
     int delta = (n - 2) / p;
@@ -78,7 +78,7 @@ std::vector<uint8_t> getParallelGauss(std::vector<uint8_t>& orig, std::vector<do
         sizes = std::vector<int>(p, row.size());
         displs = std::vector<int>(p);
         int d = p;
-        while (displs[d] = (--d) * n * delta);
+        while (displs[d] = (--d) * n * delta) {}
     }
     boost::mpi::scatterv(world, orig, sizes, displs, row.data(), row.size(), 0);
     if (world.rank() == 0) {
@@ -94,16 +94,16 @@ std::vector<uint8_t> getParallelGauss(std::vector<uint8_t>& orig, std::vector<do
         for (int i = 1; i < n-1; i++) {
             idx = n*(j+1) + i;
             row[idx] = clamp(
-                kernel[0] * row_cpy[idx - n -1] + 
+                kernel[0] * row_cpy[idx - n -1] +
                 kernel[1] * row_cpy[idx - n] +
-                kernel[2] * row_cpy[idx - n +1] + 
-                    
+                kernel[2] * row_cpy[idx - n +1] +
+
                 kernel[3] * row_cpy[idx -1] +
-                kernel[4] * row_cpy[idx] + 
-                kernel[5] * row_cpy[idx +1] + 
+                kernel[4] * row_cpy[idx] +
+                kernel[5] * row_cpy[idx +1] +
 
                 kernel[6] * row_cpy[idx + n -1] +
-                kernel[7] * row_cpy[idx + n] + 
+                kernel[7] * row_cpy[idx + n] +
                 kernel[8] * row_cpy[idx + n +1]);
         }
     }
@@ -120,26 +120,27 @@ std::vector<uint8_t> getParallelGauss(std::vector<uint8_t>& orig, std::vector<do
 
 
 
-std::vector<uint8_t> getSequentialGauss(std::vector<uint8_t>& orig, std::vector<double>& kernel, int n) {
-    uint8_t* row, * row_cpy;
+std::vector<uint8_t> getSequentialGauss(const std::vector<uint8_t>& orig, const std::vector<double>& kernel, int n) {
+    uint8_t* row;
+    const uint8_t * row_cpy;
     std::vector<uint8_t> result(orig);
     for (int j = 0; j < n-2; j++) {
         row = result.data() + j * n;
         row_cpy = orig.data() + j * n;
         for (int i = 1; i < n-1; i++) {
             row[n + i] = clamp(
-                kernel[0] * row_cpy[n + i - n -1] + 
+                kernel[0] * row_cpy[n + i - n -1] +
                 kernel[1] * row_cpy[n + i - n] +
-                kernel[2] * row_cpy[n + i - n +1] + 
-                    
+                kernel[2] * row_cpy[n + i - n +1] +
+
                 kernel[3] * row_cpy[n + i -1] +
-                kernel[4] * row_cpy[n + i] + 
-                kernel[5] * row_cpy[n + i +1] + 
+                kernel[4] * row_cpy[n + i] +
+                kernel[5] * row_cpy[n + i +1] +
 
                 kernel[6] * row_cpy[n + i + n -1] +
-                kernel[7] * row_cpy[n + i + n] + 
+                kernel[7] * row_cpy[n + i + n] +
                 kernel[8] * row_cpy[n + i + n +1]);
-        } 
+        }
     }
     return result;
 }
