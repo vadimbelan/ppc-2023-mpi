@@ -17,7 +17,7 @@ uint32_t getPxSum(const std::vector<uint8_t>& pic, int n) {
 }
 
 inline uint8_t clamp(double v) {
-	return std::min<double>(std::max<double>(v, 0), uint8_t(-1));
+    return std::min<double>(std::max<double>(v, 0), uint8_t(-1));
 }
 
 double gaussPdfExp(double x_sqruare, double sd) {
