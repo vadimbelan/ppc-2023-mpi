@@ -2,6 +2,6 @@
 #ifndef TASKS_TASK_3_SHARAPOV_G_CONV_HULL_CONN_COMP_CONNECTED_COMPONENT_H_
 #define TASKS_TASK_3_SHARAPOV_G_CONV_HULL_CONN_COMP_CONNECTED_COMPONENT_H_
 
-int* marking(bool* picture, size_t n);
+int* marking(int* image, size_t n, size_t k);
 
 #endif  // TASKS_TASK_3_SHARAPOV_G_CONV_HULL_CONN_COMP_CONNECTED_COMPONENT_H_
