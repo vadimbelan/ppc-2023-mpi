@@ -19,13 +19,13 @@ TEST(MPI_TESTS, Test_small) {
                              122, 89, 100, 0,   1,   255, 4, 5};
   std::vector copyImage(image);
 
-  par_increase_contrast(image, m, n, new_min, new_max, MPI_COMM_WORLD);
+  par_increase_contrast(&image, m, n, new_min, new_max, MPI_COMM_WORLD);
 
   if (rank == 0) {
     uint8_t old_min = *std::min_element(copyImage.begin(), copyImage.end());
     uint8_t old_max = *std::max_element(copyImage.begin(), copyImage.end());
 
-    seq_increase_contrast(copyImage, old_min, old_max, new_min, new_max);
+    seq_increase_contrast(&copyImage, old_min, old_max, new_min, new_max);
 
     ASSERT_EQ(image, copyImage);
   }
@@ -43,13 +43,13 @@ TEST(MPI_TESTS, Test_all_zero) {
   std::vector<uint8_t> image(m * n, 0);
   std::vector copyImage(image);
 
-  par_increase_contrast(image, m, n, new_min, new_max, MPI_COMM_WORLD);
+  par_increase_contrast(&image, m, n, new_min, new_max, MPI_COMM_WORLD);
 
   if (rank == 0) {
     uint8_t old_min = *std::min_element(copyImage.begin(), copyImage.end());
     uint8_t old_max = *std::max_element(copyImage.begin(), copyImage.end());
 
-    seq_increase_contrast(copyImage, old_min, old_max, new_min, new_max);
+    seq_increase_contrast(&copyImage, old_min, old_max, new_min, new_max);
 
     ASSERT_EQ(image, copyImage);
   }
@@ -67,13 +67,13 @@ TEST(MPI_TESTS, Test_all_255) {
   std::vector<uint8_t> image(m * n, 255);
   std::vector copyImage(image);
 
-  par_increase_contrast(image, m, n, new_min, new_max, MPI_COMM_WORLD);
+  par_increase_contrast(&image, m, n, new_min, new_max, MPI_COMM_WORLD);
 
   if (rank == 0) {
     uint8_t old_min = *std::min_element(copyImage.begin(), copyImage.end());
     uint8_t old_max = *std::max_element(copyImage.begin(), copyImage.end());
 
-    seq_increase_contrast(copyImage, old_min, old_max, new_min, new_max);
+    seq_increase_contrast(&copyImage, old_min, old_max, new_min, new_max);
 
     ASSERT_EQ(image, copyImage);
   }
@@ -91,7 +91,7 @@ TEST(MPI_TESTS, Test_empty) {
   std::vector<uint8_t> image{};
   std::vector copyImage(image);
 
-  par_increase_contrast(image, m, n, new_min, new_max, MPI_COMM_WORLD);
+  par_increase_contrast(&image, m, n, new_min, new_max, MPI_COMM_WORLD);
 
   if (rank == 0) {
     ASSERT_EQ(image, copyImage);
@@ -110,13 +110,13 @@ TEST(MPI_TESTS, Test_random) {
   std::vector<uint8_t> image = create_random_image(m, n, 0, 255);
   std::vector copyImage(image);
 
-  par_increase_contrast(image, m, n, new_min, new_max, MPI_COMM_WORLD);
+  par_increase_contrast(&image, m, n, new_min, new_max, MPI_COMM_WORLD);
 
   if (rank == 0) {
     uint8_t old_min = *std::min_element(copyImage.begin(), copyImage.end());
     uint8_t old_max = *std::max_element(copyImage.begin(), copyImage.end());
 
-    seq_increase_contrast(copyImage, old_min, old_max, new_min, new_max);
+    seq_increase_contrast(&copyImage, old_min, old_max, new_min, new_max);
 
     ASSERT_EQ(image, copyImage);
   }
