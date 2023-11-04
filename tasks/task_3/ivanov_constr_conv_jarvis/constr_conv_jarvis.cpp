@@ -1,8 +1,8 @@
 // Copyright 2023 Ivanov Nikita
 #include <vector>
+#include <iostream>
+#include <random>
 #include "task_3/ivanov_constr_conv_jarvis/constr_conv_jarvis.h"
-
-bool operator==(P a, P b) { return a.x == b.x && b.y == a.y; }
 
 int distance(P a, P b, P c) {
     int y1 = a.y - b.y;
@@ -38,7 +38,7 @@ std::vector<P> get_points_from_image(std::vector<std::vector<int>> &image){
     return points;
 }
 
-std::vector<P> Jarvis(std::vector<P> points){
+std::vector<P> Jarvis(const std::vector<P> points){
     P start_point = points[0];
     for (P p: points)
         if (p.y < start_point.y || (p.y == start_point.y && p.x < start_point.x))
@@ -68,4 +68,51 @@ std::vector<P> Jarvis(std::vector<P> points){
             break;
     }
     return result;
+}
+
+bool inside_conv(const std::vector<P> pol, const std::vector<P> points){
+    int pol_size = pol.size();
+    for (P point: points){
+        int j = pol_size - 1;
+        bool res = false;
+        for (int i = 0; i < pol_size; i++) {
+            if (pol[i] == point || pol[j] == point) {
+                res = true;
+                break;
+            }
+            if (pol[i].y == pol[j].y && pol[i].y == point.y){
+                res = true;
+                break;
+            }
+            if (pol[i].x == pol[j].x && pol[i].x == point.x){
+                res = true;
+                break;
+            }
+            if ((pol[i].y < point.y && pol[j].y >= point.y || pol[j].y < point.y && pol[i].y >= point.y) &&
+                (pol[i].x + (point.y - pol[i].y) / (pol[j].y - pol[i].y) * (pol[j].x - pol[i].x) == point.x)) {
+                res = true;
+                break;
+            }
+            if ((pol[i].y < point.y && pol[j].y >= point.y || pol[j].y < point.y && pol[i].y >= point.y) &&
+                (pol[i].x + (point.y - pol[i].y) * (pol[j].x - pol[i].x) / (pol[j].y - pol[i].y) > point.x))
+                res = !res;
+            j = i;
+        }
+        if (!res)
+            return false;
+    }
+    return true;
+}
+
+std::vector<std::vector<int>> create_image(int n, int m){
+    std::random_device rd;
+    std::uniform_int_distribution<int> unif(0, 255);
+    std::vector<std::vector<int>> image(n, std::vector<int> (m));
+    int i, j;
+    for (i = 0; i < n; i++)
+        for (j = 0; j < m; j++)
+            image[i][j] = unif(rd);
+    image[0][0] = 255;
+
+    return image;
 }
