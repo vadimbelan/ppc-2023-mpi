@@ -56,7 +56,7 @@ void par_increase_contrast(std::vector<uint8_t>* image, size_t m, size_t n,
     }
   }
 
-  uint8_t global_min = 0;
+  uint8_t global_min = 255;
   uint8_t global_max = 0;
 
   std::vector<uint8_t> local_img(send_counts[rank]);
@@ -65,12 +65,12 @@ void par_increase_contrast(std::vector<uint8_t>* image, size_t m, size_t n,
   MPI_Scatterv(image->data(), send_counts.data(), displs.data(), MPI_UINT8_T,
                local_img.data(), send_counts[rank], MPI_UINT8_T, 0, comm);
 
-  uint8_t local_min = 0;
+  uint8_t local_min = 255;
   uint8_t local_max = 0;
 
   if (rank < count_pix) {
-    local_max = *std::max_element(local_img.begin(), local_img.end());
     local_min = *std::min_element(local_img.begin(), local_img.end());
+    local_max = *std::max_element(local_img.begin(), local_img.end());
   }
 
   // REDUCE RESULTS
