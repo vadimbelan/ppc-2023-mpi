@@ -9,7 +9,9 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
     int ProcRank;
+    int ProcNum;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
 
     //  DEBUG --------------------------------------
 
@@ -19,14 +21,14 @@ int main(int argc, char** argv) {
     if (ProcRank == 0) {
         matrix = new int[size * size];
         int image[] = {
+            1, 0, 0, 0, 0, 0, 0, 1,
+            0, 0, 0, 0, 0, 1, 0, 0,
             1, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 1, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0, 0, 1, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 1, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
+            1, 0, 0, 0, 0, 0, 0, 1,
         };
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -34,8 +36,15 @@ int main(int argc, char** argv) {
             }
         }
     }
+    std::vector<point> ans;
 
-    marking(matrix, size, 3);
+    ans = convex_hull(matrix, size);
+
+    // if (ProcRank == ProcNum - 1) {
+    //     for (int i = 0; i < ans.size(); i++) {
+    //         ans[i].print();
+    //     }
+    // }
 
     //  DEBUG --------------------------------------
 

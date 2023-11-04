@@ -105,7 +105,7 @@ int* marking(int* image, size_t n, size_t k) {
                 currentProcessedElem++;
             }
             if ((ProcRank + (currentLocalRow * ProcNum) + 1) < n) {
-                MPI_Send(&rows[currentLocalRow * n], n, MPI_INT, nextRowProc, MPI_ANY_TAG, MPI_COMM_WORLD);
+                MPI_Send(&rows[currentLocalRow * n], n, MPI_INT, nextRowProc, 1, MPI_COMM_WORLD);
             }
             currentElemLimit += k;
         }
