@@ -81,8 +81,7 @@ void par_increase_contrast(std::vector<uint8_t>* image, size_t m, size_t n,
   seq_increase_contrast(&local_img, global_min, global_max, new_min, new_max);
 
   // GATHER RESULTS
-  if (rank < count_pix) {
-    MPI_Gatherv(local_img.data(), send_counts[rank], MPI_UINT8_T, image->data(),
-                send_counts.data(), displs.data(), MPI_UINT8_T, 0, comm);
-  }
+
+  MPI_Gatherv(local_img.data(), send_counts[rank], MPI_UINT8_T, image->data(),
+              send_counts.data(), displs.data(), MPI_UINT8_T, 0, comm);
 }
