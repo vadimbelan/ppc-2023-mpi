@@ -12,16 +12,16 @@
 
 TEST(Parallel_Gaussian_Filter, Test_Size) {
     boost::mpi::communicator world;
-    int n = 4;
+    int n = 4, m = 4;
     std::vector<double> kern = get3x3GaussKernel(1.0);
     std::vector<uint8_t> pic;
 
 
     if (world.rank() == 0) {
-        pic = getExtPicture(n);
+        pic = getExtPicture(n, m);
     }
 
-    auto filetered_pic = getParallelGauss(pic, kern, n + 2);
+    auto filetered_pic = getParallelGauss(pic, kern, n + 2, m + 2);
 
     if (world.rank() == 0) {
         auto sec_filtered = getSequentialGauss(pic, kern, n + 2);
@@ -31,18 +31,18 @@ TEST(Parallel_Gaussian_Filter, Test_Size) {
 
 TEST(Parallel_Gaussian_Filter, Test_Intensive) {
     boost::mpi::communicator world;
-    int n = 100;
+    int n = 100, m = 20;
     std::vector<double> kern = get3x3GaussKernel(1.0);
     std::vector<uint8_t> pic;
     std::uint32_t orig_sum, parallel_sum;
 
 
     if (world.rank() == 0) {
-        pic = getExtPicture(n);
+        pic = getExtPicture(n, m);
         orig_sum = getPxSum(pic, n + 2);
     }
 
-    auto filetered_pic = getParallelGauss(pic, kern, n + 2);
+    auto filetered_pic = getParallelGauss(pic, kern, n + 2, m + 2);
 
     if (world.rank() == 0) {
         parallel_sum = getPxSum(filetered_pic, n + 2);
@@ -52,21 +52,21 @@ TEST(Parallel_Gaussian_Filter, Test_Intensive) {
 
 TEST(Parallel_Gaussian_Filter, Test_RandValues4) {
     boost::mpi::communicator world;
-    int n = 4;
+    int n = 4, m = 2;
     std::vector<double> kern = get3x3GaussKernel(1.0);
     std::vector<uint8_t> pic;
 
     if (world.rank() == 0) {
-        pic = getExtPicture(n);
+        pic = getExtPicture(n, m);
     }
 
-    auto filetered_pic = getParallelGauss(pic, kern, n + 2);
+    auto filetered_pic = getParallelGauss(pic, kern, n + 2, m + 2);
 
     if (world.rank() == 0) {
         auto sec_filtered = getSequentialGauss(pic, kern, n + 2);
         for (int i = 0; i < n + 2; i++) {
-            for (int j = 0; j < n + 2; j++) {
-                ASSERT_EQ(filetered_pic[i * (n + 2) + j], sec_filtered[i * (n + 2) + j]);
+            for (int j = 0; j < m + 2; j++) {
+                ASSERT_EQ(filetered_pic[i * (m + 2) + j], sec_filtered[i * (m + 2) + j]);
             }
         }
     }
@@ -74,21 +74,21 @@ TEST(Parallel_Gaussian_Filter, Test_RandValues4) {
 
 TEST(Parallel_Gaussian_Filter, Test_RandValues8) {
     boost::mpi::communicator world;
-    int n = 8;
+    int n = 8, m = 7;
     std::vector<double> kern = get3x3GaussKernel(1.0);
     std::vector<uint8_t> pic;
 
     if (world.rank() == 0) {
-        pic = getExtPicture(n);
+        pic = getExtPicture(n, m);
     }
 
-    auto filetered_pic = getParallelGauss(pic, kern, n + 2);
+    auto filetered_pic = getParallelGauss(pic, kern, n + 2, m + 2);
 
     if (world.rank() == 0) {
         auto sec_filtered = getSequentialGauss(pic, kern, n + 2);
         for (int i = 0; i < n + 2; i++) {
-            for (int j = 0; j < n + 2; j++) {
-                ASSERT_EQ(filetered_pic[i * (n + 2) + j], sec_filtered[i * (n + 2) + j]);
+            for (int j = 0; j < m + 2; j++) {
+                ASSERT_EQ(filetered_pic[i * (m + 2) + j], sec_filtered[i * (m + 2) + j]);
             }
         }
     }
@@ -96,7 +96,7 @@ TEST(Parallel_Gaussian_Filter, Test_RandValues8) {
 
 TEST(Parallel_Gaussian_Filter, Test_Horizontal_Crosses_Small_Sd) {
     boost::mpi::communicator world;
-    int n = 4;
+    int n = 4, m = 4;
     std::vector<double> kern = get3x3GaussKernel(0.2);
     std::vector<uint8_t> pic;
 
@@ -111,7 +111,7 @@ TEST(Parallel_Gaussian_Filter, Test_Horizontal_Crosses_Small_Sd) {
         };
     }
 
-    auto filetered_pic = getParallelGauss(pic, kern, n + 2);
+    auto filetered_pic = getParallelGauss(pic, kern, n + 2, m + 2);
 
     if (world.rank() == 0) {
         std::vector<uint8_t> sec_filtered = {
@@ -124,8 +124,8 @@ TEST(Parallel_Gaussian_Filter, Test_Horizontal_Crosses_Small_Sd) {
         };
 
         for (int i = 0; i < n + 2; i++) {
-            for (int j = 0; j < n + 2; j++) {
-                ASSERT_EQ(filetered_pic[i * (n + 2) + j], sec_filtered[i * (n + 2) + j]);
+            for (int j = 0; j < m + 2; j++) {
+                ASSERT_EQ(filetered_pic[i * (m + 2) + j], sec_filtered[i * (m + 2) + j]);
             }
         }
     }
