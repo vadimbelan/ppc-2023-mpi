@@ -2,7 +2,22 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/collectives.hpp>
+#include <boost/serialization/vector.hpp>
 #include "task_3/ivanov_constr_conv_jarvis/constr_conv_jarvis.h"
+
+int get_slice(int size, int proc_count, int rank) {
+    int q = size / proc_count;
+    if (size % proc_count)
+        q++;
+    int r = proc_count * q - size;
+
+    int slice = q;
+    if (rank >= proc_count - r)
+        slice = q - 1;
+    return slice;
+}
 
 int distance(P a, P b, P c) {
     int y1 = a.y - b.y;
@@ -26,19 +41,40 @@ int crossProduct(P a, P b, P c) {
     return y2*x1 - y1*x2;
 }
 
-std::vector<P> get_points_from_image(std::vector<std::vector<int>> &image){
-    std::vector<P> points;
-    for (int i = 0; i < image.size(); i++) {
-        for (int j = 0; j < image[i].size(); j++){
-            if (image[i][j] > 178){
-                points.emplace_back(j, i);
+std::vector<std::pair<int, int>> get_points_from_image(std::vector<std::vector<int>> &image){
+    boost::mpi::communicator world;
+
+    int m = image[0].size();
+    int rank = world.rank();
+    int commsize = world.size();
+    int nrows = get_slice(image.size(), commsize, rank);
+
+    std::vector<std::pair<int, int>> points;
+    for (int i = 0; i < nrows; i++) {
+        for (int j = 0; j < m; j++){
+            if (image[rank + commsize * i][j] > 178){
+                points.emplace_back(j, rank + commsize * i);
             }
         }
     }
+
+    std::vector<int> sizes;
+    if (rank == 0)
+        sizes.resize(commsize);
+    boost::mpi::gather(world, (int)points.size(), sizes, 0);
+
+    std::vector<std::pair<int, int>> res_points;
+    if (rank == 0){
+        res_points.resize(std::accumulate(sizes.begin(), sizes.end(), 0));
+        boost::mpi::gatherv(world, points, res_points.data(), sizes, 0);
+    } else {
+        boost::mpi::gatherv(world, points, 0);
+    }
+
     return points;
 }
 
-std::vector<P> Jarvis(const std::vector<P> points){
+std::vector<P> Jarvis(std::vector<std::pair<int, int>> points){
     P start_point = points[0];
     for (P p: points)
         if (p.y < start_point.y || (p.y == start_point.y && p.x < start_point.x))
@@ -70,7 +106,7 @@ std::vector<P> Jarvis(const std::vector<P> points){
     return result;
 }
 
-bool inside_conv(const std::vector<P> pol, const std::vector<P> points){
+bool inside_conv(const std::vector<P> pol, std::vector<std::pair<int, int>> points){
     int pol_size = pol.size();
     for (P point: points){
         int j = pol_size - 1;

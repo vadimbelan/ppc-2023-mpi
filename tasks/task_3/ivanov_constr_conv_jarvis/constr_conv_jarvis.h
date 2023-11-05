@@ -6,13 +6,14 @@ struct P{
     double x;
     double y;
     P(double _x, double _y): x(_x), y(_y) {}
+    P(std::pair<int, int> pair): x(pair.first), y(pair.second) {}
     bool operator==(P p) const { return x == p.x && y == p.y; }
 };
 
-std::vector<P> get_points_from_image(std::vector<std::vector<int>> &image);
+std::vector<std::pair<int, int>> get_points_from_image(std::vector<std::vector<int>> &image);
 
-std::vector<P> Jarvis(std::vector<P> points);
-bool inside_conv(std::vector<P> pol, std::vector<P> points);
+std::vector<P> Jarvis(std::vector<std::pair<int, int>> points);
+bool inside_conv(std::vector<P> pol, std::vector<std::pair<int, int>> points);
 
 std::vector<std::vector<int>> create_image(int n, int m);
 
