@@ -70,7 +70,8 @@ std::vector<uint8_t> getExtPicture(int n, int m) {
     return pic;
 }
 
-std::vector<uint8_t> getParallelGauss(const std::vector<uint8_t>& orig, const std::vector<double>& kernel, int n, int m) {
+std::vector<uint8_t> getParallelGauss(const std::vector<uint8_t>& orig,
+                                        const std::vector<double>& kernel, int n, int m) {
     boost::mpi::communicator world;
     int rank = world.rank(), p = world.size();
     int delta = (n - 2) / p;
@@ -125,7 +126,8 @@ std::vector<uint8_t> getParallelGauss(const std::vector<uint8_t>& orig, const st
 
 
 
-std::vector<uint8_t> getSequentialGauss(const std::vector<uint8_t>& orig, const std::vector<double>& kernel, int n) {
+std::vector<uint8_t> getSequentialGauss(const std::vector<uint8_t>& orig,
+                                        const std::vector<double>& kernel, int n) {
     uint8_t* row;
     const uint8_t * row_cpy;
     int m = orig.size() / n, idx;
