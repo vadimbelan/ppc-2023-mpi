@@ -38,22 +38,13 @@ void par_increase_contrast(std::vector<uint8_t>* image, size_t m, size_t n,
   const int chunk = static_cast<int>(count_pix / size_world);
   const int tail = static_cast<int>(count_pix % size_world);
 
-  std::vector<int> send_counts(size_world, 0);
+  std::vector<int> send_counts(size_world, chunk);
   std::vector<int> displs(size_world, 0);
 
-  if (chunk != 0) {
-    for (int i = 0; i < size_world - 1; ++i) {
-      send_counts[i] = chunk;
-      displs[i] = i * chunk;
-    }
-    send_counts[size_world - 1] = static_cast<int>(
-        (tail == 0) ? chunk : count_pix - (size_world - 1) * chunk);
-    displs[size_world - 1] = (size_world - 1) * chunk;
-  } else {
-    for (int i = 0; i < count_pix; ++i) {
-      send_counts[i] = 1;
-      displs[i] = i;
-    }
+  // Uniform distribution of elements between processes
+  for (int i = 0; i < size_world; ++i) {
+    if (i < tail) ++send_counts[i];
+    displs[i] = i == 0 ? 0 : displs[i - 1] + send_counts[i - 1];
   }
 
   uint8_t global_min = 255;
@@ -61,27 +52,27 @@ void par_increase_contrast(std::vector<uint8_t>* image, size_t m, size_t n,
 
   std::vector<uint8_t> local_img(send_counts[rank]);
 
-  // FIND MAX MIN VALUES IN IMAGE
+  // Distribution of elements to processors
   MPI_Scatterv(image->data(), send_counts.data(), displs.data(), MPI_UINT8_T,
                local_img.data(), send_counts[rank], MPI_UINT8_T, 0, comm);
 
   uint8_t local_min = 255;
   uint8_t local_max = 0;
 
+  // Finding the minimum and maximum values in an image
   if (rank < count_pix) {
     local_min = *std::min_element(local_img.begin(), local_img.end());
     local_max = *std::max_element(local_img.begin(), local_img.end());
   }
 
-  // REDUCE RESULTS
+  // Sends the found maximum and minimum to all processors
   MPI_Allreduce(&local_min, &global_min, 1, MPI_UINT8_T, MPI_MIN, comm);
   MPI_Allreduce(&local_max, &global_max, 1, MPI_UINT8_T, MPI_MAX, comm);
 
-  // RUN SEQ
+  // Running a sequential version
   seq_increase_contrast(&local_img, global_min, global_max, new_min, new_max);
 
-  // GATHER RESULTS
-
+  // Gather results
   MPI_Gatherv(local_img.data(), send_counts[rank], MPI_UINT8_T, image->data(),
               send_counts.data(), displs.data(), MPI_UINT8_T, 0, comm);
 }
