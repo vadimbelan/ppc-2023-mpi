@@ -1,6 +1,6 @@
 // Copyright 2023 dmitry-vnn
 #include <gtest/gtest.h>
-#include <vector>
+#include <cmath>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 #include "task_1/vanushkin_d_rect_integration/rectangle_integration.h"
