@@ -1,8 +1,6 @@
 // Copyright 2023 Ivanov Nikita
-#include <vector>
 #include <iostream>
 #include <random>
-#include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include <boost/serialization/vector.hpp>
 #include "task_3/ivanov_constr_conv_jarvis/constr_conv_jarvis.h"
@@ -14,11 +12,11 @@ int distance(std::pair<int, int> a, std::pair<int, int> b, std::pair<int, int> c
     int x2 = a.first - c.first;
     int item1 = (y1*y1 + x1*x1);
     int item2 = (y2*y2 + x2*x2);
-    if(item1 == item2)
-        return 0; //when b and c are in same distance from a
-    else if(item1 < item2)
-        return -1; //when b is closer to a
-    return 1; //when c is closer to a
+    if (item1 == item2)
+        return 0;  // when b and c are in same distance from a
+    else if (item1 < item2)
+        return -1;  // when b is closer to a
+    return 1;  // when c is closer to a
 }
 
 int crossProduct(std::pair<int, int> a, std::pair<int, int> b, std::pair<int, int> c) {
@@ -29,7 +27,7 @@ int crossProduct(std::pair<int, int> a, std::pair<int, int> b, std::pair<int, in
     return y2*x1 - y1*x2;
 }
 
-std::vector<std::pair<int, int>> get_points_from_image(std::vector<std::vector<int>> &image, int n){
+std::vector<std::pair<int, int>> get_points_from_image(const std::vector<std::vector<int>> &image, int n) {
     boost::mpi::communicator world;
 
     int rank = world.rank();
@@ -44,7 +42,7 @@ std::vector<std::pair<int, int>> get_points_from_image(std::vector<std::vector<i
     return points;
 }
 
-std::vector<P> JarvisParallel(std::vector<std::vector<int>> &image, int n){
+std::vector<P> JarvisParallel(const std::vector<std::vector<int>> &image, int n) {
     boost::mpi::communicator world;
     int rank = world.rank();
     int commsize = world.size();
@@ -54,13 +52,13 @@ std::vector<P> JarvisParallel(std::vector<std::vector<int>> &image, int n){
     std::pair<int, int> start_point = std::make_pair(image[0].size(), image[0].size());
 
     std::vector<std::pair<int, int>> points = get_points_from_image(image, n);
-    for (auto p: points)
+    for (auto p : points)
         if (p.second < start_point.second || (p.second == start_point.second && p.first < start_point.first))
             start_point = p;
 
     boost::mpi::gather(world, start_point, selected_points.data(), 0);
-    if (rank == 0){
-        for (auto p: selected_points)
+    if (rank == 0) {
+        for (auto p : selected_points)
             if (p.second < start_point.second || (p.second == start_point.second && p.first < start_point.first))
                 start_point = p;
         for (int i = 0; i < commsize; i++)
@@ -76,32 +74,30 @@ std::vector<P> JarvisParallel(std::vector<std::vector<int>> &image, int n){
     std::pair<int, int> next_point = points[0];
 
     while (true) {
-        for (auto p: points) {
-            if(p == current)
+        for (auto p : points) {
+            if (p == current)
                 continue;
             int val = crossProduct(current, next_point, p);
-            if(val > 0) {
+            if (val > 0) {
                 next_point = p;
-            }else if(val == 0) {
-                if(distance(current, next_point, p) < 0) {
+            } else if (val == 0) {
+                if (distance(current, next_point, p) < 0)
                     next_point = p;
-                }
             }
         }
 
         boost::mpi::gather(world, next_point, selected_points.data(), 0);
 
-        if (rank == 0){
-            for (auto p: selected_points) {
-                if(p == current)
+        if (rank == 0) {
+            for (auto p : selected_points) {
+                if (p == current)
                     continue;
                 int val = crossProduct(current, next_point, p);
-                if(val > 0) {
+                if (val > 0) {
                     next_point = p;
-                }else if(val == 0) {
-                    if(distance(current, next_point, p) < 0) {
+                } else if (val == 0) {
+                    if (distance(current, next_point, p) < 0)
                         next_point = p;
-                    }
                 }
             }
             result.emplace_back(next_point);
@@ -115,9 +111,9 @@ std::vector<P> JarvisParallel(std::vector<std::vector<int>> &image, int n){
     return result;
 }
 
-std::vector<P> Jarvis(std::vector<std::pair<int, int>> points){
+std::vector<P> Jarvis(std::vector<std::pair<int, int>> points) {
     std::pair<int, int> start_point = points[0];
-    for (auto p: points)
+    for (auto p : points)
         if (p.second < start_point.second || (p.second == start_point.second && p.first < start_point.first))
             start_point = p;
 
@@ -125,16 +121,15 @@ std::vector<P> Jarvis(std::vector<std::pair<int, int>> points){
     std::pair<int, int> current = start_point;
     std::pair<int, int> next_point = points[0];
     while (true) {
-        for (auto p: points) {
-            if(p == current)
+        for (auto p : points) {
+            if (p == current)
                 continue;
             int val = crossProduct(current, next_point, p);
-            if(val > 0) {
+            if (val > 0) {
                 next_point = p;
-            }else if(val == 0) {
-                if(distance(current, next_point, p) < 0) {
+            } else if (val == 0) {
+                if (distance(current, next_point, p) < 0)
                     next_point = p;
-                }
             }
         }
 
@@ -147,9 +142,10 @@ std::vector<P> Jarvis(std::vector<std::pair<int, int>> points){
     return result;
 }
 
-bool inside_conv(const std::vector<P> pol, std::vector<std::pair<int, int>> points){
+bool inside_conv(const std::vector<P> &pol, std::vector<std::pair<int, int>> points) {
     int pol_size = pol.size();
-    for (P point: points){
+    for (auto point_pair : points) {
+        P point(point_pair);
         int j = pol_size - 1;
         bool res = false;
         for (int i = 0; i < pol_size; i++) {
@@ -174,7 +170,7 @@ bool inside_conv(const std::vector<P> pol, std::vector<std::pair<int, int>> poin
     return true;
 }
 
-std::vector<std::vector<int>> create_image(int n, int m){
+std::vector<std::vector<int>> create_image(int n, int m) {
     std::random_device rd;
     std::uniform_int_distribution<int> unif(0, 255);
     std::vector<std::vector<int>> image(n, std::vector<int> (m));
