@@ -45,10 +45,6 @@ TEST(Jarvis, test_1) {
 
     if (world.rank() == 0) {
         std::vector<std::pair<int, int>> points = get_points_from_image(image, n);
-
-//        for (P point: points_J) {
-//            std::cout << " " << point.x << " " << point.y << std::endl;
-//        }
         bool all_inside_flag = inside_conv(points_J, points);
         ASSERT_EQ(all_inside_flag, true);
     }
@@ -57,8 +53,8 @@ TEST(Jarvis, test_1) {
 TEST(Jarvis, test_2) {
     boost::mpi::communicator world;
 
-    int n = 4;
-    int m = 4;
+    int n = 100;
+    int m = 100;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
@@ -75,36 +71,12 @@ TEST(Jarvis, test_2) {
     if (world.rank() == world.size() - 1)
         delta += n - delta * world.size();
     std::vector<std::vector<int>> image_slice(delta, std::vector<int> (m));
-
     boost::mpi::scatterv(world, image.data(), sizes, image_slice.data(), 0);
-//    for (int i = 0; i < world.size(); i++) {
-//        if (i == world.rank()){
-//            world.barrier();
-//            std::cout << "Proc id =  " << i << std::endl;
-//            for (int j = 0; j < delta; j++) {
-//                for (int k = 0; k < m; k++) {
-//                    std::cout << " " << image_slice[j][k];
-//                }
-//            }
-//            std::cout << std::endl;
-//        }
-//    }
 
-
-//    std::vector<std::pair<int, int>> points = get_points_from_image(image_slice);
     std::vector<P> points_J = JarvisParallel(image_slice, n);
 
     if (world.rank() == 0) {
         std::vector<std::pair<int, int>> points = get_points_from_image(image, n);
-
-//        for (P point: points_J) {
-//            std::cout << " " << point.x << " " << point.y << std::endl;
-//        }
-//        std::cout << "------------" << std::endl;
-//
-//        for (P point: points) {
-//            std::cout << " " << point.x << " " << point.y << std::endl;
-//        }
         bool all_inside_flag = inside_conv(points_J, points);
         ASSERT_EQ(all_inside_flag, true);
     }
@@ -113,8 +85,8 @@ TEST(Jarvis, test_2) {
 TEST(Jarvis, test_3) {
     boost::mpi::communicator world;
 
-    int n = 8;
-    int m = 10;
+    int n = 200;
+    int m = 300;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
@@ -146,8 +118,8 @@ TEST(Jarvis, test_3) {
 TEST(Jarvis, test_4) {
     boost::mpi::communicator world;
 
-    int n = 10;
-    int m = 6;
+    int n = 1024;
+    int m = 1024;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
@@ -179,8 +151,8 @@ TEST(Jarvis, test_4) {
 TEST(Jarvis, test_5) {
     boost::mpi::communicator world;
 
-    int n = 10;
-    int m = 10;
+    int n = 1024;
+    int m = 2048;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
