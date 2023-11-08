@@ -61,11 +61,8 @@ std::vector<P> JarvisParallel(const std::vector<std::vector<int>> &image, int n)
         for (auto p : selected_points)
             if (p.second < start_point.second || (p.second == start_point.second && p.first < start_point.first))
                 start_point = p;
-        for (int i = 0; i < commsize; i++)
-            world.send(i, 0, start_point);
-    } else {
-        world.recv(0, 0, start_point);
     }
+    boost::mpi::broadcast(world, start_point, 0);
 
     if (points.empty())
         points.emplace_back(start_point);

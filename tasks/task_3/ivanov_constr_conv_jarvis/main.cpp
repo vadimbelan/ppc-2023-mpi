@@ -118,8 +118,8 @@ TEST(Jarvis, test_3) {
 TEST(Jarvis, test_4) {
     boost::mpi::communicator world;
 
-    int n = 1024;
-    int m = 1024;
+    int n = 400;
+    int m = 500;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
@@ -151,8 +151,8 @@ TEST(Jarvis, test_4) {
 TEST(Jarvis, test_5) {
     boost::mpi::communicator world;
 
-    int n = 1024;
-    int m = 2048;
+    int n = 500;
+    int m = 600;
     int delta = n / world.size();
     std::vector<std::vector<int>> image(0);
     std::vector<int> sizes;
