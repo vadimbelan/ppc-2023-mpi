@@ -17,7 +17,7 @@ std::string random_string(int length) {
     return random_string;
 }
 
-int GetStringDifDef(std::string s1, std::string s2) {
+int GetStringDifDef(const std::string &s1, const std::string &s2) {
     int dif_coint = 0;
     for (int i = 0; i < s1.size(); i++) {
         if (s1[i] != s2[i]) {
@@ -27,7 +27,7 @@ int GetStringDifDef(std::string s1, std::string s2) {
     return dif_coint;
 }
 
-int GetStringDifPar(std::string s1, std::string s2) {
+int GetStringDifPar(const std::string &s1, const std::string &s2) {
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
