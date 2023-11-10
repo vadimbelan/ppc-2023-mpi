@@ -1,7 +1,6 @@
 // Copyright 2023 Kulikov Artem
 #include <gtest/gtest.h>
 #include <vector>
-
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/environment.hpp>
 #include <boost/serialization/vector.hpp>
@@ -36,7 +35,7 @@ int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
     if (world.rank() != 0) {
-        delete listeners.Release(ззlisteners.default_result_printer());
+        delete listeners.Release(listeners.default_result_printer());
     }
     return RUN_ALL_TESTS();
 }

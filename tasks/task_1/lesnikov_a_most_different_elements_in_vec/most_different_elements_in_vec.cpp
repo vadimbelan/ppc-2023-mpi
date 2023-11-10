@@ -1,4 +1,5 @@
 // Copyright 2023 Kulikov Artem
+#include <utility>
 #include <vector>
 #include <string>
 #include <random>
@@ -8,60 +9,93 @@
 #include <boost/mpi/communicator.hpp>
 #include "task_1/lesnikov_a_most_different_elements_in_vec/most_different_elements_in_vec.h"
 
-std::vector<int> getRandomMatrix(int m, int n) {
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::vector<int> matr(m * n);
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
-            matr[i * n + j] = gen() % 100;
+
+std::vector<size_t> sdfsdfsdf(std::vector<int> glob_matr, int m, int n) {
+    std::vector<size_t> glob_min_indexes(m);
+
+    boost::mpi::communicator world;
+    int rank = world.rank();
+    std::vector<int> local_vecs;
+
+    boost::mpi::scatterv(world, glob_matr.data(), local_vecs, local_vecs.data(), 0);
+
+    return glob_min_indexes;
+}
+
+std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::vector<int> v) {
+    std::vector<std::pair<size_t, size_t>> most_different_elements;
+    int max_different_elements_value = 0;
+
+    for (size_t i = 0; i < v.size() - 1; i++) {
+        max_different_elements_value = std::max(max_different_elements_value, std::abs(v[i] - v[i+1]));
+    }
+
+    for (size_t i = 0; i < v.size() - 1; i++) {
+        if (std::abs(v[i] - v[i+1]) == max_different_elements_value) {
+            most_different_elements.push_back(std::make_pair(i, i + 1));
         }
     }
-    return matr;
+
+    return most_different_elements;
 }
 
-// assume what m = delta * world.size();
-std::vector<size_t> getParallelMin(std::vector<int> glob_matr, int m, int n) {
+std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vector<int> v) {
     boost::mpi::communicator world;
-    std::vector<size_t> glob_min_indexes(m);
-    const int delta = m / world.size();
-    const int remain = m % world.size();
-    int rank = world.rank();
-    std::vector<int> local_vecs(delta * n);
-    std::vector<size_t> loc_min_indexes(delta);
-    std::vector<int> sizes_i(world.size(), delta * n);
-    std::vector<int> sizes(world.size(), delta);
-    sizes[0] = delta + remain;
-    sizes_i[0] = (delta + remain) * n;
+    std::vector<int> loc_v;
+    std::vector<size_t> glob_most_different_elements;
+    std::vector<std::pair<size_t, size_t>> glob_most_different_elements_pairs;
+    std::vector<size_t> loc_most_different_elements;
+    const int part_size = v.size() / world.size();
+    const int remainder = v.size() % worlds.size();
+    std::vector<int> sizes(world.size(), part.size());
+    sizes[0] += remainder;
 
-    if (delta != 0)
-        boost::mpi::scatterv(world, glob_matr.data(), sizes_i, local_vecs.data(), 0);
+    if (part_size > 0) {
+        boost::mpi:scatterv(world, v.data(), sizes, local_v.data(), 0);
+    }
 
-    if (rank == 0) {
-        local_vecs = glob_matr;
-        local_vecs.resize(sizes_i[0]);
-        loc_min_indexes.resize(sizes[0]);
+    if (world.rank() == 0) {
+        loc_v = v;
+        loc_v.resize(sizes[0]);
     }
-    std::vector<int>::iterator row_min;
-    for (int i = 0; i < sizes[rank]; ++i) {
-        row_min = std::min_element(local_vecs.begin() + i * n,
-                                   local_vecs.begin() + (i + 1) * n);
-        loc_min_indexes[i] = std::distance(local_vecs.begin(), row_min);
-        if (rank != 0)
-            loc_min_indexes[i] += (delta * rank + remain) * n;
-    }
-    boost::mpi::gatherv(world, loc_min_indexes, glob_min_indexes.data(), sizes, 0);
-    return glob_min_indexes;
-}
 
-std::vector<size_t> getSequentialMin(std::vector<int> matr, int m) {
-    const int n = matr.size() / m;
-    std::vector<int>::iterator row_min;
-    std::vector<size_t> glob_min_indexes(m);
-    for (int i = 0; i < m; i++) {
-        row_min = std::min_element(matr.begin() + i * n,
-                                   matr.begin() + (i + 1) * n);
-        glob_min_indexes[i] = std::distance(matr.begin(), row_min);
+    int max_different_elements_value = 0;
+
+    for (size_t i = 0; i < loc_v.size() - 1; i++) {
+        max_different_elements_value = std::max(max_different_elements_value, std::abs(loc_v[i] - loc_v[i+1]));
     }
-    return glob_min_indexes;
+
+    for (size_t i = 0; i < v.size() - 1; i++) {
+        if (std::abs(loc_v[i] - loc_v[i+1]) == max_different_elements_value) {
+            most_different_elements.push_back(i + world.rank() * part_size + remainder * (int)(world.size() != 0));
+        }
+    }
+
+    glob_most_different_elements = std::move(loc_most_different_elements);
+
+    if (world.rank() == 0) {
+        std::vector<std::pair<size_t, size_t>> temp;
+
+        for (int i = 1; i < world.size(); i++) {
+            boost::mpi::recv(i, 0, temp);
+
+            if (!glob_most_different_elements.size()) {
+                glob_most_different_elements = std::move(temp);
+            } else if (temp.size()) {
+                int glob_diff = std::abs(v[glob_most_different_elements[0]] - v[glob_most_different_elements[0] + 1]);
+                int temp = std::abs(v[temp[0]] - v[temp[0] + 1]);
+                if (glob_diff < temp_diff) {
+                    glob_most_different_elements = std::move(temp);
+                }
+            }
+        }
+    } else {
+        world.send(0, 0, glob_most_different_elements);
+    }
+
+    for (const size_t& i: glob_most_different_elements){
+        glob_most_different_elements_pairs.push_back(std::make_pair(i, i + 1));
+    }
+
+    return glob_most_different_elements_pairs;
 }
