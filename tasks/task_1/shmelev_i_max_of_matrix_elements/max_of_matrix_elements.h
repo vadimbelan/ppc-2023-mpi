@@ -5,6 +5,7 @@
 #include <mpi.h>
 #include <vector>
 #include <ctime>
+#include <climits>
 
 int MaxInMatrixSeq(const std::vector<int>& matrix);
 int MaxInMatrixPar(const std::vector<int>& matrix);
