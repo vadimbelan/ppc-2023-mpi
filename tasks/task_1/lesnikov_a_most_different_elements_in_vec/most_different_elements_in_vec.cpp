@@ -46,12 +46,12 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     std::vector<std::pair<size_t, size_t>> glob_most_different_elements_pairs;
     std::vector<size_t> loc_most_different_elements;
     const int part_size = v.size() / world.size();
-    const int remainder = v.size() % worlds.size();
-    std::vector<int> sizes(world.size(), part.size());
+    const int remainder = v.size() % world.size();
+    std::vector<int> sizes(world.size(), part_size);
     sizes[0] += remainder;
 
     if (part_size > 0) {
-        boost::mpi:scatterv(world, v.data(), sizes, local_v.data(), 0);
+        boost::mpi::scatterv(world, v.data(), sizes, loc_v.data(), 0);
     }
 
     if (world.rank() == 0) {
@@ -67,23 +67,24 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
 
     for (size_t i = 0; i < v.size() - 1; i++) {
         if (std::abs(loc_v[i] - loc_v[i+1]) == max_different_elements_value) {
-            most_different_elements.push_back(i + world.rank() * part_size + remainder * (int)(world.size() != 0));
+            loc_most_different_elements.push_back(i + world.rank() * part_size
+            + remainder * static_cast<int>(world.size() != 0));
         }
     }
 
     glob_most_different_elements = std::move(loc_most_different_elements);
 
     if (world.rank() == 0) {
-        std::vector<std::pair<size_t, size_t>> temp;
+        std::vector<size_t> temp;
 
         for (int i = 1; i < world.size(); i++) {
-            boost::mpi::recv(i, 0, temp);
+            world.recv(i, 0, temp);
 
             if (!glob_most_different_elements.size()) {
                 glob_most_different_elements = std::move(temp);
             } else if (temp.size()) {
                 int glob_diff = std::abs(v[glob_most_different_elements[0]] - v[glob_most_different_elements[0] + 1]);
-                int temp = std::abs(v[temp[0]] - v[temp[0] + 1]);
+                int temp_diff = std::abs(v[temp[0]] - v[temp[0] + 1]);
                 if (glob_diff < temp_diff) {
                     glob_most_different_elements = std::move(temp);
                 }
@@ -93,7 +94,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         world.send(0, 0, glob_most_different_elements);
     }
 
-    for (const size_t& i: glob_most_different_elements){
+    for (const size_t& i : glob_most_different_elements) {
         glob_most_different_elements_pairs.push_back(std::make_pair(i, i + 1));
     }
 
