@@ -7,6 +7,8 @@
 #include <boost/mpi/collectives.hpp>
 #include "examples/test_mpi/ops_mpi.h"
 
+#include "dot_product.h"
+
 std::vector<int> getRandomVector(int sz) {
     std::random_device dev;
     std::mt19937 gen(dev());
