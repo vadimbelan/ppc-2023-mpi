@@ -7,6 +7,7 @@
 #include <string>
 #include <ctime>
 #include <sstream>
+#include <iterator>
 
 int countWords(std::string line, bool isWord);
 
