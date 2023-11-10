@@ -1,5 +1,5 @@
 // Copyright 2023 Pozdnyakov Vasya
-#include "./max_of_vector_elements.h"
+#include "max_of_vector_elements.h"
 
 std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
     std::vector<int> vec(size);
@@ -12,14 +12,14 @@ std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
 int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
     boost::mpi::communicator world;
     const int local_vec_size = vec_size / world.size();
-    if(world.rank() == 0) {
-        for(int proc = 1; proc < world.size(); proc++) {
+    if (world.rank() == 0) {
+        for (int proc = 1; proc < world.size(); proc++) {
             world.send(proc, 0, init_vec.data() + local_vec_size * proc, local_vec_size);
         }
     }
 
     std::vector<int> local_vec(local_vec_size);
-    if(world.rank() == 0) {
+    if (world.rank() == 0) {
         local_vec = std::vector<int>(init_vec.begin(), init_vec.begin() + local_vec_size);
     } else {
         world.recv(0, 0, local_vec.data(), local_vec_size);
