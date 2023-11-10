@@ -1,6 +1,6 @@
 // Copyright 2023 Alexseev Danila
 
-#include "./count_words.h"
+#include "task1/alexseev_d_word_count/count_words.h"
 
 int getRandInt(int leftBorder, int rightBorder) {
     return rand() % (rightBorder - leftBorder + 1) + leftBorder;
