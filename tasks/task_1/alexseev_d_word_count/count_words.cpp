@@ -1,6 +1,6 @@
 // Copyright 2023 Alexseev Danila
 
-#include "count_words.h"
+#include "./count_words.h"
 
 int getRandInt(int leftBorder, int rightBorder) {
     return rand() % (rightBorder - leftBorder + 1) + leftBorder;
@@ -58,7 +58,7 @@ int parallelCountWordsInString(const std::string& str) {
         local_count = countWords(local_str, isWord);
     } else {
         local_count = 0;
-	}
+    }
 
     MPI_Reduce(&local_count, &global_count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 

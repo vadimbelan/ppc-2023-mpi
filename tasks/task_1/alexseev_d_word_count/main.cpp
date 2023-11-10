@@ -82,11 +82,10 @@ TEST(CountWordsInStringTest, LastSymbolIsSpaceRandomString) {
 
 int main(int argc, char** argv) {
     int result = 0;
-	::testing::InitGoogleTest(&argc, argv);
+    ::testing::InitGoogleTest(&argc, argv);
     ::testing::TestEventListeners& listeners =
-        ::testing::UnitTest::GetInstance()->listeners();
-		
-	MPI_Init(&argc, &argv);
+        ::testing::UnitTest::GetInstance()->listeners();	
+    MPI_Init(&argc, &argv);
     result = RUN_ALL_TESTS();
     MPI_Finalize();
 	

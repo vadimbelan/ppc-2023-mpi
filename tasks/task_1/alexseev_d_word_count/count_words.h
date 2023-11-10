@@ -18,4 +18,4 @@ int getRandInt(int leftBorder, int rightBorder);
 
 int sequentialCountWordsInString(const std::string& str);
 
-#endif // TASKS_TASK_1_ALEXSEEV_D_WORD_COUNT_COUNT_WORDS_H_
+#endif  // TASKS_TASK_1_ALEXSEEV_D_WORD_COUNT_COUNT_WORDS_H_
