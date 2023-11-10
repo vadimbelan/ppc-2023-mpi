@@ -5,7 +5,7 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
-TEST(Max_of_vector_elements, Test_1) {
+TEST(Max_of_vector_elements, Test_random_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -21,7 +21,7 @@ TEST(Max_of_vector_elements, Test_1) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_2) {
+TEST(Max_of_vector_elements, Test_only_positive_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -37,7 +37,7 @@ TEST(Max_of_vector_elements, Test_2) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_3) {
+TEST(Max_of_vector_elements, Test_only_negative_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -53,7 +53,7 @@ TEST(Max_of_vector_elements, Test_3) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_4) {
+TEST(Max_of_vector_elements, Test_one_number) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 1;
@@ -64,12 +64,11 @@ TEST(Max_of_vector_elements, Test_4) {
     int global_res = get_max_element(global_vec, global_vec_size);
 
     if (world.rank() == 0) {
-        int max = *std::max_element(global_vec.begin(), global_vec.end());
-        ASSERT_EQ(max, global_res);
+        ASSERT_EQ(10, global_res);
     }
 }
 
-TEST(Max_of_vector_elements, Test_5) {
+TEST(Max_of_vector_elements, Test_equal_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 5;
