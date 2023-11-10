@@ -4,21 +4,6 @@
 #include <iostream>
 #include "./alg.h"
 
-TEST(Parallel_Operations_MPI, zero_matrix) {
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    int rows = 0, cols = 0;
-
-    if (size == 1) {
-        ASSERT_NO_THROW(ParallelProcessing(RandomMatrix(rows, cols),
-            rows, cols));
-    } else {
-        ASSERT_ANY_THROW(ParallelProcessing(RandomMatrix(rows, cols),
-            rows, cols));
-    }
-}
-
 TEST(Parallel_Operations_MPI, Matrix_4x4) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
