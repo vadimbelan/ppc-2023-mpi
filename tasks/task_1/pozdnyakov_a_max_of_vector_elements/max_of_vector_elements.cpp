@@ -1,5 +1,5 @@
 // Copyright 2023 Pozdnyakov Vasya
-#include "max_of_vector_elements.h"
+#include "task_1/pozdnyakov_a_max_of_vector_elements/max_of_vector_elements.h"
 
 std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
     std::vector<int> vec(size);
