@@ -1,3 +1,4 @@
+//Copyright 2023 Alexseev Danila
 #include "count_words.h"
 
 int getRandInt(int leftBorder, int rightBorder) {
@@ -14,8 +15,7 @@ std::string getRandString() {
     return res;
 }
 
-int sequentialCountWordsInString(const std::string& str)
-{
+int sequentialCountWordsInString(const std::string& str) {
     std::stringstream stream(str);
     return std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
 }
@@ -25,8 +25,7 @@ int countWords(std::string line, bool isWord) {
     for (char c : line) {
         if (c == ' ' || c == '\t' || c == '\n') {
             isWord = false;
-        }
-        else if (!isWord) {
+        } else if (!isWord) {
             isWord = true;
             count++;
         }
@@ -56,9 +55,9 @@ int parallelCountWordsInString(const std::string& str) {
         std::string local_str = str.substr(start, local_size);
 
         local_count = countWords(local_str, isWord);
-    }
-    else
+    } else {
         local_count = 0;
+	}
 
     MPI_Reduce(&local_count, &global_count, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 

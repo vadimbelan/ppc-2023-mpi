@@ -1,6 +1,7 @@
+//Copyright 2023 Alexseev Danila
+
 #include "./count_words.h"
 #include <gtest/gtest.h>
-
 
 TEST(CountWordsInStringTest, RandomString) {
     std::string globalStr;
