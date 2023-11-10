@@ -18,7 +18,8 @@ std::string getRandString() {
 
 int sequentialCountWordsInString(const std::string& str) {
     std::stringstream stream(str);
-    return std::distance(std::istream_iterator<std::string>(stream), std::istream_iterator<std::string>());
+    std::istream_iterator<std::string> start(stream), end;
+    return std::distance(start, end);
 }
 
 int countWords(std::string line, bool isWord) {
