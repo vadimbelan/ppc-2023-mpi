@@ -1,7 +1,9 @@
-//Copyright 2023 Alexseev Danila
+// Copyright 2023 Alexseev Danila
+
+#include <gtest/gtest.h>
 
 #include "./count_words.h"
-#include <gtest/gtest.h>
+
 
 TEST(CountWordsInStringTest, RandomString) {
     std::string globalStr;
@@ -81,9 +83,12 @@ TEST(CountWordsInStringTest, LastSymbolIsSpaceRandomString) {
 int main(int argc, char** argv) {
     int result = 0;
 	::testing::InitGoogleTest(&argc, argv);
-	::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+    ::testing::TestEventListeners& listeners =
+        ::testing::UnitTest::GetInstance()->listeners();
+		
 	MPI_Init(&argc, &argv);
     result = RUN_ALL_TESTS();
     MPI_Finalize();
+	
     return result;
 }

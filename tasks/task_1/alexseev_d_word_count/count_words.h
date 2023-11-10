@@ -1,8 +1,9 @@
-//Copyright 2023 Alexseev Danila
+// Copyright 2023 Alexseev Danila
 #ifndef TASKS_TASK_1_ALEXSEEV_D_WORD_COUNT_COUNT_WORDS_H_
 #define TASKS_TASK_1_ALEXSEEV_D_WORD_COUNT_COUNT_WORDS_H_
 
 #include <mpi.h>
+
 #include <string>
 #include <ctime>
 #include <sstream>
