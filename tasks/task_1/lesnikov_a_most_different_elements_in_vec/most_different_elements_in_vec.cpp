@@ -47,16 +47,18 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     std::vector<size_t> loc_most_different_elements;
     const int part_size = v.size() / world.size();
     const int remainder = v.size() % world.size();
-    std::vector<int> sizes(world.size(), part_size);
-    sizes[0] += remainder;
-
-    if (part_size > 0) {
-        boost::mpi::scatterv(world, v.data(), sizes, loc_v.data(), 0);
-    }
 
     if (world.rank() == 0) {
         loc_v = v;
-        loc_v.resize(sizes[0]);
+        int loc_part_size_root = world.size() > 1 ? part_size + remainder + 1 : part_size + remainder;
+        loc_v.resize(loc_part_size_root);
+        for (size_t i = 1; i < world.size(); i++) {
+            int loc_part_size = i == world.size() - 1 ? part_size : part_size + 1;
+            world.send(i, 0, v.data() + remainder + i * part_size, loc_part_size);
+        }
+    } else {
+        int loc_part_size = world.rank() == world.size() - 1 ? part_size : part_size + 1;
+        world.recv(0, 0, loc_v.data(), loc_part_size);
     }
 
     int max_different_elements_value = 0;
