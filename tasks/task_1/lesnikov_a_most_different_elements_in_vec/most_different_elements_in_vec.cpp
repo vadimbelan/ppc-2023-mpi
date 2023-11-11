@@ -49,7 +49,6 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         return std::vector<std::pair<size_t, size_t>>();
     }
 
-    std::vector<int> empty;
     std::vector<size_t> temp2;
     std::vector<int> temp;
     std::vector<int> loc_v;
@@ -70,12 +69,10 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
             int end = remainder + i * part_size + loc_part_size;
             temp = std::vector<int>(v.begin() + start, v.begin() + end);
 
-            world.recv(i, 0, empty);
             world.send(i, 0, temp);
         }
 
     } else {
-        world.send(0, 0, empty);
         world.recv(0, 0, loc_v);
     }
 
@@ -96,7 +93,6 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
 
     if (world.rank() == 0) {
         for (int i = 1; i < useful_world_size; i++) {
-            world.send(i, 0, empty);
             world.recv(i, 0, temp2);
 
             if (!glob_most_different_elements.size()) {
@@ -113,7 +109,6 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
             }
         }
     } else {
-        world.recv(0, 0, empty);
         world.send(0, 0, glob_most_different_elements);
     }
 
