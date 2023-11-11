@@ -21,7 +21,7 @@ TEST(ringSendMessage, randomProcessesPos) {
         if (rank == receiverRank) {
             ASSERT_EQ(200, message);
         }
-    }   
+    }
 }
 
 TEST(ringSendMessage, firstToLast) {

@@ -1,7 +1,7 @@
 // Copyright 2023 Alexseev Danila
 
-#ifndef TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_H_
-#define TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_H_
+#ifndef TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_RING_TOPOLOGY_H_
+#define TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_RING_TOPOLOGY_H_
 
 #include <mpi.h>
 #include <iostream>
@@ -14,4 +14,4 @@ int nextRank(int rank);
 int prevRank(int rank);
 void sendMessage(int* message, int sourceRank, int receiverRank);
 
-#endif  // TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_H_
+#endif  // TASKS_TASK_2_ALEXSEEV_D_RING_TOPOLOGY_RING_TOPOLOGY_H_
