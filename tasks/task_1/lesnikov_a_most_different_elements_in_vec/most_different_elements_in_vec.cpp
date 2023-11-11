@@ -43,8 +43,9 @@ std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::v
 
 std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vector<int> v, int n) {
     boost::mpi::communicator world;
+    const int useful_world_size = std::min(n / 2 + n % 2, world.size());
 
-    if (n < 2) {
+    if (n < 2 || useful_world_size <= world.rank()) {
         return std::vector<std::pair<size_t, size_t>>();
     }
 
@@ -55,15 +56,16 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     std::vector<size_t> glob_most_different_elements;
     std::vector<std::pair<size_t, size_t>> glob_most_different_elements_pairs;
     std::vector<size_t> loc_most_different_elements;
-    const int part_size = n / world.size();
-    const int remainder = n % world.size();
+    const int part_size = n / useful_world_size;
+    const int remainder = n % useful_world_size;
 
     if (world.rank() == 0) {
         loc_v = v;
-        int loc_part_size_root = world.size() > 1 ? part_size + remainder + 1 : part_size + remainder;
+        int loc_part_size_root = useful_world_size > 1 ? part_size + remainder + 1 : part_size + remainder;
         loc_v.resize(loc_part_size_root);
-        for (size_t i = 1; i < world.size(); i++) {
-            int loc_part_size = i == world.size() - 1 ? part_size : part_size + 1;
+
+        for (size_t i = 1; i < useful_world_size; i++) {
+            int loc_part_size = i == useful_world_size - 1 ? part_size : part_size + 1;
             int start = remainder + i * part_size;
             int end = remainder + i * part_size + loc_part_size;
             temp = std::vector<int>(v.begin() + start, v.begin() + end);
@@ -93,7 +95,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     glob_most_different_elements = std::move(loc_most_different_elements);
 
     if (world.rank() == 0) {
-        for (int i = 1; i < world.size(); i++) {
+        for (int i = 1; i < useful_world_size; i++) {
             world.send(i, 0, empty);
             world.recv(i, 0, temp2);
 
@@ -119,7 +121,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         glob_most_different_elements_pairs.push_back(std::make_pair(i, i + 1));
     }
 
-    world.barrier();
+    // world.barrier();
 
     return glob_most_different_elements_pairs;
 }
