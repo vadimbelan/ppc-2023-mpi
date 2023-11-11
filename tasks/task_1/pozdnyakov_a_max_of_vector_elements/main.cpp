@@ -8,7 +8,7 @@
 TEST(Max_Of_Vector_Elements, Test_random_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
-    const size_t global_vec_size = 10;
+    const size_t global_vec_size = 100;
     if (world.rank() == 0) {
         global_vec = get_random_vector(global_vec_size);
     }
@@ -24,7 +24,7 @@ TEST(Max_Of_Vector_Elements, Test_random_numbers) {
 TEST(Max_Of_Vector_Elements, Test_only_positive_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
-    const size_t global_vec_size = 10;
+    const size_t global_vec_size = 59;
     if (world.rank() == 0) {
         global_vec = get_random_vector(global_vec_size, 1);
     }
@@ -40,7 +40,7 @@ TEST(Max_Of_Vector_Elements, Test_only_positive_numbers) {
 TEST(Max_Of_Vector_Elements, Test_only_negative_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
-    const size_t global_vec_size = 10;
+    const size_t global_vec_size = 102;
     if (world.rank() == 0) {
         global_vec = get_random_vector(global_vec_size, -1000, -1);
     }
