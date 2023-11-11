@@ -44,7 +44,7 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
         for (int i = 1; i < process_num; i++) {
             displs[i] = displs[i - 1] + send_counts[i - 1];
             if (i <= remainder_size) {
-                displs[i]++;                
+                displs[i]++;
             }
         }
     }
