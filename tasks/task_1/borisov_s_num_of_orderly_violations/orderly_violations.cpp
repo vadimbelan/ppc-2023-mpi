@@ -30,17 +30,14 @@ int getViolationsSequentially(std::vector<int> vector) {
 int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
     boost::mpi::communicator world;
 
-    std::vector<int> send_counts;
-    std::vector<int> displs;
-
     int process_num = world.size();
     int partial_size = vector_size / process_num;
     int remainder_size = vector_size % process_num;
 
-    if (world.rank() == 0) {
-        send_counts.resize(process_num, partial_size);
-        displs.resize(world.size(), 0);
+    std::vector<int> send_counts(process_num, partial_size);
+    std::vector<int> displs(world.size(), 0);
 
+    if (world.rank() == 0) {
         for (int i = 1; i < process_num; i++) {
             displs[i] = displs[i - 1] + send_counts[i - 1];
             if (i <= remainder_size) {
