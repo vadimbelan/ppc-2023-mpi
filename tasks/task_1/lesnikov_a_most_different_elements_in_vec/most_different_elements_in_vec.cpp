@@ -1,4 +1,5 @@
 // Copyright 2023 Kulikov Artem
+#include <iostream>
 #include <utility>
 #include <vector>
 #include <string>
@@ -10,16 +11,16 @@
 #include "task_1/lesnikov_a_most_different_elements_in_vec/most_different_elements_in_vec.h"
 
 
-std::vector<size_t> sdfsdfsdf(std::vector<int> glob_matr, int m, int n) {
-    std::vector<size_t> glob_min_indexes(m);
+std::vector<int> getRandomVector(int n) {
+    std::random_device dev;
+    std::mt19937 gen(dev());
+    std::vector<int> random_vector;
 
-    boost::mpi::communicator world;
-    int rank = world.rank();
-    std::vector<int> local_vecs;
+    for (size_t i = 0; i < n; i++) {
+        random_vector.push_back(gen() % 100);
+    }
 
-    boost::mpi::scatterv(world, glob_matr.data(), local_vecs, local_vecs.data(), 0);
-
-    return glob_min_indexes;
+    return random_vector;
 }
 
 std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::vector<int> v) {
@@ -40,6 +41,10 @@ std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::v
 }
 
 std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vector<int> v) {
+    if (v.size() < 2) {
+        return std::vector<std::pair<size_t, size_t>>();
+    }
+
     boost::mpi::communicator world;
     std::vector<int> loc_v;
     std::vector<size_t> glob_most_different_elements;
@@ -47,6 +52,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     std::vector<size_t> loc_most_different_elements;
     const int part_size = v.size() / world.size();
     const int remainder = v.size() % world.size();
+    std::vector<int> empty;
 
     if (world.rank() == 0) {
         loc_v = v;
@@ -54,11 +60,17 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         loc_v.resize(loc_part_size_root);
         for (size_t i = 1; i < world.size(); i++) {
             int loc_part_size = i == world.size() - 1 ? part_size : part_size + 1;
-            world.send(i, 0, v.data() + remainder + i * part_size, loc_part_size);
+            std::vector<int> temp(v.begin() + remainder + i * part_size,
+            v.begin() + remainder + i * part_size + loc_part_size);
+            world.recv(i, 0, empty);
+            world.send(i, 0, temp);
         }
+
     } else {
         int loc_part_size = world.rank() == world.size() - 1 ? part_size : part_size + 1;
-        world.recv(0, 0, loc_v.data(), loc_part_size);
+
+        world.send(0, 0, empty);
+        world.recv(0, 0, loc_v);
     }
 
     int max_different_elements_value = 0;
@@ -80,6 +92,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         std::vector<size_t> temp;
 
         for (int i = 1; i < world.size(); i++) {
+            world.send(i, 0, empty);
             world.recv(i, 0, temp);
 
             if (!glob_most_different_elements.size()) {
@@ -89,16 +102,21 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
                 int temp_diff = std::abs(v[temp[0]] - v[temp[0] + 1]);
                 if (glob_diff < temp_diff) {
                     glob_most_different_elements = std::move(temp);
+                } else if (glob_diff == temp_diff) {
+                    glob_most_different_elements.insert(glob_most_different_elements.end(), temp.begin(), temp.end());
                 }
             }
         }
     } else {
+        world.recv(0, 0, empty);
         world.send(0, 0, glob_most_different_elements);
     }
 
     for (const size_t& i : glob_most_different_elements) {
         glob_most_different_elements_pairs.push_back(std::make_pair(i, i + 1));
     }
+
+    world.barrier();
 
     return glob_most_different_elements_pairs;
 }
