@@ -87,7 +87,6 @@ TEST(Max_Of_Vector_Elements, Test_one_number) {
 
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
     boost::mpi::environment env(argc, argv);
     boost::mpi::communicator world;
     ::testing::InitGoogleTest(&argc, argv);
