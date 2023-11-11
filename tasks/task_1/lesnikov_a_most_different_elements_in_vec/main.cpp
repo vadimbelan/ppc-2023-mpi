@@ -90,22 +90,13 @@ TEST(Parallel_Most_Different_Elements_In_Vector_MPI, Test_With_Size_2) {
     }
 }
 
-TEST(Parallel_Most_Different_Elements_In_Vector_MPI, manual_test) {
-    boost::mpi::communicator world;
+TEST(Sequential_Most_Different_Elements_In_Vector_MPI, manual_test) {
+    std::vector<int> vec = {4, 3, 10, 23, 100, 1, 100, 1};
 
-    std::vector<int> vec;
-    const int n = 8;
+    std::vector<std::pair<size_t, size_t>> most_dif = getSequentialMostDifferentElements(vec);
+    std::vector<std::pair<size_t, size_t>> expected = {{4, 5}, {5, 6}, {6, 7}};
 
-    if (world.rank() == 0) {
-        vec = {4, 3, 10, 23, 100, 1, 100, 1};
-    }
-
-    std::vector<std::pair<size_t, size_t>> most_dif = getParallelMostDifferentElements(vec, n);
-
-    if (world.rank() == 0) {
-        std::vector<std::pair<size_t, size_t>> expected = getSequentialMostDifferentElements(vec);
-        ASSERT_EQ(most_dif, expected);
-    }
+    ASSERT_EQ(most_dif, expected);
 }
 
 
