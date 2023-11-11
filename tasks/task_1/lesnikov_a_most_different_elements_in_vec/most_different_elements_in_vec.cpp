@@ -23,6 +23,7 @@ std::vector<int> getRandomVector(int n) {
     return random_vector;
 }
 
+
 std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::vector<int> v) {
     std::vector<std::pair<size_t, size_t>> most_different_elements;
     int max_different_elements_value = 0;
@@ -40,59 +41,40 @@ std::vector<std::pair<size_t, size_t>> getSequentialMostDifferentElements(std::v
     return most_different_elements;
 }
 
-std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vector<int> v) {
-    if (v.size() < 2) {
+std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vector<int> v, int n) {
+    boost::mpi::communicator world;
+
+    if (n < 2) {
         return std::vector<std::pair<size_t, size_t>>();
     }
 
-    boost::mpi::communicator world;
+    std::vector<int> empty;
+    std::vector<size_t> temp2;
+    std::vector<int> temp;
     std::vector<int> loc_v;
     std::vector<size_t> glob_most_different_elements;
     std::vector<std::pair<size_t, size_t>> glob_most_different_elements_pairs;
     std::vector<size_t> loc_most_different_elements;
-    const int part_size = v.size() / world.size();
-    const int remainder = v.size() % world.size();
-    std::vector<int> empty;
+    const int part_size = n / world.size();
+    const int remainder = n % world.size();
 
     if (world.rank() == 0) {
         loc_v = v;
         int loc_part_size_root = world.size() > 1 ? part_size + remainder + 1 : part_size + remainder;
-        std::cout << "root part size: " << loc_part_size_root << std::endl;
         loc_v.resize(loc_part_size_root);
         for (size_t i = 1; i < world.size(); i++) {
             int loc_part_size = i == world.size() - 1 ? part_size : part_size + 1;
-            std::cout << "loc part size: " << loc_part_size << std::endl;
             int start = remainder + i * part_size;
             int end = remainder + i * part_size + loc_part_size;
-            std::cout << "start: " << start << " end: " << end << std::endl;
-            std::vector<int> temp(v.begin() + start, v.begin() + end);
-            std::cout << "temp_size: " << temp.size() << std::endl;
+            temp = std::vector<int>(v.begin() + start, v.begin() + end);
 
-            std::cout << "temp: " << std::endl;
-
-            for (int i = 0; i < temp.size(); i++) {
-                std::cout << i << ":" << temp[i] << " ";
-            }
-
-            std::cout << std::endl;
-
-            std::cout << "try get loc data FOR ROOT" << std::endl;
-
-            // world.recv(i, 0, empty);
+            world.recv(i, 0, empty);
             world.send(i, 0, temp);
-
-            std::cout << "got it FOR ROOT" << std::endl;
         }
 
     } else {
-        int loc_part_size = world.rank() == world.size() - 1 ? part_size : part_size + 1;
-
-        std::cout << "try get loc data" << std::endl;
-
-        // world.send(0, 0, empty);
+        world.send(0, 0, empty);
         world.recv(0, 0, loc_v);
-
-        std::cout << "got it" << std::endl;
     }
 
     int max_different_elements_value = 0;
@@ -111,33 +93,25 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     glob_most_different_elements = std::move(loc_most_different_elements);
 
     if (world.rank() == 0) {
-        std::vector<size_t> temp;
-
         for (int i = 1; i < world.size(); i++) {
-            std::cout << "try get temp for ROOT (LOC_SIZE = " << loc_v.size() << ")" << std::endl;
-
             world.send(i, 0, empty);
-            world.recv(i, 0, temp);
-
-            std::cout << "done get temp for ROOT" << std::endl;
+            world.recv(i, 0, temp2);
 
             if (!glob_most_different_elements.size()) {
-                glob_most_different_elements = std::move(temp);
-            } else if (temp.size()) {
+                glob_most_different_elements = std::move(temp2);
+            } else if (temp2.size()) {
                 int glob_diff = std::abs(v[glob_most_different_elements[0]] - v[glob_most_different_elements[0] + 1]);
-                int temp_diff = std::abs(v[temp[0]] - v[temp[0] + 1]);
+                int temp_diff = std::abs(v[temp2[0]] - v[temp2[0] + 1]);
                 if (glob_diff < temp_diff) {
-                    glob_most_different_elements = std::move(temp);
+                    glob_most_different_elements = std::move(temp2);
                 } else if (glob_diff == temp_diff) {
                     glob_most_different_elements.insert(
-                    glob_most_different_elements.end(), temp.begin(), temp.end());
+                    glob_most_different_elements.end(), temp2.begin(), temp2.end());
                 }
             }
         }
     } else {
-        std::cout << "try get empty for SUB (LOC_SIZE = " << loc_v.size() << ")" << std::endl;
         world.recv(0, 0, empty);
-        std::cout << "done get empty for SUB" << std::endl;
         world.send(0, 0, glob_most_different_elements);
     }
 
