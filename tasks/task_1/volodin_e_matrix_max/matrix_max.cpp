@@ -1,6 +1,6 @@
 // Copyright 2023 Volodin Evgeniy
 
-#include "/home/eugene/Документы/ppc_2023/ppc-2023_mpi/ppc-2023-mpi/tasks/task_1/volodin_e_matrix_max/matrix_max.h"
+#include "task_1/volodin_e_matrix_max/matrix_max.h"
 
 std::vector<int> createRandomMatrix(int rows, int columns) {
     std::random_device dev;
