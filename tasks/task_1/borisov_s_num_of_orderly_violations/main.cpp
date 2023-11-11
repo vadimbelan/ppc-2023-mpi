@@ -1,4 +1,4 @@
-// Copyright 2023 Nesterov Alexander
+// Copyright 2023 Borisov Saveliy
 #include <gtest/gtest.h>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
@@ -13,11 +13,28 @@ TEST(Violations_Numbers_MPI, Test_Random_Vector) {
         global_vector = getRandomVector(vector_size);
     }
 
-    int global_violations_number = getViolationsInParallel(global_vector);
+    int global_violations_number = getViolationsInParallel(global_vector, vector_size);
 
     if (world.rank() == 0) {
-        int sequential_violations_number = getViolationsSequentially(global_vector);
-        ASSERT_EQ(sequential_violations_number, global_violations_number);
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
+    }
+}
+
+TEST(Violations_Numbers_MPI, Test_Random_Vector_With_Non_Multiple_Size) {
+    boost::mpi::communicator world;
+    std::vector<int> global_vector;
+    const int vector_size = 123;
+
+    if (world.rank() == 0) {
+        global_vector = getRandomVector(vector_size);
+    }
+
+    int global_violations_number = getViolationsInParallel(global_vector, vector_size);
+
+    if (world.rank() == 0) {
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
 
@@ -30,11 +47,12 @@ TEST(Violations_Numbers_MPI, Test_Random_Vector_With_One_Element) {
         global_vector = getRandomVector(vector_size);
     }
 
-    int global_violations_number = getViolationsInParallel(global_vector);
+    int global_violations_number = getViolationsInParallel(global_vector, vector_size);
 
     if (world.rank() == 0) {
-        int sequential_violations_number = getViolationsSequentially(global_vector);
-        ASSERT_EQ(sequential_violations_number, global_violations_number);
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, 0);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
 
@@ -42,11 +60,12 @@ TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector) {
     boost::mpi::communicator world;
     std::vector<int> global_vector{ 5, 4, 6, -7, 8, 9, 0 };
 
-    int global_violations_number = getViolationsInParallel(global_vector);
+    int global_violations_number = getViolationsInParallel(global_vector, 7);
 
     if (world.rank() == 0) {
-        int sequential_violations_number = getViolationsSequentially(global_vector);
-        ASSERT_EQ(sequential_violations_number, global_violations_number);
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, 3);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
 
@@ -54,11 +73,12 @@ TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector_With_One_Element) {
     boost::mpi::communicator world;
     std::vector<int> global_vector{ 1 };
 
-    int global_violations_number = getViolationsInParallel(global_vector);
+    int global_violations_number = getViolationsInParallel(global_vector, 1);
 
     if (world.rank() == 0) {
-        int sequential_violations_number = getViolationsSequentially(global_vector);
-        ASSERT_EQ(sequential_violations_number, global_violations_number);
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, 0);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
 
@@ -66,11 +86,12 @@ TEST(Violations_Numbers_MPI, Test_Vector_With_All_Same_Elements) {
     boost::mpi::communicator world;
     std::vector<int> global_vector{ 5, 5, 5, 5, 5, 5, 5 };
 
-    int global_violations_number = getViolationsInParallel(global_vector);
+    int global_violations_number = getViolationsInParallel(global_vector, 7);
 
     if (world.rank() == 0) {
-        int sequential_violations_number = getViolationsSequentially(global_vector);
-        ASSERT_EQ(sequential_violations_number, global_violations_number);
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, 0);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
 
