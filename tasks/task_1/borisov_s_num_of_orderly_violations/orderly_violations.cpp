@@ -47,6 +47,7 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
     }
 
     std::vector<int> local_vector(send_counts[world.rank()]);
+    printf("\n%d\n", send_counts[world.rank()]);
     boost::mpi::scatterv(world, global_vector, send_counts, displs, local_vector.data(), send_counts[world.rank()], 0);
 
     int global_violations_number = 0;

@@ -58,7 +58,7 @@ TEST(Violations_Numbers_MPI, Test_Random_Vector_With_One_Element) {
 
 TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector) {
     boost::mpi::communicator world;
-    std::vector<int> global_vector{ 5, 4, 6, -7, 8, 9, 0 };
+    std::vector<int> global_vector{ 5, 4, 6, 2, 8, 9, 0 };
 
     int global_violations_number = getViolationsInParallel(global_vector, 7);
 
