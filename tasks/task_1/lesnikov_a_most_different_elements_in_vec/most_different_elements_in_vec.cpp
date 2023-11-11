@@ -57,29 +57,51 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     if (world.rank() == 0) {
         loc_v = v;
         int loc_part_size_root = world.size() > 1 ? part_size + remainder + 1 : part_size + remainder;
+        std::cout << "root part size: " << loc_part_size_root << std::endl;
         loc_v.resize(loc_part_size_root);
         for (size_t i = 1; i < world.size(); i++) {
             int loc_part_size = i == world.size() - 1 ? part_size : part_size + 1;
-            std::vector<int> temp(v.begin() + remainder + i * part_size,
-            v.begin() + remainder + i * part_size + loc_part_size);
-            world.recv(i, 0, empty);
+            std::cout << "loc part size: " << loc_part_size << std::endl;
+            int start = remainder + i * part_size;
+            int end = remainder + i * part_size + loc_part_size;
+            std::cout << "start: " << start << " end: " << end << std::endl;
+            std::vector<int> temp(v.begin() + start, v.begin() + end);
+            std::cout << "temp_size: " << temp.size() << std::endl;
+
+            std::cout << "temp: " << std::endl;
+
+            for (int i = 0; i < temp.size(); i++) {
+                std::cout << i << ":" << temp[i] << " ";
+            }
+
+            std::cout << std::endl;
+
+            std::cout << "try get loc data FOR ROOT" << std::endl;
+
+            // world.recv(i, 0, empty);
             world.send(i, 0, temp);
+
+            std::cout << "got it FOR ROOT" << std::endl;
         }
 
     } else {
         int loc_part_size = world.rank() == world.size() - 1 ? part_size : part_size + 1;
 
-        world.send(0, 0, empty);
+        std::cout << "try get loc data" << std::endl;
+
+        // world.send(0, 0, empty);
         world.recv(0, 0, loc_v);
+
+        std::cout << "got it" << std::endl;
     }
 
     int max_different_elements_value = 0;
 
-    for (size_t i = 0; i < loc_v.size() - 1; i++) {
+    for (int i = 0; i < loc_v.size() - 1; i++) {
         max_different_elements_value = std::max(max_different_elements_value, std::abs(loc_v[i] - loc_v[i+1]));
     }
 
-    for (size_t i = 0; i < v.size() - 1; i++) {
+    for (int i = 0; i < loc_v.size() - 1; i++) {
         if (std::abs(loc_v[i] - loc_v[i+1]) == max_different_elements_value) {
             loc_most_different_elements.push_back(i + world.rank() * part_size
             + remainder * static_cast<int>(world.size() != 0));
@@ -92,8 +114,12 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
         std::vector<size_t> temp;
 
         for (int i = 1; i < world.size(); i++) {
+            std::cout << "try get temp for ROOT (LOC_SIZE = " << loc_v.size() << ")" << std::endl;
+
             world.send(i, 0, empty);
             world.recv(i, 0, temp);
+
+            std::cout << "done get temp for ROOT" << std::endl;
 
             if (!glob_most_different_elements.size()) {
                 glob_most_different_elements = std::move(temp);
@@ -103,12 +129,15 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
                 if (glob_diff < temp_diff) {
                     glob_most_different_elements = std::move(temp);
                 } else if (glob_diff == temp_diff) {
-                    glob_most_different_elements.insert(glob_most_different_elements.end(), temp.begin(), temp.end());
+                    glob_most_different_elements.insert(
+                    glob_most_different_elements.end(), temp.begin(), temp.end());
                 }
             }
         }
     } else {
+        std::cout << "try get empty for SUB (LOC_SIZE = " << loc_v.size() << ")" << std::endl;
         world.recv(0, 0, empty);
+        std::cout << "done get empty for SUB" << std::endl;
         world.send(0, 0, glob_most_different_elements);
     }
 
