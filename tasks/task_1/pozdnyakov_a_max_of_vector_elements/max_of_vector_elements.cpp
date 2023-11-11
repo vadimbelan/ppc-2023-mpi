@@ -3,36 +3,35 @@
 #include "task_1/pozdnyakov_a_max_of_vector_elements/max_of_vector_elements.h"
 
 int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
-    boost::mpi::communicator comm;
-    int result = 0;
-    const size_t part_size = vec_size / comm.size();
-    const size_t remain = vec_size % comm.size();
-    std::vector<int> local_vec_sizes(comm.size(), static_cast<int>(part_size));
-    std::vector<int> local_vec(part_size);
+    boost::mpi::communicator world;
+    const size_t local_part_size = vec_size / world.size();
+    const size_t remain = vec_size % world.size();
+    std::vector<int> local_vec(local_part_size);
+    std::vector<int> local_vec_sizes(world.size(), static_cast<int>(local_part_size));
     local_vec_sizes[0] += static_cast<int>(remain);
 
-    if (part_size == 0) {
+    if (local_part_size== 0) {
         local_vec = init_vec;
     } else {
-        if (comm.rank() == 0) {
-            local_vec.resize(local_vec_sizes[0]);
-            boost::mpi::scatterv(comm, init_vec, local_vec_sizes, local_vec.data(), 0);
+        if (world.rank() == 0) {
+            local_vec.resize(local_part_size + remain);
+            boost::mpi::scatterv(world, init_vec, local_vec_sizes, local_vec.data(), 0);
         } else {
-            boost::mpi::scatterv(comm, local_vec.data(), local_vec_sizes[comm.rank()], 0);
+            boost::mpi::scatterv(world, local_vec.data(), local_vec_sizes[world.rank()], 0);
         }
     }
 
-    auto max_it = std::max_element(local_vec.begin(), local_vec.end());
-
-    if (part_size == 0) {
-        if (comm.rank() == 0) {
-            result = *max_it;
-        }
+    int local_res = *std::max_element(local_vec.begin(), local_vec.end());
+    int global_res = 0;
+    if (local_part_size != 0) {
+        boost::mpi::reduce(world, local_res, global_res, boost::mpi::maximum<int>(), 0);
     } else {
-        boost::mpi::reduce(comm, *max_it, result, boost::mpi::maximum<int>(), 0);
+        if (world.rank() == 0) {
+            global_res = local_res;
+        }
     }
 
-    return result;
+    return global_res;
 }
 
 std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
