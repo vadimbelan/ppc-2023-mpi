@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <climits>
 
-void fillMatrixRandom(int* matrix, int rows, int columns);
 std::vector<int> createRandomMatrix(int rows, int columns);
 int findMax(std::vector<int> global_matrix);
 int findMaxParallel(std::vector<int> global_matrix);
