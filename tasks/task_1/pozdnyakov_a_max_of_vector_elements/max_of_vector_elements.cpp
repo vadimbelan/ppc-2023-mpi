@@ -33,7 +33,7 @@ int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
     }
 
     int local_res = *std::max_element(local_vec.begin(), local_vec.end());
-    int global_res;
+    int global_res = 0;
     if (local_vec_size != 0) {
         boost::mpi::reduce(world, local_res, global_res, boost::mpi::maximum<int>(), 0);
     } else {
