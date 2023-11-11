@@ -1,29 +1,40 @@
 // Copyright 2023 Pozdnyakov Vasya
-#include <random>
 #include "task_1/pozdnyakov_a_max_of_vector_elements/max_of_vector_elements.h"
 
-int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
-    boost::mpi::communicator world;
-    const size_t local_part_size = vec_size / world.size();
-    const size_t remain = vec_size % world.size();
-    std::vector<int> local_vec(local_part_size);
-    std::vector<int> local_vec_sizes(world.size(), static_cast<int>(local_part_size));
-    local_vec_sizes[0] += static_cast<int>(remain);
+std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
+    std::vector<int> vec(size);
+    for (size_t  i = 0; i < size; i++) {
+        vec[i] = min_elem + (std::rand() % (max_elem - min_elem + 1));
+    }
+    return vec;
+}
 
-    if (local_part_size == 0) {
-        local_vec = init_vec;
-    } else {
-        if (world.rank() == 0) {
-            local_vec.resize(local_part_size + remain);
-            boost::mpi::scatterv(world, init_vec, local_vec_sizes, local_vec.data(), 0);
+int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
+     boost::mpi::communicator world;
+    const int local_vec_size = vec_size / world.size();
+    const int remain = vec_size % world.size();
+    std::vector<int> local_vec(local_vec_size);
+
+    if (world.rank() == 0) {
+        if (local_vec_size != 0) {
+            for (int proc = 1; proc < world.size(); proc++) {
+                world.send(proc, 0, init_vec.data() + remain + local_vec_size * proc, local_vec_size);
+            }
         } else {
-            boost::mpi::scatterv(world, local_vec.data(), local_vec_sizes[world.rank()], 0);
+            local_vec = init_vec;
+        }
+    }
+    if (local_vec_size != 0) {
+        if (world.rank() == 0) {
+            local_vec = std::vector<int>(init_vec.begin(), init_vec.begin() + local_vec_size + remain);
+        } else {
+            world.recv(0, 0, local_vec.data(), local_vec_size);
         }
     }
 
     auto local_res = std::max_element(local_vec.begin(), local_vec.end());
     int global_res = 0;
-    if (local_part_size != 0) {
+    if (local_vec_size != 0) {
         boost::mpi::reduce(world, *local_res, global_res, boost::mpi::maximum<int>(), 0);
     } else {
         if (world.rank() == 0) {
@@ -32,16 +43,4 @@ int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
     }
 
     return global_res;
-}
-
-std::vector<int> get_random_vector(size_t size, int min_elem, int max_elem) {
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::uniform_int_distribution<int> distrib(min_elem, max_elem);
-
-    std::vector<int> vec(size);
-    for (int  i = 0; i < size; i++) {
-        vec[i] = distrib(gen);
-    }
-    return vec;
 }
