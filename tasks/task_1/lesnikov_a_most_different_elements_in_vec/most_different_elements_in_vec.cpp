@@ -88,7 +88,7 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     for (int i = 0; i < loc_v.size() - 1; i++) {
         if (std::abs(loc_v[i] - loc_v[i+1]) == max_different_elements_value) {
             loc_most_different_elements.push_back(i + world.rank() * part_size
-            + remainder * static_cast<int>(world.size() != 0));
+            + remainder * static_cast<int>(world.rank() != 0));
         }
     }
 
@@ -120,8 +120,6 @@ std::vector<std::pair<size_t, size_t>> getParallelMostDifferentElements(std::vec
     for (const size_t& i : glob_most_different_elements) {
         glob_most_different_elements_pairs.push_back(std::make_pair(i, i + 1));
     }
-
-    // world.barrier();
 
     return glob_most_different_elements_pairs;
 }
