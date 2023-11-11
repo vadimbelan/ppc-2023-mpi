@@ -10,7 +10,7 @@ int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
     std::vector<int> local_vec_sizes(world.size(), static_cast<int>(local_part_size));
     local_vec_sizes[0] += static_cast<int>(remain);
 
-    if (local_part_size== 0) {
+    if (local_part_size == 0) {
         local_vec = init_vec;
     } else {
         if (world.rank() == 0) {
@@ -21,13 +21,13 @@ int get_max_element(const std::vector<int>& init_vec, size_t vec_size) {
         }
     }
 
-    int local_res = *std::max_element(local_vec.begin(), local_vec.end());
+    auto local_res = std::max_element(local_vec.begin(), local_vec.end());
     int global_res = 0;
     if (local_part_size != 0) {
-        boost::mpi::reduce(world, local_res, global_res, boost::mpi::maximum<int>(), 0);
+        boost::mpi::reduce(world, *local_res, global_res, boost::mpi::maximum<int>(), 0);
     } else {
         if (world.rank() == 0) {
-            global_res = local_res;
+            global_res = *local_res;
         }
     }
 
