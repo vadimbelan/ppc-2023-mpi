@@ -5,7 +5,7 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
-TEST(Max_of_vector_elements, Test_random_numbers) {
+TEST(Max_Of_Vector_Elements, Test_random_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -21,7 +21,7 @@ TEST(Max_of_vector_elements, Test_random_numbers) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_only_positive_numbers) {
+TEST(Max_Of_Vector_Elements, Test_only_positive_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -37,7 +37,7 @@ TEST(Max_of_vector_elements, Test_only_positive_numbers) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_only_negative_numbers) {
+TEST(Max_Of_Vector_Elements, Test_only_negative_numbers) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 10;
@@ -53,22 +53,7 @@ TEST(Max_of_vector_elements, Test_only_negative_numbers) {
     }
 }
 
-TEST(Max_of_vector_elements, Test_one_number) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const size_t global_vec_size = 1;
-    if (world.rank() == 0) {
-        global_vec = {10};
-    }
-
-    int global_res = get_max_element(global_vec, global_vec_size);
-
-    if (world.rank() == 0) {
-        ASSERT_EQ(10, global_res);
-    }
-}
-
-TEST(Max_of_vector_elements, Test_equal_numbers) {
+TEST(Max_Of_Vector_Elements, Test_equal_number) {
     boost::mpi::communicator world;
     std::vector<int> global_vec;
     const size_t global_vec_size = 5;
@@ -84,8 +69,25 @@ TEST(Max_of_vector_elements, Test_equal_numbers) {
     }
 }
 
+TEST(Max_Of_Vector_Elements, Test_one_number) {
+    boost::mpi::communicator world;
+    std::vector<int> global_vec;
+    const size_t global_vec_size = 1;
+    if (world.rank() == 0) {
+        global_vec = {10};
+    }
+
+    int global_res = get_max_element(global_vec, global_vec_size);
+
+    if (world.rank() == 0) {
+        ASSERT_EQ(10, global_res);
+    }
+}
+
+
 
 int main(int argc, char** argv) {
+    srand(time(NULL));
     boost::mpi::environment env(argc, argv);
     boost::mpi::communicator world;
     ::testing::InitGoogleTest(&argc, argv);
@@ -94,4 +96,5 @@ int main(int argc, char** argv) {
         delete listeners.Release(listeners.default_result_printer());
     }
     return RUN_ALL_TESTS();
+    return 0;
 }
