@@ -4,6 +4,7 @@
 #include <functional>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
+#include <boost/mpi/collectives/broadcast.hpp>
 #include "task_1/borisov_s_num_of_orderly_violations/orderly_violations.h"
 
 std::vector<int> getRandomVector(int size) {
@@ -33,27 +34,41 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
     int process_num = world.size();
     int partial_size = vector_size / process_num;
     int remainder_size = vector_size % process_num;
+    int local_count = partial_size;
 
-    std::vector<int> send_counts(process_num, partial_size);
-    std::vector<int> displs(world.size(), 0);
-
+    std::vector<int> send_counts;
+    std::vector<int> displs;
+    std::vector<int> local_vector;
+    
     if (world.rank() == 0) {
+        send_counts.resize(process_num, partial_size);
+        displs.resize(world.size(), 0);
         for (int i = 1; i < process_num; i++) {
-            if (i < remainder_size) {
+            if (i - 1 < remainder_size) {
                 send_counts[i - 1]++;
             }
             displs[i] = displs[i - 1] + send_counts[i - 1] - 1;
             send_counts[i]++;
         }
+        local_vector.resize(send_counts[0]);
+    } else {
+        if (world.rank() < remainder_size)
+        {
+            local_count++;
+        }
+        local_count++;
+        local_vector.resize(local_count);
     }
 
-    std::vector<int> local_vector(send_counts[world.rank()]);
-    printf("\n%d\n", send_counts[world.rank()]);
-    boost::mpi::scatterv(world, global_vector, send_counts, displs, local_vector.data(), send_counts[world.rank()], 0);
+    if (world.rank() == 0) {
+        boost::mpi::scatterv(world, global_vector, send_counts, displs, local_vector.data(), send_counts[0], 0);
+    } else {
+        boost::mpi::scatterv(world, local_vector.data(), local_count, 0);
+    }
 
     int global_violations_number = 0;
     int local_violations_number = getViolationsSequentially(local_vector);
-    reduce(world, local_violations_number, global_violations_number, std::plus<int>(), 0);
-
+    boost::mpi::reduce(world, local_violations_number, global_violations_number, std::plus<int>(), 0);
+    
     return global_violations_number;
 }
