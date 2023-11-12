@@ -1,6 +1,7 @@
 // Copyright 2023 Pivovarov Alexey
 #include <gtest/gtest.h>
-#include "task_1/pivovarov_a_letter_count/letter_count.h"
+#include "./letter_count.h"
+#include <mpi.h>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
@@ -17,6 +18,7 @@ TEST(CountLetterTest, RandomString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
+
 TEST(CountLetterTest, SingleLetterString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -29,6 +31,7 @@ TEST(CountLetterTest, SingleLetterString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
+
 TEST(CountLetterTest, AllLettersString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -41,6 +44,7 @@ TEST(CountLetterTest, AllLettersString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
+
 TEST(CountLetterTest, HalfLettersHalfSymbolsString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -53,6 +57,7 @@ TEST(CountLetterTest, HalfLettersHalfSymbolsString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
+
 TEST(CountLetterTest, NoLettersString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
