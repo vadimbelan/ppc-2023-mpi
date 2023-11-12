@@ -6,8 +6,8 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/serialization/utility.hpp>
 
-double calc_integ_par(size_t num_vars, func f,
-                      const std::vector<size_t>& num_parts,
+double calc_integ_par(std::size_t num_vars, func f,
+                      const std::vector<std::size_t>& num_parts,
                       std::vector<std::pair<double, double>>* lim_integ) {
     boost::mpi::communicator comm;
     double global_res = 0;
@@ -16,14 +16,14 @@ double calc_integ_par(size_t num_vars, func f,
     boost::mpi::broadcast(comm, lim_integ->data(),
                           static_cast<int>(num_vars), 0);
 
-    size_t num_areas = get_num_areas(num_parts);
-    size_t num_local_areas = num_areas / comm.size();
+    std::size_t num_areas = get_num_areas(num_parts);
+    std::size_t num_local_areas = num_areas / comm.size();
 
     std::vector<double> steps = get_steps(num_vars, *lim_integ, num_parts);
 
     std::vector<double> vars(num_vars);
-    size_t first_area = num_local_areas * comm.rank();
-    size_t last_area = first_area + num_local_areas;
+    std::size_t first_area = num_local_areas * comm.rank();
+    std::size_t last_area = first_area + num_local_areas;
     if (comm.rank() == comm.size() - 1) {
         last_area += num_areas % comm.size();
     }
@@ -36,11 +36,11 @@ double calc_integ_par(size_t num_vars, func f,
     return global_res;
 }
 
-double calc_integ_seq(size_t num_vars, func f,
-                      const std::vector<size_t>& num_parts,
+double calc_integ_seq(std::size_t num_vars, func f,
+                      const std::vector<std::size_t>& num_parts,
                       const std::vector<
                               std::pair<double, double>>& lim_integ) {
-    size_t num_areas = get_num_areas(num_parts);
+    std::size_t num_areas = get_num_areas(num_parts);
 
     std::vector<double> steps = get_steps(num_vars, lim_integ, num_parts);
 
@@ -50,17 +50,18 @@ double calc_integ_seq(size_t num_vars, func f,
     return res;
 }
 
-double calc_val_areas(size_t first_area, size_t last_area, size_t num_vars,
-                      func f, const std::vector<size_t>& num_parts,
+double calc_val_areas(std::size_t first_area, std::size_t last_area,
+                      std::size_t num_vars, func f,
+                      const std::vector<std::size_t>& num_parts,
                       const std::vector<std::pair<double, double>>& lim_integ,
                       const std::vector<double>& steps) {
     double res = 0;
     double offset;
     std::vector<double> vars(num_vars);
-    for (size_t cur_area = first_area; cur_area < last_area; cur_area++) {
-        size_t ind_rest = cur_area;
-        for (size_t var_ind = 0; var_ind < num_vars - 1; var_ind++) {
-            size_t num_steps = ind_rest / num_parts[var_ind];
+    for (std::size_t cur_area = first_area; cur_area < last_area; cur_area++) {
+        std::size_t ind_rest = cur_area;
+        for (std::size_t var_ind = 0; var_ind < num_vars - 1; var_ind++) {
+            std::size_t num_steps = ind_rest / num_parts[var_ind];
             offset = static_cast<double>(num_steps) * steps[var_ind] +
                     steps[var_ind] / 2;
             vars[var_ind] = lim_integ[var_ind].first + offset;
@@ -74,17 +75,17 @@ double calc_val_areas(size_t first_area, size_t last_area, size_t num_vars,
     return res;
 }
 
-size_t get_num_areas(const std::vector<size_t>& num_parts) {
-    size_t number_areas = 1;
-    for (size_t part : num_parts) {
+std::size_t get_num_areas(const std::vector<std::size_t>& num_parts) {
+    std::size_t number_areas = 1;
+    for (std::size_t part : num_parts) {
         number_areas *= part;
     }
     return number_areas;
 }
 
-std::vector<double> get_steps(size_t num_vars, const std::vector<
+std::vector<double> get_steps(std::size_t num_vars, const std::vector<
         std::pair<double, double>>& lim_integ,
-        const std::vector<size_t>& num_parts) {
+        const std::vector<std::size_t>& num_parts) {
     std::vector<double> steps(num_vars);
     for (int i = 0; i < num_vars; i++) {
         steps[i] = (lim_integ[i].second - lim_integ[i].first) /

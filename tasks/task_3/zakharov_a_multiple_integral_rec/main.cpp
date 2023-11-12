@@ -11,8 +11,8 @@ TEST(Sequential_Integral, Test_One_Var) {
     if (world.rank() == 0) {
         double true_val = 1.42823590869;
         double epsilon = 1e-3;
-        size_t num_vars = 1;
-        std::vector<size_t> num_parts = {1000};
+        std::size_t num_vars = 1;
+        std::vector<std::size_t> num_parts = {1000};
         std::vector<std::pair<double, double>> lim_integ = {{-1, 15.23}};
 
         double result = calc_integ_seq(num_vars, one_var_func,
@@ -26,8 +26,8 @@ TEST(Sequential_Integral, Test_Two_Var) {
     if (world.rank() == 0) {
         double true_val = 12062.2623333;
         double epsilon = 1e-1;
-        size_t num_vars = 2;
-        std::vector<size_t> num_parts = {1000, 1000};
+        std::size_t num_vars = 2;
+        std::vector<std::size_t> num_parts = {1000, 1000};
         std::vector<std::pair<double, double>> lim_integ = {{-2.3, 4.1},
                                                             {0, 6.5}
         };
@@ -43,8 +43,8 @@ TEST(Sequential_Integral, Test_Three_Var) {
     if (world.rank() == 0) {
         double true_val = 6.23202211038;
         double epsilon = 1e-1;
-        size_t num_vars = 3;
-        std::vector<size_t> num_parts = {100, 100, 100};
+        std::size_t num_vars = 3;
+        std::vector<std::size_t> num_parts = {100, 100, 100};
         std::vector<std::pair<double, double>> lim_integ = {{1, 2},
                                                             {3.2, 5},
                                                             {6.743, 8}
@@ -58,8 +58,8 @@ TEST(Sequential_Integral, Test_Three_Var) {
 
 TEST(Parallel_Integral, Test_One_Var) {
     boost::mpi::communicator world;
-    size_t num_vars = 1;
-    std::vector<size_t> num_parts = {1000};
+    std::size_t num_vars = 1;
+    std::vector<std::size_t> num_parts = {1000};
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
@@ -77,8 +77,8 @@ TEST(Parallel_Integral, Test_One_Var) {
 
 TEST(Parallel_Integral, Test_Two_Var) {
     boost::mpi::communicator world;
-    size_t num_vars = 2;
-    std::vector<size_t> num_parts = {500, 500};
+    std::size_t num_vars = 2;
+    std::vector<std::size_t> num_parts = {500, 500};
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
@@ -96,8 +96,8 @@ TEST(Parallel_Integral, Test_Two_Var) {
 
 TEST(Parallel_Integral, Test_Two_Var_2) {
     boost::mpi::communicator world;
-    size_t num_vars = 2;
-    std::vector<size_t> num_parts = {500, 500};
+    std::size_t num_vars = 2;
+    std::vector<std::size_t> num_parts = {500, 500};
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
@@ -115,8 +115,8 @@ TEST(Parallel_Integral, Test_Two_Var_2) {
 
 TEST(Parallel_Integral, Test_Three_Var) {
     boost::mpi::communicator world;
-    size_t num_vars = 3;
-    std::vector<size_t> num_parts = {100, 100, 100};
+    std::size_t num_vars = 3;
+    std::vector<std::size_t> num_parts = {100, 100, 100};
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
@@ -137,8 +137,8 @@ TEST(Parallel_Integral, Test_Three_Var) {
 
 TEST(Parallel_Integral, Test_Four_Var) {
     boost::mpi::communicator world;
-    size_t num_vars = 4;
-    std::vector<size_t> num_parts = {28, 28, 28, 28};
+    std::size_t num_vars = 4;
+    std::vector<std::size_t> num_parts = {28, 28, 28, 28};
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
