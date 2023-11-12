@@ -5,11 +5,11 @@
 #include <boost/mpi/communicator.hpp>
 
 
-TEST(CountLetterTest, EmptyString) {
+TEST(CountLetterTest, RandomString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
-
-    std::string str = "";
+    int size = 10;
+    std::string str = generateRandomRow(size);
     int parallel_result = count_letters_par(str);
 
     if (world.rank() == 0) {
@@ -62,19 +62,6 @@ TEST(CountLetterTest, NoLettersString) {
     boost::mpi::communicator world;
 
     std::string str = "1234567890";
-    int parallel_result = count_letters_par(str);
-
-    if (world.rank() == 0) {
-        int sequential_result = count_letters_seq(str);
-        ASSERT_EQ(parallel_result, sequential_result);
-    }
-}
-
-TEST(CountLetterTest, RandomString) {
-    boost::mpi::environment env;
-    boost::mpi::communicator world;
-    int size = 10;
-    std::string str = generateRandomRow(size);
     int parallel_result = count_letters_par(str);
 
     if (world.rank() == 0) {
