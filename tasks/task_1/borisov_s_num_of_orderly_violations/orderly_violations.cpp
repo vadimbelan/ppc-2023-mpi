@@ -4,7 +4,6 @@
 #include <functional>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
-#include <boost/mpi/collectives/broadcast.hpp>
 #include "task_1/borisov_s_num_of_orderly_violations/orderly_violations.h"
 
 std::vector<int> getRandomVector(int size) {
@@ -29,6 +28,9 @@ int getViolationsSequentially(std::vector<int> vector) {
 }
 
 int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
+    if (vector_size == 0) {
+        return 0;
+    }
     boost::mpi::communicator world;
 
     int process_num = world.size();
