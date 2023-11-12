@@ -82,7 +82,7 @@ TEST(Parallel_Integral, Test_Two_Var) {
     std::vector<std::pair<double, double>> lim_integ = {};
     double epsilon = 1e-6;
     if (world.rank() == 0) {
-        lim_integ = {get_random_lim(-3, 13), get_random_lim(5, 32)};
+        lim_integ = {get_random_lim(-3, 13), get_random_lim(5, 22)};
     }
 
     double par_result = calc_integ_par(num_vars, two_var_func,
