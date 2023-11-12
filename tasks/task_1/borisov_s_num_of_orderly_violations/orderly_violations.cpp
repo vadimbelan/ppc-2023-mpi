@@ -39,10 +39,11 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
 
     if (world.rank() == 0) {
         for (int i = 1; i < process_num; i++) {
-            displs[i] = displs[i - 1] + send_counts[i - 1];
-            if (i <= remainder_size) {
-                displs[i]++;
+            if (i < remainder_size) {
+                send_counts[i - 1]++;
             }
+            displs[i] = displs[i - 1] + send_counts[i - 1] - 1;
+            send_counts[i]++;
         }
     }
 
