@@ -1,18 +1,18 @@
 // Copyright 2023 Alexseev Danila
 
 #include <gtest/gtest.h>
-#include "task_3/alexseev_d_Monte_Carlo_integral/Monte_Carlo_integral.h"
+#include "./Monte_Carlo_integral.h"
 
 TEST(MonteCarloIntegral, Pow1Var) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     const int pointsCount = 1000000;
     std::vector<double> lowerLimits = { 0.0 };
     std::vector<double> upperLimits = { 5.0 };
 
     double parallelRes = parallelCalculateIntegral(func1VarPow, 1, pointsCount, lowerLimits, upperLimits);
-    
+
     if (rank == 0) {
         ASSERT_LT(std::abs(parallelRes - 41.66666666666666), 0.5);
     }

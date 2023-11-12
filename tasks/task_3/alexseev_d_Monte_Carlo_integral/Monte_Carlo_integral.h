@@ -1,7 +1,7 @@
 // Copyright 2023 Alexseev Danila
 
-#ifndef TASKS_TASK_2_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_
-#define TASKS_TASK_2_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_
+#ifndef TASKS_TASK_3_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_
+#define TASKS_TASK_3_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_
 
 #include <mpi.h>
 #include <iostream>
@@ -17,6 +17,7 @@ double func2VarExp(const std::vector<double>& x);
 double func2VarSin(const std::vector<double>& x);
 double func2VarSum(const std::vector<double>& x);
 
-double parallelCalculateIntegral(func foo, const int dimensionOfSpace, const int pointsCount, const std::vector<double>& lowerLimits, const std::vector<double>& upperLimits);
+double parallelCalculateIntegral(func foo, const int dimensionOfSpace,
+    const int pointsCount, const std::vector<double>& lowerLimits, const std::vector<double>& upperLimits);
 
-#endif  // TASKS_TASK_2_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_
+#endif  // TASKS_TASK_3_ALEXSEEV_D_MONTE_CARLO_INTEGRAL_MONTE_CARLO_INTEGRAL_H_

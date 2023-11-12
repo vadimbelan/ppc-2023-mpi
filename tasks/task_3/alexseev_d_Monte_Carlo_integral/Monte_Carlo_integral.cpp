@@ -1,6 +1,6 @@
 // Copyright 2023 Alexseev Danila
 
-#include "./Monte_Carlo_integral.h"
+#include "task_3/alexseev_d_Monte_Carlo_integral/Monte_Carlo_integral.h"
 
 double func1VarPow(const std::vector<double>& x) {
     return std::pow(x[0], 2);
@@ -22,7 +22,8 @@ double func2VarSum(const std::vector<double>& x) {
     return -x[0] + x[1];
 }
 
-double parallelCalculateIntegral(func foo, const int dimensionOfSpace, const int pointsCount, const std::vector<double>& lowerLimits, const std::vector<double>& upperLimits) {
+double parallelCalculateIntegral(func foo, const int dimensionOfSpace,
+    const int pointsCount, const std::vector<double>& lowerLimits, const std::vector<double>& upperLimits) {
     double integral = 0.0, globalIntegral, res = 0.0;
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -47,7 +48,7 @@ double parallelCalculateIntegral(func foo, const int dimensionOfSpace, const int
         for (int j = 0; j < dimensionOfSpace; ++j) {
             spaceVolume *= (upperLimits[j] - lowerLimits[j]);
         }
-        double average = globalIntegral / (double)pointsCount;
+        double average = globalIntegral / static_cast<double>(pointsCount);
         res = spaceVolume * average;
     }
     return res;
