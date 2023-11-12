@@ -39,7 +39,7 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
     std::vector<int> send_counts;
     std::vector<int> displs;
     std::vector<int> local_vector;
-    
+
     if (world.rank() == 0) {
         send_counts.resize(process_num, partial_size);
         displs.resize(world.size(), 0);
@@ -52,8 +52,7 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
         }
         local_vector.resize(send_counts[0]);
     } else {
-        if (world.rank() < remainder_size)
-        {
+        if (world.rank() < remainder_size) {
             local_count++;
         }
         local_count++;
@@ -69,6 +68,6 @@ int getViolationsInParallel(std::vector<int> global_vector, int vector_size) {
     int global_violations_number = 0;
     int local_violations_number = getViolationsSequentially(local_vector);
     boost::mpi::reduce(world, local_violations_number, global_violations_number, std::plus<int>(), 0);
-    
+
     return global_violations_number;
 }
