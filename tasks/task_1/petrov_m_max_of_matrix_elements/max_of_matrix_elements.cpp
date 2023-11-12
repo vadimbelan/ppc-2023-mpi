@@ -47,7 +47,7 @@ int getParallelOperations(std::vector<int> _matrix, const int rows, const int co
     if (world.rank() == 0) {
         local_row = std::vector<int>(_matrix.begin(),
             _matrix.begin() + delta_2);
-    }else {
+    } else {
         world.recv(0, 0, local_row.data(), delta);
     }
 
