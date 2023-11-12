@@ -17,7 +17,6 @@ TEST(CountLetterTest, RandomString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
-
 TEST(CountLetterTest, SingleLetterString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -30,7 +29,6 @@ TEST(CountLetterTest, SingleLetterString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
-
 TEST(CountLetterTest, AllLettersString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -43,7 +41,6 @@ TEST(CountLetterTest, AllLettersString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
-
 TEST(CountLetterTest, HalfLettersHalfSymbolsString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
@@ -56,7 +53,6 @@ TEST(CountLetterTest, HalfLettersHalfSymbolsString) {
         ASSERT_EQ(parallel_result, sequential_result);
     }
 }
-
 TEST(CountLetterTest, NoLettersString) {
     boost::mpi::environment env;
     boost::mpi::communicator world;

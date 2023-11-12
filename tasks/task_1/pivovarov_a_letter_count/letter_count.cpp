@@ -12,7 +12,6 @@ int count_letters_seq(const std::string& str) {
     }
     return count;
 }
-
 int count_letters_par(const std::string& str) {
     int numProc;
     MPI_Comm_size(MPI_COMM_WORLD, &numProc);
@@ -37,7 +36,6 @@ int count_letters_par(const std::string& str) {
 
     return global_count;
 }
-
 std::string generateRandomRow(int size) {
     const std::string charset = "abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+№;%:?*-=,`~<>";
     std::string result;
