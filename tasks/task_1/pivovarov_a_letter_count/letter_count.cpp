@@ -45,4 +45,3 @@ std::string generateRandomRow(int size) {
     }
     return result;
 }
-

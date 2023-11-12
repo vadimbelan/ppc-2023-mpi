@@ -1,7 +1,6 @@
 // Copyright 2023 Pivovarov Alexey
 #include <gtest/gtest.h>
 #include "./letter_count.h"
-#include <mpi.h>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
