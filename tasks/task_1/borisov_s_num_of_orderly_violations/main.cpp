@@ -69,7 +69,7 @@ TEST(Violations_Numbers_MPI, Test_Empty_Vector) {
     }
 }
 
-TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector) {
+TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector_1) {
     boost::mpi::communicator world;
     std::vector<int> global_vector{ 5, 4, 6, 2, 8, 9, 0 };
 
@@ -78,6 +78,19 @@ TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector) {
     if (world.rank() == 0) {
         int reference_violations_number = getViolationsSequentially(global_vector);
         ASSERT_EQ(reference_violations_number, 3);
+        ASSERT_EQ(reference_violations_number, global_violations_number);
+    }
+}
+
+TEST(Violations_Numbers_MPI, Test_Manual_Filled_Vector_2) {
+    boost::mpi::communicator world;
+    std::vector<int> global_vector{ 1, 4, 6, 2, 8, 7 };
+
+    int global_violations_number = getViolationsInParallel(global_vector, 6);
+
+    if (world.rank() == 0) {
+        int reference_violations_number = getViolationsSequentially(global_vector);
+        ASSERT_EQ(reference_violations_number, 2);
         ASSERT_EQ(reference_violations_number, global_violations_number);
     }
 }
