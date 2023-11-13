@@ -15,7 +15,6 @@ void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int
     auto producer_process = [&](int id) {
         for (int i = 0; i < num_producers; ++i) {
             while (buffer.size() >= num_consumers) {
-                // Эмуляция ожидания
                 MPI_Barrier(MPI_COMM_WORLD);
             }
 
@@ -32,7 +31,6 @@ void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int
     auto consumer_process = [&](int id) {
         for (int i = 0; i < num_consumers; ++i) {
             while (buffer.empty()) {
-                // Эмуляция ожидания
                 MPI_Barrier(MPI_COMM_WORLD);
             }
 
@@ -44,10 +42,7 @@ void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int
                 count_consumer = 0;
                 count_producer++;
             }
-
             std::cout << "Consumer " << id << " consumed: " << data << std::endl;
-
-            // Эмуляция ожидания
             MPI_Barrier(MPI_COMM_WORLD);
         }
     };
