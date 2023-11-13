@@ -37,7 +37,7 @@ TEST(MPI_TESTS, Test_float_prod) {
       reduce(&value, &prod, 1, MPI_FLOAT, MPI_PROD, recv_rank, comm);
 
   if (return_code == MPI_SUCCESS && rank == recv_rank) {
-    ASSERT_EQ(prod, std::powf(value, static_cast<float>(world_size)));
+    ASSERT_EQ(prod, powf(value, static_cast<float>(world_size)));
   }
 }
 

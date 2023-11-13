@@ -2,12 +2,11 @@
 #ifndef TASKS_TASK_2_BALYASOV_REDUCE_MY_REDUCE_H_
 #define TASKS_TASK_2_BALYASOV_REDUCE_MY_REDUCE_H_
 
+#include <math.h>
 #include <mpi.h>
 
-#include <cmath>
 #include <cstdlib>
 #include <cstring>
-
 
 template <typename T>
 void operation(void* buf, void* recvbuf, MPI_Op op) {
