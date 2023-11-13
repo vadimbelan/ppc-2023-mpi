@@ -4,8 +4,10 @@
 
 #include <mpi.h>
 
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
+
 
 template <typename T>
 void operation(void* buf, void* recvbuf, MPI_Op op) {
