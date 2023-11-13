@@ -2,7 +2,7 @@
 
 #include "task_2/pivovarov_a_producer_consumer/producer_consumer.h"
 
-void producer_consumer_seq(int num_producers, int num_consumers,std::vector<int>& results) {
+void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int> results) {
     std::vector<int> buffer;
     std::mutex mutex;
     std::condition_variable cv_producer, cv_consumer;
@@ -52,7 +52,7 @@ void producer_consumer_seq(int num_producers, int num_consumers,std::vector<int>
     results.push_back(1);
 }
 
-void producer_consumer_par(int num_producers, int num_consumers, std::vector<int>& results) {
+void producer_consumer_par(int num_producers, int num_consumers, std::vector<int> results) {
     int rank, size;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
