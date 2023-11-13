@@ -1,7 +1,8 @@
 // Copyright 2023 Pivovarov Alexey
 
+#include <mutex>
 #include "task_2/pivovarov_a_producer_consumer/producer_consumer.h"
-using namespace std::literals::chrono_literals;
+
 
 void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int> results) {
     std::vector<int> buffer;
@@ -33,7 +34,7 @@ void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int
 
             std::cout << "Consumer " << id << " consumed: " << data << std::endl;
 
-            std::this_thread::sleep_for(100ms);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     };
 
