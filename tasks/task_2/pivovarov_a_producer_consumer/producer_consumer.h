@@ -6,8 +6,6 @@
 #include <mpi.h>
 #include <iostream>
 #include <vector>
-#include <thread>
-#include <chrono>
 #include <algorithm>
 
 void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int> results);

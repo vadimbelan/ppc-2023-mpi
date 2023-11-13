@@ -1,59 +1,66 @@
 // Copyright 2023 Pivovarov Alexey
 
-#include <mutex>
 #include "task_2/pivovarov_a_producer_consumer/producer_consumer.h"
 
-
 void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int> results) {
+    int rank, size;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
     std::vector<int> buffer;
-    std::mutex mutex;
-    std::condition_variable cv_producer, cv_consumer;
+    int count_producer = 0;
+    int count_consumer = 0;
 
-    auto producer_thread = [&](int id) {
+    auto producer_process = [&](int id) {
         for (int i = 0; i < num_producers; ++i) {
-            std::unique_lock<std::mutex> lock(mutex);
-
-            cv_producer.wait(lock, [&] { return buffer.size() < num_consumers; });
+            while (buffer.size() >= num_consumers) {
+                // Эмуляция ожидания
+                MPI_Barrier(MPI_COMM_WORLD);
+            }
 
             buffer.push_back(id * 100 + i);
 
-            cv_consumer.notify_one();
+            count_producer++;
+            if (count_producer == num_producers) {
+                count_producer = 0;
+                count_consumer++;
+            }
         }
     };
 
-    auto consumer_thread = [&](int id) {
+    auto consumer_process = [&](int id) {
         for (int i = 0; i < num_consumers; ++i) {
-            std::unique_lock<std::mutex> lock(mutex);
+            while (buffer.empty()) {
+                // Эмуляция ожидания
+                MPI_Barrier(MPI_COMM_WORLD);
+            }
 
-            cv_consumer.wait(lock, [&] { return !buffer.empty(); });
-
-            int data = buffer.front();
+            int data = buffer.back();
             buffer.pop_back();
 
-            cv_producer.notify_one();
+            count_consumer++;
+            if (count_consumer == num_consumers) {
+                count_consumer = 0;
+                count_producer++;
+            }
 
             std::cout << "Consumer " << id << " consumed: " << data << std::endl;
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            // Эмуляция ожидания
+            MPI_Barrier(MPI_COMM_WORLD);
         }
     };
 
-    std::vector<std::thread> threads;
-    threads.reserve(num_producers);
-    for (int i = 0; i < num_producers; ++i) {
-        threads.emplace_back(producer_thread, i);
-    }
-
-    for (int i = 0; i < num_consumers; ++i) {
-        threads.emplace_back(consumer_thread, i);
-    }
-
-    for (auto& thread : threads) {
-        thread.join();
+    if (rank < num_producers) {
+        producer_process(rank);
+    } else {
+        consumer_process(rank - num_producers);
     }
 
     results.push_back(1);
 }
+
 
 void producer_consumer_par(int num_producers, int num_consumers, std::vector<int> results) {
     int rank, size;

@@ -5,7 +5,6 @@ if( USE_MPI )
     if( UNIX )
         set(CMAKE_C_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-uninitialized")
         set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-uninitialized")
-        set(CMAKE_CXX_STANDARD 11)
     endif( UNIX )
 
     set(ProjectId "${ProjectId}_mpi")
