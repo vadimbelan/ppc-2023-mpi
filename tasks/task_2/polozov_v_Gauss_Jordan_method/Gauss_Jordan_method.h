@@ -3,8 +3,8 @@
 
 
 
-#ifndef TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_H_
-#define TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_H_
+#ifndef TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
+#define TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
 
 #include <mpi.h>
 #include <climits>
@@ -20,4 +20,4 @@ std::vector<double> getSequentialGaussJordan(std::vector<double> A, int n);
 std::vector<double> getRandomMatrix(int n, int m);
 
 
-#endif  // TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_H_
+#endif  // TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
