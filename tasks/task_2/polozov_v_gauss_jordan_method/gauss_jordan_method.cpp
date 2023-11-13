@@ -10,8 +10,9 @@ std::vector<double> getRandomMatrix(int n, int m) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             int val = generator();
-            if(val < 0)
+            if (val < 0) {
                 val *= -1;
+            }
             val %= mod;
             val -= mod/2;
             ans[i * m + j] = val;
