@@ -2,7 +2,7 @@
 
 #include "task_2/pivovarov_a_producer_consumer/producer_consumer.h"
 
-void producer_consumer_seq(int num_producers, int num_consumers, std::vector<int>& results) {
+void producer_consumer_seq(int num_producers, int num_consumers,std::vector<int>& results) {
     std::vector<int> buffer;
     std::mutex mutex;
     std::condition_variable cv_producer, cv_consumer;
