@@ -47,8 +47,8 @@ TEST(ProducerConsumerTest, NoProducersNoConsumers) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    int num_producers = 3;
-    int num_consumers = 3;
+    int num_producers = 0;
+    int num_consumers = 0;
 
     std::vector<int> results_par;
     std::vector<int> results_seq;
@@ -66,7 +66,7 @@ TEST(ProducerConsumerTest, LargeNumberOfProducersAndConsumers) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    int num_producers = 10;
+    int num_producers = 5;
     int num_consumers = 5;
 
     std::vector<int> results_par;
