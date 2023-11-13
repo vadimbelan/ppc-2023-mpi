@@ -85,7 +85,7 @@ TEST(ProducerConsumerTest, UnequalProducersAndConsumers) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    int num_producers = 5;
+    int num_producers = 2;
     int num_consumers = 5;
 
     std::vector<int> results_par;
