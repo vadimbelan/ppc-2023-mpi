@@ -33,17 +33,13 @@ int reduce(const void* sendbuf, void* recvbuf, int count, MPI_Datatype datatype,
     for (int i = 0; i < world_size - 1; ++i) {
       MPI_Recv(buf, count, datatype, MPI_ANY_SOURCE, 0, comm,
                MPI_STATUS_IGNORE);
-      switch (datatype) {
-        case MPI_INT:
-          operation<int>(buf, recvbuf, op);
-          break;
-        case MPI_FLOAT:
-          operation<float>(buf, recvbuf, op);
-          break;
-        case MPI_DOUBLE:
-          operation<double>(buf, recvbuf, op);
-        default:
-          break;
+
+      if (datatype == MPI_INT) {
+        operation<int>(buf, recvbuf, op);
+      } else if (datatype == MPI_FLOAT) {
+        operation<float>(buf, recvbuf, op);
+      } else if (datatype == MPI_DOUBLE) {
+        operation<double>(buf, recvbuf, op);
       }
     }
   } else {

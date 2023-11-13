@@ -12,28 +12,18 @@ void operation(void* buf, void* recvbuf, MPI_Op op) {
   T& buf_val = *reinterpret_cast<T*>(buf);
   T& recvbuf_val = *reinterpret_cast<T*>(recvbuf);
 
-  switch (op) {
-    case MPI_MAX:
-      if (buf_val > recvbuf_val) recvbuf_val = buf_val;
-      break;
-    case MPI_MIN:
-      if (buf_val < recvbuf_val) recvbuf_val = buf_val;
-      break;
-    case MPI_SUM:
-      recvbuf_val += buf_val;
-      break;
-    case MPI_PROD:
-      recvbuf_val *= buf_val;
-      break;
-    case MPI_LAND:
-      recvbuf_val =
-          static_cast<bool>(recvbuf_val) && static_cast<bool>(buf_val);
-      break;
-    case MPI_LOR:
-      recvbuf_val =
-          static_cast<bool>(recvbuf_val) || static_cast<bool>(buf_val);
-    default:
-      break;
+  if (op == MPI_MAX) {
+    if (buf_val > recvbuf_val) recvbuf_val = buf_val;
+  } else if (op == MPI_MIN) {
+    if (buf_val < recvbuf_val) recvbuf_val = buf_val;
+  } else if (op == MPI_SUM) {
+    recvbuf_val += buf_val;
+  } else if (op == MPI_PROD) {
+    recvbuf_val *= buf_val;
+  } else if (op == MPI_LAND) {
+    recvbuf_val = static_cast<bool>(recvbuf_val) && static_cast<bool>(buf_val);
+  } else if (op == MPI_LOR) {
+    recvbuf_val = static_cast<bool>(recvbuf_val) || static_cast<bool>(buf_val);
   }
 }
 
