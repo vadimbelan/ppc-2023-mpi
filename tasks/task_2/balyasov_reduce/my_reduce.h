@@ -1,0 +1,7 @@
+// Copyright 2023 Balyasov Ivan
+#ifndef TASKS_TASK_2_BALYASOV_REDUCE_MY_REDUCE_H_
+#define TASKS_TASK_2_BALYASOV_REDUCE_MY_REDUCE_H_
+
+#include <mpi.h>
+
+#endif  // TASKS_TASK_2_BALYASOV_REDUCE_MY_REDUCE_H_
