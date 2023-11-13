@@ -28,7 +28,7 @@ std::vector<double> getParallelGaussJordan(std::vector<double> A, int n) {
     std::vector<double> cur_rows;
     std::vector<int> sendcounts;
     std::vector<int> displs;
-    std::vector<int> who;  // какому процессу достается эта строка
+    std::vector<int> who;
     cur_rows.resize(delta * m);
     center_row.resize(m);
     if (rank == 0) {
@@ -53,10 +53,6 @@ std::vector<double> getParallelGaussJordan(std::vector<double> A, int n) {
     }
 
     for (int i = 0; i < n; i++) {
-        // A[i][i] - центральный элемент
-        // отсылаю строки процессорам
-        // 1.центральная строка всем
-        // 2.их строки, которые будут пересчитаны
         int rank_block;
         int num_row_block;
         double val;
@@ -78,16 +74,13 @@ std::vector<double> getParallelGaussJordan(std::vector<double> A, int n) {
         MPI_Bcast(center_row.data(), m, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         MPI_Bcast(&rank_block, 1, MPI_INT, 0, MPI_COMM_WORLD);
         MPI_Bcast(&num_row_block, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        // считаю строки
         for (int j = 0; j < (cur_rows.size() / m); j++) {
             if (rank == rank_block && j == num_row_block) continue;
             val = cur_rows[j * m + i];
             for (int k = 0; k < m; k++) {
-                // A[j][k] -= val * A[i][k]
                 cur_rows[j * m + k] -= val * center_row[k];
             }
         }
-        // отсылаю строки root процессу
         MPI_Gatherv(cur_rows.data(), cur_rows.size(), MPI_DOUBLE, A.data(), sendcounts.data(), displs.data(),
                     MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
@@ -99,13 +92,6 @@ std::vector<double> getParallelGaussJordan(std::vector<double> A, int n) {
             if (abs(answer[i]) < eps)
                 answer[i] = 0;
         }
-        /*
-        std::cout<<"ANSWER PARALL:\n";
-        for(auto x : answer){
-            std::cout<<x<<' ';
-        }
-        std::cout<<"==========\n";
-        */
     }
     return answer;
 }
@@ -114,18 +100,14 @@ std::vector<double> getSequentialGaussJordan(std::vector<double> A, int n) {
     std::vector<double> ans(n);
     int m = n + 1;
     for (int i = 0; i < n; i++) {
-        // A[i][i] - центральный элемент
         double val = A[i * m + i];
         for (int j = 0; j < m; j++) {
-            // нормирую свою строку
             A[i * m + j] /= val;
         }
         for (int j = 0; j < n; j++) {
             if (j == i) continue;
-            // val = A[j][i]
             val = A[j * m + i];
             for (int k = 0; k < m; k++) {
-                // A[j][k] -= val * A[i][k]
                 A[j * m + k] -= val * A[i * m + k];
             }
         }
