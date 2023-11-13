@@ -1,6 +1,6 @@
 // Copyright 2023 Polozov Vladislav
 
-#include "task_2/polozov_v_Gauss_Jordan_method/Gauss_Jordan_method.h"
+#include "task_2/polozov_v_gauss_jordan_method/gauss_jordan_method.h"
 
 std::vector<double> getRandomMatrix(int n, int m) {
     std::random_device device;

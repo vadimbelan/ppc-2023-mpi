@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <mpi.h>
-#include "./Gauss_Jordan_method.h"
+#include "./gauss_jordan_method.h"
 
 TEST(MPI_TESTS, Test1) {
     int n = 3;
