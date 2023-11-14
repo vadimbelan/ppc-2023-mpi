@@ -8,7 +8,7 @@ TEST(ShellSortTest, EmptyArray) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    std::vector<int> arr;
+    std::vector<int> arr{};
 
     std::vector<int> parallel_arr = arr;
     std::vector<int> sequential_arr = arr;
@@ -25,7 +25,7 @@ TEST(ShellSortTest, SortedArray) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    std::vector<int> arr = {1, 2, 3, 4, 5};
+    std::vector<int> arr{1, 2, 3, 4, 5};
 
     std::vector<int> parallel_arr = arr;
     std::vector<int> sequential_arr = arr;
@@ -42,7 +42,7 @@ TEST(ShellSortTest, ReverseSortedArray) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    std::vector<int> arr = {5, 4, 3, 2, 1};
+    std::vector<int> arr{5, 4, 3, 2, 1};
 
     std::vector<int> parallel_arr = arr;
     std::vector<int> sequential_arr = arr;
@@ -59,7 +59,8 @@ TEST(ShellSortTest, RandomArray) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    std::vector<int> arr = generate_random_array(10, 1, 9);
+    std::vector<int> arr(10);
+    arr = generate_random_array(10, 1, 9);
 
     std::vector<int> parallel_arr = arr;
     std::vector<int> sequential_arr = arr;
@@ -76,7 +77,7 @@ TEST(ShellSortTest, DuplicateValuesArray) {
     boost::mpi::environment env;
     boost::mpi::communicator world;
 
-    std::vector<int> arr = {2, 1, 2, 1, 3, 2, 3, 1, 3, 2};
+    std::vector<int> arr{2, 1, 2, 1, 3, 2, 3, 1, 3, 2};
 
     std::vector<int> parallel_arr = arr;
     std::vector<int> sequential_arr = arr;
