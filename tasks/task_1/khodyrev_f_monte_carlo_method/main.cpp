@@ -1,4 +1,5 @@
 // Copyright 2023 Khodyrev Fedor
+#include <mpi.h>
 #include <gtest/gtest.h>
 #include <cmath>
 #include <iostream>
@@ -20,7 +21,7 @@ TEST(MPI_TESTS, Test_exponentional_function) {
   if (rank == 0) {
     double result_seq = seq_monte_carlo_integration(num_points, lower_limit,
     upper_limit, exponentional_function);
-    EXPECT_LT(abs(result_seq - result_par), 0.01);
+    EXPECT_LT(std::abs(result_seq - result_par), 0.01);
   }
 }
 
@@ -58,7 +59,7 @@ TEST(MPI_TESTS, Test_quadratic_function) {
   if (rank == 0) {
     double result_seq = seq_monte_carlo_integration(num_points, lower_limit,
     upper_limit, quadratic_function);
-    EXPECT_LT(abs(result_seq - result_par), 0.01);
+    EXPECT_LT(std::abs(result_seq - result_par), 0.01);
   }
 }
 
@@ -96,7 +97,7 @@ TEST(MPI_TESTS, Test_sine_function) {
   if (rank == 0) {
     double result_seq = seq_monte_carlo_integration(num_points, lower_limit,
     upper_limit, sine_function);
-    EXPECT_LT(abs(result_seq - result_par), 0.01);
+    EXPECT_LT(std::abs(result_seq - result_par), 0.01);
   }
 }
 
