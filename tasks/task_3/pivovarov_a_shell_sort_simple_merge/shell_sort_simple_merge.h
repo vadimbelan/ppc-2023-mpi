@@ -3,11 +3,11 @@
 #ifndef TASKS_TASK_3_PIVOVAROV_A_SHELL_SORT_SIMPLE_MERGE_SHELL_SORT_SIMPLE_MERGE_H_
 #define TASKS_TASK_3_PIVOVAROV_A_SHELL_SORT_SIMPLE_MERGE_SHELL_SORT_SIMPLE_MERGE_H_
 
+#include <mpi.h>
 #include <vector>
 #include <algorithm>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <mpi.h>
 
 std::vector<int> generate_random_array(int length, int minValue, int maxValue);
 void merge(std::vector<int> arr, int low, int mid, int high);
