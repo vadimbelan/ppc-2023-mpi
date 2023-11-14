@@ -1,4 +1,5 @@
 // Copyright 2023 Pivovarov Alexey
+
 #include <gtest/gtest.h>
 #include "./shell_sort_simple_merge.h"
 

@@ -1,4 +1,5 @@
 // Copyright 2023 Pivovarov Alexey
+
 #include "task_3/pivovarov_a_shell_sort_simple_merge/shell_sort_simple_merge.h"
 
 std::vector<int> generate_random_array(int length, int minValue, int maxValue) {
@@ -11,7 +12,7 @@ std::vector<int> generate_random_array(int length, int minValue, int maxValue) {
     return randomArray;
 }
 
-void merge(std::vector<int>& arr, int low, int mid, int high) {
+void merge(std::vector<int> arr, int low, int mid, int high) {
     int n1 = mid - low + 1;
     int n2 = high - mid;
 
@@ -49,7 +50,7 @@ void merge(std::vector<int>& arr, int low, int mid, int high) {
     }
 }
 
-void shell_sort_seq(std::vector<int>& arr) {
+void shell_sort_seq(std::vector<int> arr) {
     int n = arr.size();
     for (int gap = n / 2; gap > 0; gap /= 2) {
         for (int i = gap; i < n; i++) {
@@ -62,7 +63,7 @@ void shell_sort_seq(std::vector<int>& arr) {
     }
 }
 
-void shell_sort_par(std::vector<int>& arr, const boost::mpi::communicator& world) {
+void shell_sort_par(std::vector<int> arr, const boost::mpi::communicator& world) {
     int rank = world.rank();
     int size = world.size();
 
