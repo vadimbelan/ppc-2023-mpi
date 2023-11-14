@@ -5,7 +5,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <cstdlib>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <mpi.h>
