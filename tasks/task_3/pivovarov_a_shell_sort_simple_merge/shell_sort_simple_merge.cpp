@@ -67,8 +67,6 @@ void shell_sort_par(std::vector<int> arr, const boost::mpi::communicator& world)
     int rank = world.rank();
     int size = world.size();
 
-    MPI_Init(nullptr, nullptr);
-
     int n = arr.size();
     int local_size = n / size;
     std::vector<int> local_arr(local_size);
@@ -90,6 +88,5 @@ void shell_sort_par(std::vector<int> arr, const boost::mpi::communicator& world)
         }
     }
 
-    MPI_Finalize();
     world.barrier();
 }
