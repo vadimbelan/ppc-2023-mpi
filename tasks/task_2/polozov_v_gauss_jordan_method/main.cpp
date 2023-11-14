@@ -5,14 +5,15 @@
 #include "./gauss_jordan_method.h"
 
 TEST(MPI_TESTS, Test1) {
-    int n = 3;
+    int n = 4;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
     std::vector<double> matr;
     if (rank == 0) {
-        matr = {3, -2, 4, 12, 3, 4, -2, 6, 2, -1, -1, -9};
+        matr = {3, 1, 2, 5, -6, 3, 1, 0, 2, 10, 6, 4, 11, 11, -27, -3, -2, -2, -10, 1};
+        // matr = {3, -2, 4, 12, 3, 4, -2, 6, 2, -1, -1, -9};
     }
     std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
     if (rank == 0) {
@@ -30,7 +31,7 @@ TEST(MPI_TESTS, Test2) {
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
     std::vector<double> matr;
     if (rank == 0) {
-        matr = getRandomMatrix(n, n+1);
+        matr = generateMatrix(n);
     }
     std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
     if (rank == 0) {
@@ -48,7 +49,7 @@ TEST(MPI_TESTS, Test_all_neg) {
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
     std::vector<double> matr;
     if (rank == 0) {
-        matr = getRandomMatrix(n, n+1);
+        matr = generateMatrix(n);
         for (auto& x : matr) {
             if (x > 0) {
                 x*=-1.0;
@@ -70,7 +71,7 @@ TEST(MPI_TESTS, Test_small_size) {
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
     std::vector<double> matr;
     if (rank == 0) {
-        matr = getRandomMatrix(n, n+1);
+        matr = generateMatrix(n);
     }
     std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
     if (rank == 0) {
@@ -87,7 +88,7 @@ TEST(MPI_TESTS, Test_big_size) {
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
     std::vector<double> matr;
     if (rank == 0) {
-        matr = getRandomMatrix(n, n+1);
+        matr = generateMatrix(n);
     }
     std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
     if (rank == 0) {
@@ -95,7 +96,6 @@ TEST(MPI_TESTS, Test_big_size) {
         ASSERT_EQ(ans, parallel_ans);
     }
 }
-
 
 int main(int argc, char** argv) {
     int result = 0;
@@ -114,4 +114,3 @@ int main(int argc, char** argv) {
     MPI_Finalize();
     return result;
 }
-
