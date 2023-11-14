@@ -4,6 +4,8 @@
 #include <cmath>
 #include <iostream>
 #include "./monte_carlo_method.h"
+#include <boost/mpi/environment.hpp>
+#include <boost/mpi/communicator.hpp>
 
 TEST(MPI_TESTS, Test_exponentional_function) {
   int rank = 0;
