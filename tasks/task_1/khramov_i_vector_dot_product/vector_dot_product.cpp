@@ -16,8 +16,8 @@ std::vector<int> getRandomVector(int sz) {
     return vec;
 }
 
-int getLocalVectorDotProduct(std::vector<int>& vec1,
-                            std::vector<int>& vec2) {
+int getLocalVectorDotProduct(std::vector<int> vec1,
+                            std::vector<int> vec2) {
     int result = 0;
     for (int i = 0; i < vec1.size(); i++) {
         result += vec1[i] * vec2[i];
@@ -26,7 +26,7 @@ int getLocalVectorDotProduct(std::vector<int>& vec1,
 }
 
 int getVectorDotProduct(boost::mpi::communicator world,
-    std::vector<int>& global_vec1,std::vector<int>& global_vec2) {
+    std::vector<int> global_vec1,std::vector<int> global_vec2) {
     if (global_vec1.size() != global_vec2.size())
         return -1;
     else if (global_vec1.size() == 0 || global_vec2.size() == 0)
