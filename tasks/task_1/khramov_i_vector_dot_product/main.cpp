@@ -111,7 +111,7 @@ TEST(Vector_Dot_Product_MPI, Test_Second_Void_Vector) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+   int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
     if (world.rank() == 0) {
         int reference_product = -1;
