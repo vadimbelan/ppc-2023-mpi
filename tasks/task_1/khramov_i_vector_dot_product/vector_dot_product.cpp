@@ -6,6 +6,7 @@
 #include <functional>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
+#include <boost/serialization/vector.hpp>
 #include "task_1/khramov_i_vector_dot_product/vector_dot_product.h"
 
 std::vector<int> getRandomVector(int sz) {
@@ -32,21 +33,19 @@ int getVectorDotProduct(boost::mpi::communicator world,
     else if (global_vec1.size() == 0 || global_vec2.size() == 0)
         return 0;
 
-    std::vector<int> local_vec1(global_vec1.size());
-    std::vector<int> local_vec2(global_vec2.size());
+    std::vector<int> local_vec1(global_vec1.size() / world.size());
+    std::vector<int> local_vec2(global_vec2.size() / world.size());
 
     boost::mpi::scatter(
         world,
-        global_vec1,
-        local_vec1.data(),
-        global_vec1.size(),
+        &global_vec1,
+        local_vec1,
         0);
 
     boost::mpi::scatter(
         world,
-        global_vec2,
-        local_vec2.data(),
-        global_vec2.size(),
+        &global_vec2,
+        local_vec2,
         0);
 
     int part_result = getLocalVectorDotProduct(local_vec1, local_vec2);

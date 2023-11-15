@@ -19,9 +19,6 @@ TEST(Vector_Dot_Product_MPI, Test_Equal_Size_Vectors) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
-
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
     if (world.rank() == 0) {
@@ -42,9 +39,6 @@ TEST(Vector_Dot_Product_MPI, Test_Not_Equal_Size_Vectors) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector + 1);
     }
-
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
 
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
@@ -82,9 +76,6 @@ TEST(Vector_Dot_Product_MPI, Test_Both_Void_Vectors) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
-
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
     if (world.rank() == 0) {
@@ -102,9 +93,6 @@ TEST(Vector_Dot_Product_MPI, Test_First_Void_Vector) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector + 1);
     }
-
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
 
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
@@ -124,9 +112,6 @@ TEST(Vector_Dot_Product_MPI, Test_Second_Void_Vector) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
-
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
     if (world.rank() == 0) {
@@ -144,9 +129,6 @@ TEST(Vector_Dot_Product_MPI, Test_Order_Independent_Vectors) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector);
     }
-
-    boost::mpi::broadcast(world, global_vec1, 0);
-    boost::mpi::broadcast(world, global_vec2, 0);
 
     int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
 
