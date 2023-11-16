@@ -35,7 +35,7 @@ int MinElementsInVectorParallel(const std::vector<int>& vec) {
             world,
             localMin,
             globalMin,
-            boost::mpi::minimum<int>(), 0);
+            boost::mpi::minimum<int>(),0);
 
     return globalMin;
 }
