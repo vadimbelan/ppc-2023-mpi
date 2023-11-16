@@ -13,7 +13,7 @@ std::vector<int> GenerateRandomMatrix(int n, int m) {
 	  throw "Error";
   std::vector<int> newMatrix(n * m);
   for (int i = 0; i < n * m; i++)
-		  newMatrix.push_back(Random(-100, 100));
+	  newMatrix.push_back(Random(-100, 100));
   return newMatrix;
 }
 
@@ -31,13 +31,13 @@ std::vector<int> ParallSumValuesByRows(const std::vector<int>& matrix, int n, in
   std::vector<int>globalSum(n);
   if (rankProc == 0) {
 	  for (int i = 0; i < n; i++)
-		  globalSum[i] = 0;
+	    globalSum[i] = 0;
   }
   MPI_Gather(localSum.data(), rowsForOneProc, MPI_INT, globalSum.data(), rowsForOneProc, MPI_INT, 0, MPI_COMM_WORLD);
   if (rankProc == 0) {
 	  for (int i = 0; i < remainder; i++) {
-		  for (int j = 0; j < m; j++)
-			  globalSum[rowsForOneProc * numProc + i] += matrix[(rowsForOneProc * numProc + i) * m + j];
+	    for (int j = 0; j < m; j++)
+	      globalSum[rowsForOneProc * numProc + i] += matrix[(rowsForOneProc * numProc + i) * m + j];
 	  }
   }
   return globalSum;
@@ -49,8 +49,8 @@ std::vector<int> SeqSumValuesByRows(const std::vector<int>& matrix, int n, int m
   for (int i = 0; i < n; i++) {
 	  s = 0;
 	  for (int j = 0; j < m; j++)
-		  s += matrix[i * m + j];
-	  locSum.push_back(s);
+	    s += matrix[i * m + j];
+    locSum.push_back(s);
   }
   return locSum;
 }
