@@ -56,15 +56,14 @@ TEST(Parallel_Operations_MPI, Test_only_el) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::vector<int> global_vec;
-  const int count_size_vector = 1;
-
+  const int count_size_vector = 9;
   if (rank == 0) {
-      global_vec = getRandVec(count_size_vector);
+    global_vec = getRandVec(count_size_vector);
   }
-  int global_min = parallelCount(global_vec);
+  int globalMin = parallelCount(global_vec);
   if (rank == 0) {
-      int reference_min = SequentialCount(global_vec);
-      ASSERT_EQ(global_min, reference_min);
+    int reference_min = SequentialCount(global_vec);
+    ASSERT_EQ(globalMin, reference_min);
   }
 }
 

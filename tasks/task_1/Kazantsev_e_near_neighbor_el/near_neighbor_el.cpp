@@ -35,32 +35,35 @@ int SequentialCount(const std::vector<int>& vec) {
   return min;
 }
 int parallelCount(const std::vector<int>& vec) {
-  int size;
-  int rank;
+  int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int n = vec.size() / size;
-  int remainder = vec.size() % size;
-  std::vector<int> loc_vec;
+  int ost = vec.size() % size;
+  std::vector<int> local_vec;
   if (rank == 0) {
     if (n > 0) {
-      for (int process = 1; process < size; ++process) {
-        int send_index = remainder + process * n - 1;
-        MPI_Send(vec.data() + send_index, n + 1, MPI_INT, process, 0, MPI_COMM_WORLD);
-       }
+      for (int proc = 1; proc < size; proc++) {
+        MPI_Send(vec.data() + ost + proc * n - 1, n + 1,
+        MPI_INT, proc, 0, MPI_COMM_WORLD);
+      }
     }
   }
   if (rank == 0) {
-    loc_vec = std::vector<int>(vec.begin(), vec.begin() + n + remainder);
+    local_vec = std::vector<int>(vec.begin(), vec.begin() + n + ost);
   } else {
     if (n > 0) {
-      loc_vec.resize(n + 1);
+      local_vec.resize(n + 1);
       MPI_Status status;
-      MPI_Recv(loc_vec.data(), n + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+      MPI_Recv(local_vec.data(), n + 1,
+      MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
   }
-  int loc_res = SequentialCount(loc_vec);
-  int glob_res;
-  MPI_Reduce(&loc_res, &glob_res, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
-  return glob_res;
+  int my_p = INT16_MAX;
+  if (local_vec.size() > 1) {
+    my_p = SequentialCount(local_vec);
+  }
+  int global_p;
+  MPI_Reduce(&my_p, &global_p, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
+  return global_p;
 }
