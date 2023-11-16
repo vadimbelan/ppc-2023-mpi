@@ -14,14 +14,9 @@
 #include <random>
 #include <utility>
 
-std::vector<double> getParallelGaussJordan(std::vector<double> A, int n);
-
-std::vector<double> getSequentialGaussJordan(std::vector<double> A, int n);
-
-std::vector<double> getRandomMatrix(int n, int m);
-
-std::vector<double> generateMatrix(int n);
-
-int CalcRank(std::vector<double> A, int n);
+void RadixSortDouble(double* inp , int n);
+void getRandomInput(double* inp, int n, );
+void CountingSort(double* inp, double* tmp, int byteNum, int n);
+double fRand(double fMin, double fMax);
 
 #endif  // TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
