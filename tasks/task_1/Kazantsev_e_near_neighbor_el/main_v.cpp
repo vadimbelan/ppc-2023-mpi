@@ -5,82 +5,94 @@
 #include <boost/mpi/communicator.hpp>
 #include "../tasks/task_1/Kazantsev_e_near_neighbor_el/near_neighbor_el.h"
 
-TEST(Parallel_Operations_MPI, Test_count) {
+TEST(Parallel_Operations_MPI, Test_even_count) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     std::vector<int> global_vec;
     const int count_size_vector = 100;
-
     if (rank == 0) {
         global_vec = getRandVec(count_size_vector);
     }
-    int global_min = parallelCount(global_vec);
+    int globalMin = parallelCount(global_vec, count_size_vector);
     if (rank == 0) {
         int reference_min = SequentialCount(global_vec);
-        ASSERT_EQ(global_min, reference_min);
+        ASSERT_EQ(globalMin, reference_min);
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_count_2) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int> global_vec;
-  const int count_size_vector = 150;
-
-  if (rank == 0) {
-      global_vec = getRandVec(count_size_vector);
-  }
-  int global_min = parallelCount(global_vec);
-  if (rank == 0) {
-      int reference_min = SequentialCount(global_vec);
-      ASSERT_EQ(global_min, reference_min);
-  }
+TEST(Parallel_Operations_MPI, Test_even_count_2) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec;
+    const int count_size_vector = 120;
+    if (rank == 0) {
+        global_vec = getRandVec(count_size_vector);
+    }
+    int globalMin = parallelCount(global_vec, count_size_vector);
+    if (rank == 0) {
+        int reference_min = SequentialCount(global_vec);
+        ASSERT_EQ(globalMin, reference_min);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Test_uneven_count) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int> global_vec;
-  const int count_size_vector = 111;
-  if (rank == 0) {
-    global_vec = getRandVec(count_size_vector);
-  }
-  int globalMin = parallelCount(global_vec);
-  if (rank == 0) {
-    int reference_min = SequentialCount(global_vec);
-    ASSERT_EQ(globalMin, reference_min);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec;
+    const int count_size_vector = 111;
+    if (rank == 0) {
+        global_vec = getRandVec(count_size_vector);
+    }
+    int globalMin = parallelCount(global_vec, count_size_vector);
+    if (rank == 0) {
+        int reference_min = SequentialCount(global_vec);
+        ASSERT_EQ(globalMin, reference_min);
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_only_el) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int> global_vec;
-  const int count_size_vector = 9;
-  if (rank == 0) {
-    global_vec = getRandVec(count_size_vector);
-  }
-  int globalMin = parallelCount(global_vec);
-  if (rank == 0) {
-    int reference_min = SequentialCount(global_vec);
-    ASSERT_EQ(globalMin, reference_min);
-  }
+TEST(Parallel_Operations_MPI, Test_uneven_count_2) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec;
+    const int count_size_vector = 99;
+    if (rank == 0) {
+        global_vec = getRandVec(count_size_vector);
+    }
+    int globalMin = parallelCount(global_vec, count_size_vector);
+    if (rank == 0) {
+        int reference_min = SequentialCount(global_vec);
+        ASSERT_EQ(globalMin, reference_min);
+    }
 }
 
-TEST(Parallel_Operations_MPI, Test_count_s) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int> global_vec;
-  const int count_size_vector = 1000;
+TEST(Parallel_Operations_MPI, Test_uneven_count_3) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec;
+    const int count_size_vector = 77;
+    if (rank == 0) {
+        global_vec = getRandVec(count_size_vector);
+    }
+    int globalMin = parallelCount(global_vec, count_size_vector);
+    if (rank == 0) {
+        int reference_min = SequentialCount(global_vec);
+        ASSERT_EQ(globalMin, reference_min);
+    }
+}
 
-  if (rank == 0) {
-      global_vec = getRandVec(count_size_vector);
-  }
-  int global_min = parallelCount(global_vec);
-  if (rank == 0) {
-      int reference_min = SequentialCount(global_vec);
-      ASSERT_EQ(global_min, reference_min);
-  }
+TEST(Parallel_Operations_MPI, Test_even_count_3) {
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    std::vector<int> global_vec;
+    const int count_size_vector = 86;
+    if (rank == 0) {
+        global_vec = getRandVec(count_size_vector);
+    }
+    int globalMin = parallelCount(global_vec, count_size_vector);
+    if (rank == 0) {
+        int reference_min = SequentialCount(global_vec);
+        ASSERT_EQ(globalMin, reference_min);
+    }
 }
 
 int main(int argc, char** argv) {

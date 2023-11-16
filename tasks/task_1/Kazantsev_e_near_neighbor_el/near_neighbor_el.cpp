@@ -34,12 +34,12 @@ int SequentialCount(const std::vector<int>& vec) {
   }
   return min;
 }
-int parallelCount(const std::vector<int>& vec) {
+int parallelCount(const std::vector<int>& vec, const int sz) {
   int size, rank;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  int n = vec.size() / size;
-  int ost = vec.size() % size;
+  int n = sz / size;
+  int ost = sz % size;
   std::vector<int> local_vec;
   if (rank == 0) {
     if (n > 0) {
