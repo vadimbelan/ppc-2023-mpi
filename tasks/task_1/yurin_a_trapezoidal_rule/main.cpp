@@ -1,10 +1,9 @@
 // Copyright 2023 Nesterov Alexander
 #include <gtest/gtest.h>
-#include <cmath>
+#include <math.h>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 #include "task_1/yurin_a_trapezoidal_rule/trapezoidal_rule.h"
-#define _USE_MATH_DEFINES
 
 TEST(Parallel_Operations_MPI, sin) {
     boost::mpi::communicator world;
