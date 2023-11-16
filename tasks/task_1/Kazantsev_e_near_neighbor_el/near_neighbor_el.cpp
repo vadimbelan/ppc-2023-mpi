@@ -10,7 +10,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include "examples/test_mpi/ops_mpi.h"
-#include "/home/evgenius/ppc-2023/ppc-2023-mpi/tasks/task_1/Kazantsev_e_near_neighbor_el/near_neighbor_el.h"
+#include "../tasks/task_1/Kazantsev_e_near_neighbor_el/near_neighbor_el.h"
 
 std::vector<int> getRandVec(int size) {
   std::vector<int> vec(size);
