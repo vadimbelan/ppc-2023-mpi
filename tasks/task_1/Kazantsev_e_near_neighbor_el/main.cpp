@@ -69,7 +69,7 @@ TEST(Parallel_Operations_MPI, Test_only_el) {
   }
 }
 
-TEST(Parallel_Operations_MPI, Test_count_2) {
+TEST(Parallel_Operations_MPI, Test_count_s) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::vector<int> global_vec;

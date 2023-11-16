@@ -21,7 +21,7 @@ std::vector<int> getRandVec(int size) {
   }
   return vec;
 }
-int SecquentialCount(const std::vector<int>& vec) {
+int SequentialCount(const std::vector<int>& vec) {
   if (vec.size() == 0 || vec.size() == 1) {
     return 0;
   }
@@ -59,7 +59,7 @@ int parallelCount(const std::vector<int>& vec) {
       MPI_Recv(loc_vec.data(), n + 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
     }
   }
-  int loc_res = SecquentialCount(loc_vec);
+  int loc_res = SequentialCount(loc_vec);
   int glob_res;
   MPI_Reduce(&loc_res, &glob_res, 1, MPI_INT, MPI_MIN, 0, MPI_COMM_WORLD);
   return glob_res;

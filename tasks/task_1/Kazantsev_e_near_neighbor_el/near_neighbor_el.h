@@ -8,6 +8,6 @@
 #include <boost/mpi/collectives.hpp>
 
 std::vector<int> getRandVec(int size);
-int SecquentialCount(const std::vector<int>& vec);
+int SequentialCount(const std::vector<int>& vec);
 int parallelCount(const std::vector<int>& vec);
 #endif  // TASKS_TASK_1_KAZANTSEV_E_NEAR_NEIGHBOR_EL_NEAR_NEIGHBOR_EL_H_
