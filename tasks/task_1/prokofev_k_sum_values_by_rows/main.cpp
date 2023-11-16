@@ -1,7 +1,7 @@
 // Copyright 2023 Prokofev Kirill
 #include <gtest/gtest.h>
-#include<iostream>
 #include <mpi.h>
+#include<iostream>
 #include "./sum_values_by_rows.h"
 
 TEST(Parallel_Sum_Values_By_Rows_Matrix, Matrix_2x2) {
@@ -11,7 +11,7 @@ TEST(Parallel_Sum_Values_By_Rows_Matrix, Matrix_2x2) {
   int n = 2;
   int m = 2;
   if (rankProc == 0) {
-    matrix = { 4,5,6,7 };
+    matrix = {4, 5, 6, 7};
   }
   std::vector<int> parallSum = ParallSumValuesByRows(matrix, n, m);
   if (rankProc == 0) {
@@ -56,7 +56,7 @@ TEST(Parallel_Sum_Values_By_Rows_Matrix, RandomMatrix_3x4) {
     for (int i = 0; i < n; i++) {
       ASSERT_EQ(refSum[i], parallSum[i]);
     }
-  }  
+  }
 }
 
 TEST(Parallel_Sum_Values_By_Rows_Matrix, RandomMatrix_100x200) {
@@ -74,7 +74,7 @@ TEST(Parallel_Sum_Values_By_Rows_Matrix, RandomMatrix_100x200) {
     for (int i = 0; i < n; i++) {
       ASSERT_EQ(refSum[i], parallSum[i]);
     }
-  }  
+  }
 }
 TEST(Parallel_Sum_Values_By_Rows_Matrix, RandomMatrix_200x2) {
   int rankProc;
@@ -91,7 +91,7 @@ TEST(Parallel_Sum_Values_By_Rows_Matrix, RandomMatrix_200x2) {
     for (int i = 0; i < n; i++) {
       ASSERT_EQ(refSum[i], parallSum[i]);
     }
-  } 
+  }
 }
 
 int main(int argc, char** argv) {
