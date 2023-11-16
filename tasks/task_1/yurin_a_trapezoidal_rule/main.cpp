@@ -9,8 +9,8 @@ TEST(Parallel_Operations_MPI, sin) {
     boost::mpi::communicator world;
     std::function function = [](double argument){return sin(argument);};
     double leftBound = 0;
-    double rightBound = M_PI;
-    double step = M_PI / 2048.0;
+    double rightBound = 3.14159265358979323846;
+    double step = 3.14159265358979323846 / 2048.0;
     double expectedValue = 2;
     double tolerance = 1e-6;
 
@@ -36,10 +36,10 @@ TEST(Parallel_Operations_MPI, cos) {
     boost::mpi::communicator world;
 
     std::function function = [](double argument){return cos(argument);};
-    double leftBound = M_PI;
-    double rightBound = M_PI / 5.0;
-    double step = M_PI / 2048.0;
-    double expectedValue = sin(M_PI / 5.0);
+    double leftBound = 3.14159265358979323846;
+    double rightBound = 3.14159265358979323846 / 5.0;
+    double step = 3.14159265358979323846 / 2048.0;
+    double expectedValue = sin(3.14159265358979323846 / 5.0);
     double tolerance = 1e-6;
 
     double parallelVersion = IntegrateWithTrapezoidRuleParallel(
@@ -118,9 +118,8 @@ TEST(Parallel_Operations_MPI, left_bound_is_equal_right) {
 
 TEST(Parallel_Operations_MPI, function_composition) {
     boost::mpi::communicator world;
-
     std::function function = [](double argument){
-        return (sin(sqrt(argument)+3) * std::pow(M_E, sqrt(argument)) / sqrt(argument));};
+        return (sin(sqrt(argument)+3) * std::pow(2.7182818284590452354, sqrt(argument)) / sqrt(argument));};
     double leftBound = 1;
     double rightBound = 5;
     double step = 1e-4;
