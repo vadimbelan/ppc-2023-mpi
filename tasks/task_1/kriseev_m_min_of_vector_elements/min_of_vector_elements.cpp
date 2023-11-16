@@ -25,11 +25,10 @@ int MinElementsInVectorParallel(const std::vector<int>& vec) {
     if (vec.size() % commSize) {
         sizes.back() = vec.size() % commSize;
     }
-    int localSize = sizes[rank - 0];
-    int *localData = new int[localSize];
-    boost::mpi::scatterv(world, vec, sizes, localData, 0);
+    std::vector<int> local(sizes[rank], 0);
+    boost::mpi::scatterv(world, vec, sizes, local.data(), 0);
 
-    int localMin = MinOfArray(localData, sizes[rank]);
+    int localMin = MinOfArray(local.data(), sizes[rank]);
     int globalMin = 0;
 
     boost::mpi::reduce(
@@ -37,8 +36,6 @@ int MinElementsInVectorParallel(const std::vector<int>& vec) {
             localMin,
             globalMin,
             boost::mpi::minimum<int>(), 0);
-
-    delete [] localData;
 
     return globalMin;
 }
