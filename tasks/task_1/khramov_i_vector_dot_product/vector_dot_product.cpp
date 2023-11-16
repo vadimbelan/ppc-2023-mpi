@@ -17,41 +17,86 @@ std::vector<int> getRandomVector(int sz) {
     return vec;
 }
 
-int getLocalVectorDotProduct(const std::vector<int>& vec1,
-                            const std::vector<int>& vec2) {
-    int result = 0;
-    for (int i = 0; i < vec1.size(); i++) {
-        result += vec1[i] * vec2[i];
-    }
-    return result;
+std::vector<int> getLocalVectorSizes(int comm_size, int global_vec_size) {
+    std::vector<int> vectors_sizes(comm_size, global_vec_size / comm_size);
+    vectors_sizes[0] += global_vec_size % comm_size;
+    return vectors_sizes;
 }
 
-int getVectorDotProduct(boost::mpi::communicator world,
-    const std::vector<int>& global_vec1, const std::vector<int>& global_vec2) {
-    if (global_vec1.size() != global_vec2.size())
-        return -1;
-    else if (global_vec1.size() == 0 || global_vec2.size() == 0)
-        return 0;
+int getSequentialVectorDotProduct(
+    const std::vector<int>& vec1,
+    const std::vector<int>& vec2) {
+    return std::inner_product(
+        std::begin(vec1),
+        std::end(vec1),
+        std::begin(vec2),
+        0);
+}
 
-    std::vector<int> local_vec1(global_vec1.size() / world.size());
-    std::vector<int> local_vec2(global_vec2.size() / world.size());
+int getParallelVectorDotProduct(
+    boost::mpi::communicator world,
+    int count_size_vector,
+    const std::vector<int>& global_vec1,
+    const std::vector<int>& global_vec2) {
+    int isValid = 1;
+    if (world.rank() == 0 &&
+     (global_vec1.size() != global_vec2.size()))
+        isValid = -1;
+    else if (world.rank() == 0 &&
+     (global_vec1.size() == 0 || global_vec2.size() == 0))
+        isValid = 0;
 
-    boost::mpi::scatter(
+    boost::mpi::broadcast(world, isValid, 0);
+
+    if (isValid == -1 || isValid == 0)
+        return isValid;
+
+    std::vector<int> local_vec1, local_vec2;
+
+    std::vector<int> vectors_sizes = getLocalVectorSizes(
+        world.size(),
+        count_size_vector);
+
+    local_vec1.resize(vectors_sizes[world.rank()]);
+    local_vec2.resize(vectors_sizes[world.rank()]);
+
+    if (world.rank() == 0) {
+        boost::mpi::scatterv(
         world,
-        &global_vec1,
+        global_vec1,
+        vectors_sizes,
+        local_vec1.data(),
+        0);
+        boost::mpi::scatterv(
+        world,
+        global_vec2,
+        vectors_sizes,
+        local_vec2.data(),
+        0);
+    } else {
+        boost::mpi::scatterv(
+        world,
+        local_vec1.data(),
+        vectors_sizes[world.rank()],
+        0);
+        boost::mpi::scatterv(
+        world,
+        local_vec2.data(),
+        vectors_sizes[world.rank()],
+        0);
+    }
+
+    int part_product = getSequentialVectorDotProduct(
         local_vec1,
-        0);
-
-    boost::mpi::scatter(
-        world,
-        &global_vec2,
-        local_vec2,
-        0);
-
-    int part_result = getLocalVectorDotProduct(local_vec1, local_vec2);
+        local_vec2);
 
     int global_product;
-    boost::mpi::reduce(world, part_result, global_product, std::plus<int>(), 0);
+    boost::mpi::reduce(
+        world,
+        part_product,
+        global_product,
+        std::plus<int>(),
+        0);
 
     return global_product;
 }

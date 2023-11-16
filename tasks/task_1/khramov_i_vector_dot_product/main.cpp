@@ -4,28 +4,29 @@
 #include <numeric>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <boost/serialization/vector.hpp>
 #include "./vector_dot_product.h"
 #include <boost/mpi.hpp>
-
 
 TEST(Vector_Dot_Product_MPI, Test_Equal_Size_Vectors) {
     boost::mpi::communicator world;
     std::vector<int> global_vec1, global_vec2;
-    const int count_size_vector = 500;
+    const int count_size_vector = 10001;
 
     if (world.rank() == 0) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
-        int reference_product = std::inner_product(
-                                    std::begin(global_vec1),
-                                    std::end(global_vec1),
-                                    std::begin(global_vec2), 0);
+        int reference_product = getSequentialVectorDotProduct(
+            global_vec1,
+            global_vec2);
         ASSERT_EQ(reference_product, global_product);
     }
 }
@@ -33,14 +34,18 @@ TEST(Vector_Dot_Product_MPI, Test_Equal_Size_Vectors) {
 TEST(Vector_Dot_Product_MPI, Test_Not_Equal_Size_Vectors) {
     boost::mpi::communicator world;
     std::vector<int> global_vec1, global_vec2;
-    const int count_size_vector = 500;
+    const int count_size_vector = 10001;
 
     if (world.rank() == 0) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector + 1);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
         int reference_product = -1;
@@ -58,10 +63,16 @@ TEST(Vector_Dot_Product_MPI, Test_One_Size_Vectors) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
-        int reference_product = global_vec1[0] * global_vec2[0];
+        int reference_product = getSequentialVectorDotProduct(
+            global_vec1,
+            global_vec2);
         ASSERT_EQ(reference_product, global_product);
     }
 }
@@ -76,7 +87,11 @@ TEST(Vector_Dot_Product_MPI, Test_Both_Void_Vectors) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
         int reference_product = 0;
@@ -94,7 +109,11 @@ TEST(Vector_Dot_Product_MPI, Test_First_Void_Vector) {
         global_vec2 = getRandomVector(count_size_vector + 1);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
         int reference_product = -1;
@@ -112,7 +131,11 @@ TEST(Vector_Dot_Product_MPI, Test_Second_Void_Vector) {
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
         int reference_product = -1;
@@ -123,20 +146,23 @@ TEST(Vector_Dot_Product_MPI, Test_Second_Void_Vector) {
 TEST(Vector_Dot_Product_MPI, Test_Order_Independent_Vectors) {
     boost::mpi::communicator world;
     std::vector<int> global_vec1, global_vec2;
-    const int count_size_vector = 500;
+    const int count_size_vector = 0;
 
     if (world.rank() == 0) {
         global_vec1 = getRandomVector(count_size_vector);
         global_vec2 = getRandomVector(count_size_vector);
     }
 
-    int global_product = getVectorDotProduct(world, global_vec1, global_vec2);
+    int global_product = getParallelVectorDotProduct(
+        world,
+        count_size_vector,
+        global_vec1,
+        global_vec2);
 
     if (world.rank() == 0) {
-        int reference_product = std::inner_product(
-                                    std::begin(global_vec2),
-                                    std::end(global_vec2),
-                                    std::begin(global_vec1), 0);;
+        int reference_product = getSequentialVectorDotProduct(
+            global_vec2,
+            global_vec1);
         ASSERT_EQ(reference_product, global_product);
     }
 }
