@@ -18,21 +18,21 @@ TEST(Parallel_Operations_MPI, sin) {
             function,
             leftBound,
             rightBound,
-            step
-            );
+            step);
+
     if (world.rank() == 0) {
         double sequentialVersion = IntegrateWithTrapezoidRuleSequential(
                 function,
                 leftBound,
                 rightBound,
-                step
-                );
+                step);
+
         ASSERT_NEAR(sequentialVersion, parallelVersion, tolerance);
         ASSERT_NEAR(expectedValue, parallelVersion, tolerance);
     }
 }
 
-TEST(Parallel_Operations_MPI, cos){
+TEST(Parallel_Operations_MPI, cos) {
     boost::mpi::communicator world;
 
     std::function function = [](double argument){return cos(argument);};
@@ -46,21 +46,21 @@ TEST(Parallel_Operations_MPI, cos){
             function,
             leftBound,
             rightBound,
-            step
-    );
+            step);
+
     if (world.rank() == 0) {
         double sequentialVersion = IntegrateWithTrapezoidRuleSequential(
                 function,
                 leftBound,
                 rightBound,
-                step
-        );
+                step);
+
         ASSERT_NEAR(sequentialVersion, parallelVersion, tolerance);
         ASSERT_NEAR(expectedValue, parallelVersion, tolerance);
     }
 }
 
-TEST(Parallel_Operations_MPI, log10){
+TEST(Parallel_Operations_MPI, log10) {
     boost::mpi::communicator world;
 
     std::function function = [](double argument){return log10(argument);};
@@ -81,14 +81,14 @@ TEST(Parallel_Operations_MPI, log10){
                 function,
                 leftBound,
                 rightBound,
-                step
-        );
+                step);
+
         ASSERT_NEAR(sequentialVersion, parallelVersion, tolerance);
         ASSERT_NEAR(expectedValue, parallelVersion, tolerance);
     }
 }
 
-TEST(Parallel_Operations_MPI, left_bound_is_equal_right){
+TEST(Parallel_Operations_MPI, left_bound_is_equal_right) {
     boost::mpi::communicator world;
 
     std::function function = [](double argument){return argument;};
@@ -102,8 +102,8 @@ TEST(Parallel_Operations_MPI, left_bound_is_equal_right){
             function,
             leftBound,
             rightBound,
-            step
-    );
+            step);
+
     if (world.rank() == 0) {
         double sequentialVersion = IntegrateWithTrapezoidRuleSequential(
                 function,
@@ -111,12 +111,13 @@ TEST(Parallel_Operations_MPI, left_bound_is_equal_right){
                 rightBound,
                 step
         );
+
         ASSERT_NEAR(sequentialVersion, parallelVersion, tolerance);
         ASSERT_NEAR(expectedValue, parallelVersion, tolerance);
     }
 }
 
-TEST(Parallel_Operations_MPI, function_composition){
+TEST(Parallel_Operations_MPI, function_composition) {
     boost::mpi::communicator world;
 
     std::function function = [](double argument){return (sin(sqrt(argument)+3) * std::pow(M_E, sqrt(argument)) / sqrt(argument));};
@@ -130,15 +131,15 @@ TEST(Parallel_Operations_MPI, function_composition){
             function,
             leftBound,
             rightBound,
-            step
-    );
+            step);
+
     if (world.rank() == 0) {
         double sequentialVersion = IntegrateWithTrapezoidRuleSequential(
                 function,
                 leftBound,
                 rightBound,
-                step
-        );
+                step);
+
         ASSERT_NEAR(sequentialVersion, parallelVersion, tolerance);
         ASSERT_NEAR(expectedValue, parallelVersion, tolerance);
     }

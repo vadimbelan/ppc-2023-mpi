@@ -1,4 +1,7 @@
 // Copyright 2023 Nesterov Alexander
+#include <utility>
+#include <vector>
+#include <algorithm>
 #include "task_1/yurin_a_trapezoidal_rule/trapezoidal_rule.h"
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
@@ -6,7 +9,7 @@
 struct Segment {
     double LeftBound, RightBound;
 
-    Segment(double leftBound = 0, double rightBound = 0){
+    explicit Segment(double leftBound = 0, double rightBound = 0) {
         LeftBound = leftBound;
         RightBound = rightBound;
     }
@@ -47,7 +50,7 @@ double IntegrateWithTrapezoidRuleSequential(
 
     double firstArgument, secondArgument = leftBound;
 
-    do{
+    do {
         firstArgument = secondArgument;
         secondArgument = std::min(secondArgument + step, rightBound);
         result += TrapezoidArea(function, firstArgument, secondArgument);
@@ -61,7 +64,6 @@ double IntegrateWithTrapezoidRuleParallel(
         double rightBound,
         double step
         ) {
-
     boost::mpi::communicator world;
 
     bool isSignChanges = false;
@@ -74,11 +76,11 @@ double IntegrateWithTrapezoidRuleParallel(
     std::vector<Segment> segments;
     Segment localSegment;
 
-    if (world.rank() == 0){
+    if (world.rank() == 0) {
         auto processAvailable = world.size();
         double lengthOfSegment = std::abs((rightBound - leftBound)) / processAvailable;
 
-        for (size_t i = 0; i < processAvailable; i++){
+        for (size_t i = 0; i < processAvailable; i++) {
             double localLeftBound = leftBound + i * lengthOfSegment;
             double localRightBound = std::min(rightBound, localLeftBound + lengthOfSegment);
             Segment segment = Segment(localLeftBound, localRightBound);
@@ -92,8 +94,7 @@ double IntegrateWithTrapezoidRuleParallel(
             function,
             localSegment.LeftBound,
             localSegment.RightBound,
-            step
-            );
+            step);
 
     double globalResult = 0;
     boost::mpi::reduce(world, localResult, globalResult, std::plus<double>(), 0);
