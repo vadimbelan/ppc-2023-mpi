@@ -37,20 +37,19 @@ TEST(Parallel_Operations_MPI, Test_count_2) {
   }
 }
 
-TEST(Parallel_Operations_MPI, Test_odd_numb) {
+TEST(Parallel_Operations_MPI, Test_uneven_count) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   std::vector<int> global_vec;
   const int count_size_vector = 111;
-
   if (rank == 0) {
-      global_vec = getRandVec(count_size_vector);
+    global_vec = getRandVec(count_size_vector);
   }
-  int global_min = parallelCount(global_vec);
+  int globalMin = parallelCount(global_vec);
   if (rank == 0) {
-      int reference_min = SequentialCount(global_vec);
-      ASSERT_EQ(global_min, reference_min);
-  }
+    int reference_min = SequentialCount(global_vec);
+    ASSERT_EQ(globalMin, reference_min);
+    }
 }
 
 TEST(Parallel_Operations_MPI, Test_only_el) {
