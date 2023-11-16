@@ -7,9 +7,9 @@
 
 
 TEST(Words_Count_MPI, Just_Count) {
-    std::string str = "This is a test string for MPI programm.";
+    std::string str = "She has seen this scene before. It had come to her in dreams many times before.";
     int res = SimpleCount(str);
-    ASSERT_EQ(res, 8);
+    ASSERT_EQ(res, 16);
 }
 
 TEST(Words_Count_MPI, Empty_String_Words_Count_no_throw) {
@@ -20,47 +20,49 @@ TEST(Words_Count_MPI, Empty_String_Words_Count_no_throw) {
 TEST(Words_Count_MPI, Parallel_Count) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::string testStr = "This is a test string for MPI programm.";
+    std::string testStr = "In fact, it was difficult for anyone to come up with a date they had first appeared.";
     int res = ParallelCount(testStr);
     if (rank == 0) {
-        ASSERT_EQ(res, 8);
+        ASSERT_EQ(res, 17);
     }
 }
 TEST(Words_Count_MPI, Parallel_Count_Complicated_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::string testStr = "Test  this . . . ... strange string with 11 words";
+    std::string testStr = "Dragons don't exist they said.";
     int res = ParallelCount(testStr);
     if (rank == 0) {
-        ASSERT_EQ(res, 11);
+        ASSERT_EQ(res, 5);
     }
 }
 TEST(Words_Count_MPI, Parallel_Count_Generated_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::string testStr = getLongString(100);
+    std::string testStr = getLongString(50);
     int res = ParallelCount(testStr);
     if (rank == 0) {
-        ASSERT_EQ(res, 100);
+        ASSERT_EQ(res, 50);
     }
 }
 
 TEST(Words_Count_MPI, Parallel_Count_Generated_Long_String) {
     int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::string testStr = getLongString(1000);
+    std::string testStr = getLongString(2500);
     int res = ParallelCount(testStr);
     if (rank == 0) {
-        ASSERT_EQ(res, 1000);
+        ASSERT_EQ(res, 2500);
     }
 }
 
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
-     int rank;
+    int rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+
     if (rank != 0) {
         delete listeners.Release(listeners.default_result_printer());
     }
