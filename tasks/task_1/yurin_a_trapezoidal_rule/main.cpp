@@ -1,6 +1,7 @@
 // Copyright 2023 Nesterov Alexander
-#include <gtest/gtest.h>
+#define _USE_MATH_DEFINES
 #include <cmath>
+#include <gtest/gtest.h>
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 #include "task_1/yurin_a_trapezoidal_rule/trapezoidal_rule.h"
