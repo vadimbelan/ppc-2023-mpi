@@ -7,13 +7,13 @@
 
 TEST(Parallel_Sum_Vec_Of_Elem, Test_Sum_1) {
     int ProcNum, ProcRank;
-  	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-  	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    std::vector<int> test_vec{1,1,1,1,1,1,1,1,1,1};
+    std::vector<int> test_vec{1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
     int par_sum = sum_of_vec_elem_par(test_vec);
-    
+
     if (ProcRank == 0) {
         int seq_sum = sum_of_vec_elem_seq(test_vec);
         ASSERT_EQ(par_sum, seq_sum);
@@ -22,13 +22,13 @@ TEST(Parallel_Sum_Vec_Of_Elem, Test_Sum_1) {
 
 TEST(Parallel_Sum_Vec_Of_Elem, Test_Sum_0) {
     int ProcNum, ProcRank;
-  	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-  	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    std::vector<int> test_vec{0,0,0,0,0,0,0,0,0,0};
+    std::vector<int> test_vec{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     int par_sum = sum_of_vec_elem_par(test_vec);
-    
+
     if (ProcRank == 0) {
         int seq_sum = sum_of_vec_elem_seq(test_vec);
         ASSERT_EQ(par_sum, seq_sum);
@@ -37,13 +37,13 @@ TEST(Parallel_Sum_Vec_Of_Elem, Test_Sum_0) {
 
 TEST(Parallel_Sum_Vec_Of_Elem, Test_Empty_Vec) {
     int ProcNum, ProcRank;
-  	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-  	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
     std::vector<int> test_vec{};
 
     int par_sum = sum_of_vec_elem_par(test_vec);
-    
+
     if (ProcRank == 0) {
         int seq_sum = sum_of_vec_elem_seq(test_vec);
         ASSERT_EQ(par_sum, seq_sum);
@@ -52,14 +52,14 @@ TEST(Parallel_Sum_Vec_Of_Elem, Test_Empty_Vec) {
 
 TEST(Parallel_Sum_Vec_Of_Elem, Test_Random_Elements_1) {
     int ProcNum, ProcRank;
-  	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-  	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     
     std::vector<int> test_vec;
     test_vec = get_random_vector(100);
 
     int par_sum = sum_of_vec_elem_par(test_vec);
-    
+
     if (ProcRank == 0) {
         int seq_sum = sum_of_vec_elem_seq(test_vec);
         ASSERT_EQ(par_sum, seq_sum);
@@ -68,14 +68,14 @@ TEST(Parallel_Sum_Vec_Of_Elem, Test_Random_Elements_1) {
 
 TEST(Parallel_Sum_Vec_Of_Elem, Test_Random_Elements_2) {
     int ProcNum, ProcRank;
-  	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-  	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    
+    MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+
     std::vector<int> test_vec;
     test_vec = get_random_vector(1000);
 
     int par_sum = sum_of_vec_elem_par(test_vec);
-    
+
     if (ProcRank == 0) {
         int seq_sum = sum_of_vec_elem_seq(test_vec);
         ASSERT_EQ(par_sum, seq_sum);
