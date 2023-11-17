@@ -27,16 +27,7 @@ double* generateMatrix(size_t size) {
     return matrix;
 }
 
-void printMatrix(double* matrix, size_t size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size + 1; j++)
-            std::cout << matrix[i * (size + 1) + j] << "\t";
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-bool seidelMethod(double* matrix, size_t n, double eps) {
+double* seidelMethod(double* matrix, size_t n, double eps) {
     int ProcRank, ProcNum;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
@@ -150,22 +141,23 @@ bool seidelMethod(double* matrix, size_t n, double eps) {
             current_proc = (current_proc + 1) % ProcNum;
         }
 
-        //  check for condition on all processors (Ax - B) < (eps)
-        for (int row = 0; row < rows_amount; row++) {
-            double tmp = 0.0;
-            for (int elem = 0; elem < n; elem++) {
-                tmp += ans[elem] * rows[row * (n + 1) + elem];
+        //  check for condition (Ax - B) < (eps)
+        if (ProcRank == 0) {
+            double tmp_value = 0.0;
+            for (int row = 0; row < n; row++) {
+                tmp_value = 0.0;
+                for (int elem = 0; elem < n; elem++) {
+                    tmp_value += ans[elem] * matrix[row * (n + 1) + elem];
+                }
+                if (fabs(matrix[row * (n + 1) + n] - tmp_value) > eps) {
+                    condition = false;
+                    break;
+                }
+                condition = true;
             }
-            tmp -= rows[row * (n + 1) + n];
-            if (tmp > eps) {
-                local_condition = false;
-                break;
-            }
-            local_condition = true;
         }
-        //  if at least one processor has one row in which Ax - B >= eps
-        //  we will start another for loop = new iteration
-        MPI_Allreduce(&local_condition, &condition, 1, MPI_C_BOOL, MPI_LAND, MPI_COMM_WORLD);
+
+        MPI_Bcast(&condition, 1, MPI_C_BOOL, 0, MPI_COMM_WORLD);
     }
 
     delete[] rows;
@@ -175,5 +167,5 @@ bool seidelMethod(double* matrix, size_t n, double eps) {
     delete right_part;
     delete left_part;
 
-    return condition;
+    return ans;
 }

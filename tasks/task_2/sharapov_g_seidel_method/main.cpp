@@ -1,6 +1,7 @@
 // Copyright 2023 Sharapov Georgiy
 #include <mpi.h>
 #include <gtest/gtest.h>
+#include <cmath>
 #include "task_2/sharapov_g_seidel_method/seidel_method.h"
 
 TEST(Seidel_Method_MPI, Test_5) {
@@ -11,10 +12,23 @@ TEST(Seidel_Method_MPI, Test_5) {
 
     double* matrix = nullptr;
     if (ProcRank == 0) matrix = generateMatrix(size);
+    double eps = 0.00001;
 
-    bool test = seidelMethod(matrix, size, 0.000001);
+    double* ans = seidelMethod(matrix, size, eps);
 
-    ASSERT_TRUE(test);
+    if (ProcRank == 0) {
+        bool correct = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i * (size + 1) + size] -= matrix[i * (size + 1) + j] * ans[j];
+            }
+            if (fabs(matrix[i * (size + 1) + size]) > eps) {
+                correct = false;
+                break;
+            }
+        }
+        ASSERT_TRUE(correct);
+    }
 }
 
 TEST(Seidel_Method_MPI, Test_25) {
@@ -25,10 +39,23 @@ TEST(Seidel_Method_MPI, Test_25) {
 
     double* matrix = nullptr;
     if (ProcRank == 0) matrix = generateMatrix(size);
+    double eps = 0.00001;
 
-    bool test = seidelMethod(matrix, size, 0.000001);
+    double* ans = seidelMethod(matrix, size, eps);
 
-    ASSERT_TRUE(test);
+    if (ProcRank == 0) {
+        bool correct = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i * (size + 1) + size] -= matrix[i * (size + 1) + j] * ans[j];
+            }
+            if (fabs(matrix[i * (size + 1) + size]) > eps) {
+                correct = false;
+                break;
+            }
+        }
+        ASSERT_TRUE(correct);
+    }
 }
 
 TEST(Seidel_Method_MPI, Test_50) {
@@ -39,10 +66,23 @@ TEST(Seidel_Method_MPI, Test_50) {
 
     double* matrix = nullptr;
     if (ProcRank == 0) matrix = generateMatrix(size);
+    double eps = 0.00001;
 
-    bool test = seidelMethod(matrix, size, 0.000001);
+    double* ans = seidelMethod(matrix, size, eps);
 
-    ASSERT_TRUE(test);
+    if (ProcRank == 0) {
+        bool correct = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i * (size + 1) + size] -= matrix[i * (size + 1) + j] * ans[j];
+            }
+            if (fabs(matrix[i * (size + 1) + size]) > eps) {
+                correct = false;
+                break;
+            }
+        }
+        ASSERT_TRUE(correct);
+    }
 }
 
 TEST(Seidel_Method_MPI, Test_75) {
@@ -53,10 +93,23 @@ TEST(Seidel_Method_MPI, Test_75) {
 
     double* matrix = nullptr;
     if (ProcRank == 0) matrix = generateMatrix(size);
+    double eps = 0.00001;
 
-    bool test = seidelMethod(matrix, size, 0.000001);
+    double* ans = seidelMethod(matrix, size, eps);
 
-    ASSERT_TRUE(test);
+    if (ProcRank == 0) {
+        bool correct = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i * (size + 1) + size] -= matrix[i * (size + 1) + j] * ans[j];
+            }
+            if (fabs(matrix[i * (size + 1) + size]) > eps) {
+                correct = false;
+                break;
+            }
+        }
+        ASSERT_TRUE(correct);
+    }
 }
 
 TEST(Seidel_Method_MPI, Test_100) {
@@ -67,10 +120,23 @@ TEST(Seidel_Method_MPI, Test_100) {
 
     double* matrix = nullptr;
     if (ProcRank == 0) matrix = generateMatrix(size);
+    double eps = 0.00001;
 
-    bool test = seidelMethod(matrix, size, 0.000001);
+    double* ans = seidelMethod(matrix, size, eps);
 
-    ASSERT_TRUE(test);
+    if (ProcRank == 0) {
+        bool correct = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                matrix[i * (size + 1) + size] -= matrix[i * (size + 1) + j] * ans[j];
+            }
+            if (fabs(matrix[i * (size + 1) + size]) > eps) {
+                correct = false;
+                break;
+            }
+        }
+        ASSERT_TRUE(correct);
+    }
 }
 
 int main(int argc, char** argv) {
