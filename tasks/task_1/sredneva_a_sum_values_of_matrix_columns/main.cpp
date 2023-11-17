@@ -1,7 +1,7 @@
+// Copyright 2023 Sredneva Anastasiya
 #include <gtest/gtest.h>
 #include <vector>
 #include "./sum_values.h"
-#include <iostream>
 
 TEST(TEST_MPI, Test_rand) {
     int ProcRank;
@@ -105,7 +105,9 @@ int main(int argc, char** argv) {
     if (ProcRank != 0) {
         delete listeners.Release(listeners.default_result_printer());
     }
+
     result = RUN_ALL_TESTS();
+
 	MPI_Finalize();
 	return result;
 }

@@ -1,7 +1,7 @@
 // Copyright 2023 Sredneva Anastasiya
 #include <vector>
 #include <random>
-#include "task_1/sredneva_a_sum_values_by_matrix_columns/sum_values.h"
+#include "tasks/task_1/sredneva_a_sum_values_of_matrix_columns/sum_values.h "
 
 std::vector<int> getRandomMatrix(int columns, int lines, int l, int r) {
     int size = columns * lines;
@@ -9,7 +9,7 @@ std::vector<int> getRandomMatrix(int columns, int lines, int l, int r) {
     std::mt19937 gen(dev());
     std::uniform_int_distribution<int> distrib(l, r);
     std::vector<int> M(size);
-    for (int i = 0; i < lines; i++) { 
+    for (int i = 0; i < lines; i++) {
         for (int j = 0; j < columns; j++) {
             M[i * columns + j] = distrib(gen);
         }
@@ -59,7 +59,8 @@ std::vector<int> getParallelSum(const std::vector<int>& M, int columns, int line
         Matr.resize((size1 + ost) * lines);
     }
     std::vector<int> tMat = transposeMatr(M, columns, lines);
-    MPI_Scatterv(tMat.data(), sendcounts.data(), displs.data(), MPI_INT, Matr.data(), Matr.size(), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(tMat.data(), sendcounts.data(), displs.data(), MPI_INT, Matr.data(), Matr.size(),
+        MPI_INT, 0, MPI_COMM_WORLD);
     std::vector<int> sum;
     int k = Matr.size() / lines;
     for (int i = 0; i < k; i++) {
@@ -69,7 +70,8 @@ std::vector<int> getParallelSum(const std::vector<int>& M, int columns, int line
         }
         sum.push_back(s);
     }
-    MPI_Gatherv(sum.data(), sum.size(), MPI_INT, Summ.data(), recvcounts.data(), displs2.data(), MPI_INT, 0, MPI_COMM_WORLD);
+    MPI_Gatherv(sum.data(), sum.size(), MPI_INT, Summ.data(), recvcounts.data(), displs2.data(),
+        MPI_INT, 0, MPI_COMM_WORLD);
     return Summ;
 }
 

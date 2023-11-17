@@ -1,6 +1,6 @@
 // Copyright 2023 Sredneva Anastasiya
-#ifndef TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_BY_MATRIX_COLUMNS_SUM_VALUES_H_
-#define TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_BY_MATRIX_COLUMNS_SUM_VALUES_H_
+#ifndef TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_OF_MATRIX_COLUMNS_SUM_VALUES_H_ 
+#define TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_OF_MATRIX_COLUMNS_SUM_VALUES_H_ 
 
 #include <vector>
 #include "mpi.h"
@@ -10,4 +10,6 @@ std::vector<int> getParallelSum(const std::vector<int>& vec, int columns, int li
 std::vector<int> getSequentialSum(const std::vector<int>& vec, int columns);
 std::vector<int> transposeMatr(const std::vector<int>& M, int columns, int lines);
 
-#endif //TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_BY_MATRIX_COLUMNS_SUM_VALUES_H_
+
+
+#endif // TASKS_TASK_1_SREDNEVA_A_SUM_VALUES_OF_MATRIX_COLUMNS_SUM_VALUES_H_ 
