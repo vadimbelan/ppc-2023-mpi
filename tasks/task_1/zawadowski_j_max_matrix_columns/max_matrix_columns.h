@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <limits>
 
 std::vector<int> fillMatrixRandom(size_t rows, size_t cols, int min, int max);
 std::vector<int> findMaxByMatrixColumns(std::vector<int> matrix,

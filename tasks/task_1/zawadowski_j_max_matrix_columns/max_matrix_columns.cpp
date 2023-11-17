@@ -34,7 +34,7 @@ std::vector<int> findMaxByMatrixColumns(std::vector<int> matrix,
     std::vector<int> localVector(chunk * rows);
 
     if (rank == 0) {
-        maxValues.resize(cols, INT_MIN);
+        maxValues.resize(cols, std::numeric_limits<int>::min());
         sendCounts.resize(sizeWorld, chunk);
         sendCounts[0] = sendCounts[0] + remainder;
         displacement.resize(sizeWorld, 0);
@@ -63,7 +63,7 @@ std::vector<int> findMaxByMatrixColumns(std::vector<int> matrix,
 
     int localSize = localVector.size() / rows;
     for (int i = 0; i < localSize; i++) {
-        int max = INT_MIN;
+        int max = std::numeric_limits<int>::min();
         for (int j = 0; j < rows; j++)
             max = std::max(max, localVector[i * rows + j]);
         vec.push_back(max);
@@ -88,7 +88,7 @@ std::vector<int> findMaxByMatrixColumnsConsistently(std::vector<int> matrix,
     std::vector<int> maxValues;
 
     for (int i = 0; i < cols; i++) {
-        int max = INT_MIN;
+        int max = std::numeric_limits<int>::min();
         for (int j = 0; j < rows; j++)
             max = std::max(max, matrix[j * cols + i]);
         maxValues.push_back(max);
