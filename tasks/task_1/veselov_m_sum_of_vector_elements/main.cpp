@@ -54,7 +54,7 @@ TEST(Parallel_Sum_Vec_Of_Elem, Test_Random_Elements_1) {
     int ProcNum, ProcRank;
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    
+
     std::vector<int> test_vec;
     test_vec = get_random_vector(100);
 
