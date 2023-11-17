@@ -15,7 +15,6 @@ struct point {
   bool operator!=(const point& other) {
     return !(*this == other);
   }
-
 };
 
 std::vector<point> find_hull(std::vector<std::vector<point>> cmpnts);
