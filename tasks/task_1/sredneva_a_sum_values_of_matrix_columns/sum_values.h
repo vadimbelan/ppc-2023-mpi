@@ -4,7 +4,7 @@
 
 #include <mpi.h>
 
-#include <vector.h>
+#include <vector>
 
 std::vector<int> getRandomMatrix(int columns, int lines, int l, int r);
 std::vector<int> getParallelSum(const std::vector<int>& vec, int columns, int lines);
