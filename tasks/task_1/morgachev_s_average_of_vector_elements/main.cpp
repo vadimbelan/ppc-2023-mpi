@@ -1,27 +1,98 @@
 #include <vector>
 #include <iostream>
+#include <gtest/gtest.h>
 #include <mpi.h>
 #include "./average_of_vector_elements.h"
 
-int main(int argc, char** argv) {
-    size_t array_size = 5;
-    int lower_bound = 1;
-    int upper_bound = 11;
+TEST(Average_Of_Vector_Elements, Test_only_positive_data) {
+    int rank = 0;
 
-    std::vector<int> vector = fillVectorRandomNumbers(array_size, lower_bound, upper_bound);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    for (const auto& element : vector) {
-        std::cout << element << " ";
+    std::vector<int> vector{ 11, 8, 3, 9 , 23, 2, 4, 30, 10, 41};
+
+    int result = calculateAverageOfVectorElements(vector);
+
+    if (rank == 0) {
+        int resSeq = calculatePartialSum(vector) / (double) vector.size();
+        ASSERT_EQ(result, resSeq);
     }
-    std::cout << std::endl;
+}
 
-    MPI_Init(&argc, &argv);
+TEST(Average_Of_Vector_Elements, Test_only_negative_data) {
+    int rank = 0;
 
-    double res = calculateAverageOfVectorElements(vector);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    std::cout << res << std::endl;
+    std::vector<int> vector{ -11, -8, -3, -9 , -23, -2, -4, -30, -10, -41 };
 
+    int result = calculateAverageOfVectorElements(vector);
+
+    if (rank == 0) {
+        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        ASSERT_EQ(result, resSeq);
+    }
+}
+
+TEST(Average_Of_Vector_Elements, Test_only_one_number) {
+    int rank = 0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::vector<int> vector{ 1};
+
+    int result = calculateAverageOfVectorElements(vector);
+
+    if (rank == 0) {
+        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        ASSERT_EQ(result, resSeq);
+    }
+}
+
+TEST(Average_Of_Vector_Elements, Test_only_zero) {
+    int rank = 0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    std::vector<int> vector{ 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0 };
+
+    int result = calculateAverageOfVectorElements(vector);
+
+    if (rank == 0) {
+        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        ASSERT_EQ(result, resSeq);
+    }
+}
+
+TEST(Average_Of_Vector_Elements, Test_random) {
+    int rank = 0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    const size_t sizeVector = 1000000;
+    const int lowerBound = -100000;
+    const int upperBound = 100000;
+
+    std::vector<int> vector(fillVectorRandomNumbers(sizeVector, lowerBound, upperBound));
+    int result_par = calculateAverageOfVectorElements(vector);
+
+    if (rank == 0) {
+        int result_seq = calculatePartialSum(vector) / (double) vector.size();
+        ASSERT_EQ(result_par, result_seq);
+    }
+}
+
+int main(int argc, char** argv) {
+    int result_code = 0;
+
+    ::testing::InitGoogleTest(&argc, argv);
+    ::testing::TestEventListeners& listeners =
+        ::testing::UnitTest::GetInstance()->listeners();
+
+    if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
+        MPI_Abort(MPI_COMM_WORLD, -1);
+    result_code = RUN_ALL_TESTS();
     MPI_Finalize();
 
-    return 0;
+    return result_code;
 }
