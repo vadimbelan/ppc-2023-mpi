@@ -1,66 +1,64 @@
-#include <vector>
-#include <string>
 #include <random>
-#include <algorithm>
-#include <functional>
-#include <boost/mpi/communicator.hpp>
-#include <boost/mpi/collectives.hpp>
+#include <mpi.h>
 #include "task_1\morgachev_s_average_of_vector_elements\average_of_vector_elements.h"
 
-std::vector<int> getRandomVector(int sz) {
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::vector<int> vec(sz);
-    for (int  i = 0; i < sz; i++) { vec[i] = gen() % 100; }
-    return vec;
+std::vector<int> fillVectorRandomNumbers(size_t size, int min, int max) {
+    std::vector<int> vector(size);
+
+    for (auto& element : vector) {
+        element = min + (std::rand() % (max - min + 1));
+    }
+
+    return vector;
 }
 
-int getSequentialOperations(std::vector<int> vec, const std::string& ops) {
-    const int  sz = vec.size();
-    int reduction_elem = 0;
-    if (ops == "+") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem += vec[i];
-        }
-    } else if (ops == "-") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem -= vec[i];
-        }
-    } else if (ops == "max") {
-        reduction_elem = vec[0];
-        for (int  i = 1; i < sz; i++) {
-            reduction_elem = std::max(reduction_elem, vec[i]);
-        }
+int calculatePartialSum(std::vector<int>& vec) {
+    int sum = 0;
+
+    for (int i : vec) {
+        sum += i;
     }
-    return reduction_elem;
+
+    return sum;
 }
 
-int getParallelOperations(std::vector<int> global_vec,
-                          int count_size_vector, const std::string& ops) {
-    boost::mpi::communicator world;
-    const int delta = count_size_vector / world.size();
+double calculateAverageOfVectorElements(std::vector<int>& vector) {
+    int sizeWorld = 0;
+    int rank = 0;
+    size_t vectorSize = vector.size();
 
-    if (world.rank() == 0) {
-        for (int proc = 1; proc < world.size(); proc++) {
-            world.send(proc, 0, global_vec.data() + proc * delta, delta);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int chunkSize = vectorSize / sizeWorld;
+    int remainder = vectorSize % sizeWorld;
+
+    std::vector<int> sendCounts(sizeWorld);
+    std::vector<int> displacement(sizeWorld);
+
+    int dif = 0;
+
+    for (int i = 0; i < sizeWorld; i++) {
+        if (i < remainder) {
+            sendCounts[i] = chunkSize + 1;
         }
+        else {
+            sendCounts[i] = chunkSize;
+        }
+        displacement[i] = dif;
+        dif += sendCounts[i];
     }
 
-    std::vector<int> local_vec(delta);
-    if (world.rank() == 0) {
-        local_vec = std::vector<int>(global_vec.begin(),
-                                     global_vec.begin() + delta);
-    } else {
-        world.recv(0, 0, local_vec.data(), delta);
-    }
+    std::vector<int> localVector(sendCounts[rank]);
 
-    int global_sum = 0;
-    int local_sum = getSequentialOperations(local_vec, ops);
-    if (ops == "+" || ops == "-") {
-        reduce(world, local_sum, global_sum, std::plus<int>(), 0);
-    }
-    if (ops == "max") {
-        reduce(world, local_sum, global_sum, boost::mpi::maximum<int>(), 0);
-    }
-    return global_sum;
+    MPI_Scatterv(vector.data(), sendCounts.data(), displacement.data(), MPI_INT,
+        localVector.data(), sendCounts[rank], MPI_INT, 0, MPI_COMM_WORLD);
+
+    int totalSum = 0;
+    int partialSum = calculatePartialSum(localVector);
+
+    MPI_Reduce(&partialSum, &totalSum, 1, MPI_INT, MPI_SUM, 0,
+        MPI_COMM_WORLD);
+
+    return totalSum / (double)vectorSize;
 }

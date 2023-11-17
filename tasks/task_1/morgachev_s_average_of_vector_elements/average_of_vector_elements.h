@@ -1,12 +1,11 @@
-#ifndef TASKS_EXAMPLES_TEST_MPI_OPS_MPI_H_
-#define TASKS_EXAMPLES_TEST_MPI_OPS_MPI_H_
+#ifndef TASKS_TASK_1_MORGACHEV_S_AVERAGE_OF_VECTOR_SUM_H_
+#define TASKS_TASK_1_MORGACHEV_S_AVERAGE_OF_VECTOR_SUM_H_
+
 
 #include <vector>
-#include <string>
 
-std::vector<int> getRandomVector(int  sz);
-int getParallelOperations(std::vector<int> global_vec,
-                          int count_size_vector, const std::string& ops);
-int getSequentialOperations(std::vector<int> vec, const std::string& ops);
+std::vector<int> fillVectorRandomNumbers(size_t size, int left, int right);
+double calculateAverageOfVectorElements(std::vector<int>& vector);
+int calculatePartialSum(std::vector<int>& vec);
 
-#endif  // TASKS_EXAMPLES_TEST_MPI_OPS_MPI_H_
+#endif //TASKS_TASK_1_MORGACHEV_S_AVERAGE_OF_VECTOR_SUM_H_
