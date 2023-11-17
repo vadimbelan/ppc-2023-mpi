@@ -1,10 +1,7 @@
 // Copyright 2023 Polozov Vladislav
 
-
-
-
-#ifndef TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
-#define TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
+#ifndef TASKS_TASK_3_POLOZOV_V_DOUBLE_RADIX_SORT_SIMPLE_MERGE_DOUBLE_RADIX_SORT_SIMPLE_MERGE_H_
+#define TASKS_TASK_3_POLOZOV_V_DOUBLE_RADIX_SORT_SIMPLE_MERGE_DOUBLE_RADIX_SORT_SIMPLE_MERGE_H_
 
 #include <mpi.h>
 #include <climits>
@@ -14,9 +11,8 @@
 #include <random>
 #include <utility>
 
-void RadixSortDouble(double* inp , int n);
-void getRandomInput(double* inp, int n, );
+std::vector<double> SequenceRadixSortDouble(std::vector<double> a , int n);
+std::vector<double> getRandomInput(int n, double fMin, double fMax);
 void CountingSort(double* inp, double* tmp, int byteNum, int n);
-double fRand(double fMin, double fMax);
-
-#endif  // TASKS_TASK_2_POLOZOV_V_GAUSS_JORDAN_METHOD_GAUSS_JORDAN_METHOD_H_
+std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n);
+#endif  // TASKS_TASK_3_POLOZOV_V_DOUBLE_RADIX_SORT_SIMPLE_MERGE_DOUBLE_RADIX_SORT_SIMPLE_MERGE_H_
