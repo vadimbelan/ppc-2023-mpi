@@ -105,11 +105,8 @@ int main(int argc, char** argv) {
     if (ProcRank != 0) {
         delete listeners.Release(listeners.default_result_printer());
     }
-
     result = RUN_ALL_TESTS();
+    MPI_Finalize();
 
-	MPI_Finalize();
-
-	return result;
-
+    return result;
 }
