@@ -58,7 +58,7 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
     CountingSort(tmp_neg, inp_neg, 7, cnt_neg);
 
     for (int i = cnt_neg - 1; i >= 0; i--) {
-        a[i] = -inp_neg[i];
+        a[cnt_neg-1 - i] = -inp_neg[i];
     }
     for (int i = 0; i < n - cnt_neg; i++) {
         a[i + cnt_neg] = inp_pos[i];
