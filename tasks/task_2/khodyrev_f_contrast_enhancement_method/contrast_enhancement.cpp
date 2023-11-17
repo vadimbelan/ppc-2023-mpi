@@ -1,4 +1,6 @@
 // Copyright 2023 Khodyrev Fedor
+#include "task_2/khodyrev_f_contrast_enhancement_method/contrast_enhancement.h"
+
 #include <mpi.h>
 #include <iostream>
 #include <ctime>
@@ -6,7 +8,6 @@
 #include <vector>
 #include <cstdlib>
 
-#include "task_2/khodyrev_f_contrast_enhancement/contrast_enhancement.h"
 
 bool compareMatrix(const std::vector<std::vector<int>>& v1,
   const std::vector<std::vector<int>>& v2) {
