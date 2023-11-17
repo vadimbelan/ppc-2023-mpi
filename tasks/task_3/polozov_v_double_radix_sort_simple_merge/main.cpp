@@ -23,7 +23,7 @@ TEST(MPI_TESTS, Test1) {
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
         b = a;
-        sort(b.begin(),b.end());
+        sort(b.begin(), b.end());
     }
     a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
@@ -44,7 +44,7 @@ TEST(MPI_TESTS, Test2) {
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
         b = a;
-        sort(b.begin(),b.end());
+        sort(b.begin(), b.end());
     }
     a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
@@ -68,7 +68,7 @@ TEST(MPI_TESTS, Test_all_neg) {
             a[i] *= -1;
         }
         b = a;
-        sort(b.begin(),b.end());
+        sort(b.begin(), b.end());
     }
     a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
@@ -88,7 +88,7 @@ TEST(MPI_TESTS, Test_small_size) {
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
         b = a;
-        sort(b.begin(),b.end());
+        sort(b.begin(), b.end());
     }
     a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
@@ -108,7 +108,7 @@ TEST(MPI_TESTS, Test_big_size) {
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
         b = a;
-        sort(b.begin(),b.end());
+        sort(b.begin(), b.end());
     }
     a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
