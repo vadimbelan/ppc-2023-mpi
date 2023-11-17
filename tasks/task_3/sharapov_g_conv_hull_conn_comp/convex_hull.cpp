@@ -5,26 +5,39 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include "task_3/sharapov_g_conv_hull_conn_comp/convex_hull.h"
+
+int *vec_to_arr(std::vector<point> pnts_v, int prev_size = 0) {
+    int *res = new int[((pnts_v.size() > prev_size) ? pnts_v.size() : prev_size) * 2];
+    for (int i = 0; i < pnts_v.size(); i++) {
+        res[i * 2] = pnts_v[i].x;
+        res[(i * 2) + 1] = pnts_v[i].y;
+    }
+    if (pnts_v.size() < prev_size) {
+        for (int i = pnts_v.size(); i < prev_size; i++) {
+            res[i * 2] = -1;
+            res[(i * 2) + 1] = -1;
+        }
+    }
+    return res;
+}
+
+std::vector<point> arr_to_vec(int *pnts_arr, int size) {
+    std::vector<point> res;
+    for (int i = 0; i < size; i += 2) {
+        if (pnts_arr[i] == -1) break;
+        res.push_back(point{pnts_arr[i], pnts_arr[i + 1]});
+    }
+    return res;
+}
 
 bool ccw(point start, point a, point b) {
     int x1 = a.x - start.x;
     int y1 = a.y - start.y;
     int x2 = b.x - start.x;
     int y2 = b.y - start.y;
-    if ((x1 * y2 - x2 * y1) > 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool cw(point start, point a, point b) {
-    int x1 = a.x - start.x;
-    int y1 = a.y - start.y;
-    int x2 = b.x - start.x;
-    int y2 = b.y - start.y;
-    if ((x1 * y2 - x2 * y1) < 0) {
+    if ((x1 * y2 - x2 * y1) > 0 || (x2 == 0 && y2 == 0)) {
         return true;
     } else {
         return false;
@@ -34,7 +47,8 @@ bool cw(point start, point a, point b) {
 double angle(point start, point a) {
     double x = a.x - start.x;
     double y = a.y - start.y;
-    if (y == 0 && x == 0) return -2;
+    if (y == 0 && x == 0)
+        return -2;
     return std::atan2(y, x);
 }
 
@@ -42,6 +56,30 @@ int distance(point start, point a) {
     double x = a.x - start.x;
     double y = a.y - start.y;
     return abs(x) + abs(y);
+}
+
+bool longer(point start, point a, point b) {
+    if (distance(start, a) > distance(start, b)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool collinear(point start, point a, point b) {
+    int x1 = a.x - start.x;
+    int y1 = a.y - start.y;
+    int x2 = b.x - start.x;
+    int y2 = b.y - start.y;
+    if (x1 * y2 - x2 * y1 == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool pnt_greater(point start, point a, point b) {
+    return (ccw(start, a, b) || (collinear(start, a, b) && longer(start, a, b)));
 }
 
 bool pnt_comp(point start, point a, point b) {
@@ -60,54 +98,7 @@ bool pnt_less_by_x(point a, point b) {
     return a.y < b.y;
 }
 
-bool pnt_less_by_y(point a, point b) {
-    if (a.y != b.y) {
-        return a.y < b.y;
-    }
-    return a.x < b.x;
-}
-
-point* find_left() {
-    return nullptr;
-}
-
-point* find_right() {
-    return nullptr;
-}
-
-std::vector<point> connect_hulls(std::vector<point> lower_hull, std::vector<point> upper_hull) {
-    std::vector<point> ans;
-    return ans;
-}
-
-int* vec_to_arr(std::vector<point> pnts_v) {
-    int* res = new int[pnts_v.size() * 2];
-    for (int i = 0; i < pnts_v.size(); i++) {
-        res[i * 2] = pnts_v[i].x;
-        res[(i * 2) + 1] = pnts_v[i].y;
-    }
-    return res;
-}
-
-std::vector<point> arr_to_vec(int* pnts_arr, int size) {
-    std::vector<point> res;
-    for (int i = 0; i < size; i += 2) {
-        res.push_back(point{ pnts_arr[i], pnts_arr[i + 1] });
-    }
-    return res;
-}
-
-std::vector<point> graham_scan(int* matrix, int rows, int columns, int rows_disp) {
-    std::vector<point> pnts;
-
-    for (int row = 0; row < rows; row++) {
-        for (int elem = 0; elem < columns; elem++) {
-            if (matrix[(row * (columns)) + elem] == 1) {
-            pnts.push_back(point{elem, columns - (rows_disp + row) - 1});
-            }
-        }
-    }
-
+std::vector<point> graham_scan(std::vector<point> pnts) {
     std::vector<point> answer;
 
     if (pnts.size() != 0) {
@@ -115,14 +106,14 @@ std::vector<point> graham_scan(int* matrix, int rows, int columns, int rows_disp
 
         std::sort(pnts.begin(), pnts.end(), [&](const point& a, const point& b) {
             return pnt_comp(min_pnt, a, b);
-        });
+            });
 
         answer.push_back(min_pnt);
 
         for (int i = 1; i < pnts.size(); i++) {
             while (answer.size() > 1 && (!ccw(answer[answer.size() - 2],
-                                        answer[answer.size() - 1], pnts[i])))
-            answer.pop_back();
+                answer[answer.size() - 1], pnts[i])))
+                answer.pop_back();
             answer.push_back(pnts[i]);
         }
     }
@@ -130,114 +121,307 @@ std::vector<point> graham_scan(int* matrix, int rows, int columns, int rows_disp
     return answer;
 }
 
-std::vector<point> convex_hull(int* matrix, size_t n) {
-    //  DEBUG ----------------------------------
+point find_tangent(point pnt, std::vector<point> hull) {
+    if (hull.size() == 1) {
+        return hull[0];
+    }
 
-    int test = 1;
+    int a = 0;
+    int b = hull.size();
+    int curr = (a + b) / 2;
+    int size = hull.size();
 
-    //  DEBUG ----------------------------------
+    while (!((pnt_greater(pnt, hull[curr % size], hull[(curr + 1) % size]) &&
+         pnt_greater(pnt, hull[curr % size], hull[(curr - 1) % size])) ||
+        ((b - a) == 1))
+        ) {
+        //  a + 1 > a
+        if (ccw(pnt, hull[(a + 1) % size], hull[a % size])) {
+            //  c > c + 1
+            if (ccw(pnt, hull[curr % size], hull[(curr + 1) % size])) {
+                b = curr;
+            //  c + 1 > c
+            } else {
+                //  c > a
+                if (ccw(pnt, hull[curr % size], hull[a % size])) {
+                    a = curr;
+                //  a > c
+                } else {
+                    b = curr;
+                }
+            }
+        //  a > a + 1
+        } else {
+            //  c + 1 > c
+            if (ccw(pnt, hull[(curr + 1) % size], hull[curr % size])) {
+                a = curr;
+            //  c > c + 1
+            } else {
+                //  c > a
+                if (ccw(pnt, hull[curr % size], hull[a % size])) {
+                    b = curr;
+                //  a > c
+                } else {
+                    a = curr;
+                }
+            }
+        }
+        curr = (a + b) / 2;
+    }
 
+    if ((b - a) == 1) {
+        if (pnt_greater(pnt, hull[a % size], hull[b % size])) {
+            return hull[a % size];
+        } else {
+            return hull[b % size];
+        }
+    }
+    return hull[curr % size];
+}
+
+std::vector<point> find_hull(std::vector<std::vector<point>> cmpnts) {
     int ProcRank, ProcNum;
-    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
+    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
 
-    //  declaration of variables
+    std::vector<point> ans;
+
+    //  parallel part ------------------------------------
+
+    int compnts_amount = 0;
+
+    if (ProcRank == 0) {
+        compnts_amount = cmpnts.size();
+        MPI_Bcast(&compnts_amount, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    } else {
+        MPI_Bcast(&compnts_amount, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    }
+
     int *ProcSizes = new int[ProcNum]();
     int *ProcDisp = new int[ProcNum]();
     for (int i = 0; i < ProcNum; i++) {
-        ProcSizes[i] = n / ProcNum + (i < n % ProcNum ? 1 : 0);
-        ProcDisp[i] = i * (n / ProcNum) + std::min<int>(i, n % ProcNum);
-    }
-    int *ProcElem = new int[ProcNum]();
-    int *ProcElemDisp = new int[ProcNum]();
-    for (int i = 0; i < ProcNum; i++) {
-        ProcElem[i] = ProcSizes[i] * n;
-        ProcElemDisp[i] = ProcDisp[i] * n;
+        ProcSizes[i] = compnts_amount / ProcNum + (i < compnts_amount % ProcNum ? 1 : 0);
+        ProcDisp[i] = i * (compnts_amount / ProcNum) + std::min<int>(i, compnts_amount % ProcNum);
     }
 
-    int rows_amount = ProcSizes[ProcRank];
-    int* rows = new int[rows_amount * n];
+    if (compnts_amount == 0)
+        return ans;
 
-    //  sending parts of image to corresponding processors
+    int *compnts_sizes = new int[compnts_amount]();
+
     if (ProcRank == 0) {
-        MPI_Scatterv(matrix, ProcElem, ProcElemDisp, MPI_INT, rows,
-                    rows_amount * n, MPI_INT, 0, MPI_COMM_WORLD);
-    } else {
-        MPI_Scatterv(nullptr, nullptr, nullptr, MPI_INT, rows, rows_amount * n, MPI_INT, 0, MPI_COMM_WORLD);
-    }
-
-    //  DEBUG ----------------------------------
-    // if (ProcRank == test) {
-    //     for (int i = 0; i < rows_amount; i++) {
-    //         for (int j = 0; j < n; j++) {
-    //             std::cout << rows[(i * n) + j] << " ";
-    //         }
-    //         std::cout << std::endl;
-    //     }
-    // }
-    //  DEBUG ----------------------------------
-
-    //  find convex hull for this part of image
-    std::vector<point> local_hull = graham_scan(rows, rows_amount, n, ProcDisp[ProcRank]);
-
-    //  DEBUG ----------------------------------
-    // if (ProcRank == test) {
-    //     for (int i = 0; i < local_hull.size(); i++) {
-    //         local_hull[i].print(); std::cout << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    //  DEBUG ----------------------------------
-
-    //  connectiong parts to one hull
-    int tree_level = 1;
-    int rank = ProcRank + 1;
-    int hull_size = 0;
-    int *points_data;
-    std::vector<point> other_hull;
-    MPI_Status status;
-    while (ProcNum >= pow(2, tree_level)) {
-        if ((rank % static_cast<int>(pow(2, tree_level))) == 0) {
-            int senderRank = rank - static_cast<int>(pow(2, tree_level - 1)) - 1;
-
-            //  get other_hull
-            MPI_Recv(&hull_size, 1, MPI_INT, senderRank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-            points_data = new int[hull_size];
-            MPI_Recv(points_data, hull_size, MPI_INT, senderRank, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-            other_hull = arr_to_vec(points_data, hull_size);
-            delete[] points_data;
-
-            //  DEBUG ----------------------------------
-
-            if (ProcRank == test) {
-                for (int i = 0; i < other_hull.size(); i++) {
-                    other_hull[i].print();
-                }
-            }
-            std::cout << std::endl;
-
-            if (ProcRank == test) {
-                for (int i = 0; i < local_hull.size(); i++) {
-                    local_hull[i].print();
-                }
-            }
-            std::cout << std::endl;
-
-            //  DEBUG ----------------------------------
-
-            local_hull = connect_hulls(local_hull, other_hull);
-        } else if (((rank +
-                    static_cast<int>(pow(2, tree_level - 1))) % static_cast<int>(pow(2, tree_level))) == 0) {
-            int receiverRank = rank + static_cast<int>(pow(2, tree_level - 1)) - 1;
-            //  send local_hull
-            hull_size = local_hull.size() * 2;
-            MPI_Send(&hull_size, 1, MPI_INT, receiverRank, 1, MPI_COMM_WORLD);
-            points_data = vec_to_arr(local_hull);
-            MPI_Send(points_data, hull_size, MPI_INT, receiverRank, 1, MPI_COMM_WORLD);
-            delete[] points_data;
+        for (int i = 0; i < cmpnts.size(); i++) {
+            compnts_sizes[i] = cmpnts[i].size() * 2;
         }
-        tree_level++;
+        MPI_Bcast(compnts_sizes, compnts_amount, MPI_INT, 0, MPI_COMM_WORLD);
+    } else {
+        MPI_Bcast(compnts_sizes, compnts_amount, MPI_INT, 0, MPI_COMM_WORLD);
     }
 
-    return local_hull;
+    int* ProcElemSizes = new int[ProcNum]();
+    int* ProcElemDisp = new int[ProcNum]();
+    int disp = 0;
+    for (int i = 0; i < ProcNum; i++) {
+        ProcElemDisp[i] = disp;
+        int size = 0;
+        for (int j = 0; j < ProcSizes[i]; j++) {
+            size += compnts_sizes[ProcDisp[i] + j];
+        }
+        disp += size;
+        ProcElemSizes[i] = size;
+    }
+
+    int *components = new int[ProcElemSizes[ProcRank]]();
+
+    //  sending components to processors
+    int* all_compnt_arr = nullptr;
+    int ints_amount = 0;
+    if (ProcRank == 0) {
+        std::vector<point> all_compnt;
+        for (int i = 0; i < cmpnts.size(); i++) {
+            all_compnt.insert(all_compnt.end(), cmpnts[i].begin(), cmpnts[i].end());
+        }
+        ints_amount = all_compnt.size() * 2;
+
+        int* all_compnt_arr = vec_to_arr(all_compnt);
+
+
+        MPI_Scatterv(all_compnt_arr, ProcElemSizes, ProcElemDisp, MPI_INT,
+                    components, ProcElemSizes[ProcRank], MPI_INT, 0, MPI_COMM_WORLD);
+        delete[] all_compnt_arr;
+    } else {
+        MPI_Scatterv(nullptr, nullptr, nullptr, MPI_INT,
+                    components, ProcElemSizes[ProcRank], MPI_INT, 0, MPI_COMM_WORLD);
+    }
+
+    std::vector<std::vector<point>> local_comp_vec;
+
+    std::vector<point> tmp_vec;
+    int* tmp_compnt = nullptr;
+    disp = 0;
+    for (int i = 0; i < ProcSizes[ProcRank]; i++) {
+        tmp_compnt = new int[compnts_sizes[ProcDisp[ProcRank] + i]]();
+        for (int j = 0; j < compnts_sizes[ProcDisp[ProcRank] + i]; j++) {
+            tmp_compnt[j] = components[disp + j];
+        }
+        disp += compnts_sizes[ProcDisp[ProcRank] + i];
+        local_comp_vec.push_back(arr_to_vec(tmp_compnt, compnts_sizes[ProcDisp[ProcRank] + i]));
+        delete[] tmp_compnt;
+    }
+
+    //  find hulls for each component
+    std::vector<std::vector<point>> local_sub_hulls;
+    for (int i = 0; i < local_comp_vec.size(); i++) {
+        local_sub_hulls.push_back(graham_scan(local_comp_vec[i]));
+    }
+
+    //  collecting data on root processor
+    int* tmp_arr_pnts = nullptr;
+    disp = 0;
+    for (int i = 0; i < local_sub_hulls.size(); i++) {
+        tmp_arr_pnts = vec_to_arr(local_sub_hulls[i], compnts_sizes[ProcDisp[ProcRank] + i]);
+
+        for (int j = disp; j < disp + compnts_sizes[ProcDisp[ProcRank] + i]; j++) {
+            components[j] = tmp_arr_pnts[j - disp];
+        }
+        disp += compnts_sizes[ProcDisp[ProcRank] + i];
+        delete[] tmp_arr_pnts;
+    }
+
+    std::vector<std::vector<point>> sub_hulls;
+    if (ProcRank == 0) {
+        all_compnt_arr = new int[ints_amount]();
+
+        MPI_Gatherv(components, ProcElemSizes[ProcRank], MPI_INT, all_compnt_arr,
+        ProcElemSizes, ProcElemDisp, MPI_INT, 0, MPI_COMM_WORLD);
+
+        disp = 0;
+        int* tmp_arr_pnts = nullptr;
+        for (int i = 0; i < compnts_amount; i++) {
+            tmp_arr_pnts = new int[compnts_sizes[i]]();
+            for (int j = disp; j < compnts_sizes[i] + disp; j++) {
+                tmp_arr_pnts[j - disp] = all_compnt_arr[j];
+            }
+            disp += compnts_sizes[i];
+            sub_hulls.push_back(arr_to_vec(tmp_arr_pnts, compnts_sizes[i]));
+        }
+    } else {
+        MPI_Gatherv(components, ProcElemSizes[ProcRank], MPI_INT, nullptr,
+        ProcElemSizes, ProcElemDisp, MPI_INT, 0, MPI_COMM_WORLD);
+    }
+
+    if (ProcRank != 0) {
+        return ans;
+    }
+
+    //  end of parallel part ------------------------------------
+
+    //  find min point
+    point start_pnt{-1, -1};
+    for (int i = 0; i < sub_hulls.size(); i++) {
+        point tmp_pnt = *std::min_element(sub_hulls[i].begin(), sub_hulls[i].end(), pnt_less_by_x);
+        if (start_pnt.x == -1 || pnt_less_by_x(tmp_pnt, start_pnt)) {
+            start_pnt = tmp_pnt;
+        }
+    }
+    ans.push_back(start_pnt);
+
+    //  connect sub-hulls
+    point new_pnt{-1, -1};
+    while (true) {
+        new_pnt = {-1, -1};
+        for (int i = 0; i < sub_hulls.size(); i++) {
+            point tmp_pnt = find_tangent(ans.back(), sub_hulls[i]);
+            if (new_pnt.x == -1 || pnt_greater(ans.back(), tmp_pnt, new_pnt)) {
+                new_pnt = tmp_pnt;
+            }
+        }
+        if (new_pnt == ans[0]) {
+            return ans;
+        }
+        if (ans.size() > 1 && (collinear(ans[ans.size() - 2], new_pnt, ans[ans.size() - 1]) &&
+                               longer(ans[ans.size() - 2], new_pnt, ans[ans.size() - 1]))) {
+            ans[ans.size() - 1] = new_pnt;
+        } else {
+            ans.push_back(new_pnt);
+        }
+    }
+}
+
+std::vector<std::vector<point>> marking(int *matrix, int n) {
+    int comp_id = 2;
+    int zero = 0;
+    int *marked_image = new int[n * n]();
+    for (int row = 0; row < n; row++) {
+        for (int elem = 0; elem < n; elem++) {
+            marked_image[row * n + elem] = matrix[row * n + elem];
+        }
+    }
+
+    //  forward step
+    for (int row = 0; row < n; row++) {
+        for (int elem = 0; elem < n; elem++) {
+            //  for readability
+            int *current = &marked_image[(row * n) + elem];
+            int *left = (elem == 0 ? &zero : &marked_image[(row * n) + (elem - 1)]);
+            int *upper = (row == 0 ? &zero : &marked_image[((row - 1) * n) + elem]);
+
+            //  empty cell
+            if (*current == 0)
+                continue;
+
+            if (*left == 0 && *upper == 0) {
+                //  new component
+                *current = comp_id++;
+            } else {
+                //  part of existing component
+                if (*left > *upper) {
+                    *current = *left;
+                } else {
+                    *current = *upper;
+                }
+            }
+        }
+    }
+
+    //  backward step
+    for (int row = n - 1; row > -1; row--) {
+        for (int elem = n - 1; elem > -1; elem--) {
+            //  for readability
+            int *current = &marked_image[(row * n) + elem];
+            int *right = (elem == n - 1 ? &zero : &marked_image[(row * n) + (elem + 1)]);
+            int *bottom = (row == n - 1 ? &zero : &marked_image[((row + 1) * n) + elem]);
+
+            //  empty cell
+            if (*current == 0 || (*right == 0 && *bottom == 0))
+                continue;
+
+            //  part of existing component
+            if (*right > *bottom) {
+                *current = *right;
+            } else {
+                *current = *bottom;
+            }
+        }
+    }
+
+    std::map<int, int> idxs;
+    std::vector<std::vector<point>> ans;
+    int components_count = 0;
+
+    for (int row = 0; row < n; row++) {
+        for (int elem = 0; elem < n; elem++) {
+            if (marked_image[(row * n) + elem] == 0)
+                continue;
+            if (idxs.find(marked_image[(row * n) + elem]) != idxs.end()) {
+                ans[idxs[marked_image[(row * n) + elem]]].push_back(point{elem, row});
+            } else {
+                idxs.insert({marked_image[(row * n) + elem], components_count++});
+                std::vector<point> vec = {point{elem, row}};
+                ans.push_back(vec);
+            }
+        }
+    }
+
+    return ans;
 }

@@ -8,9 +8,17 @@ struct point {
   int x;
   int y;
 
-  void print() { std::cout << "(" << x << ", " << y << ")"; }
+  bool operator==(const point& other) {
+    return (x == other.x && y == other.y);
+  }
+
+  bool operator!=(const point& other) {
+    return !(*this == other);
+  }
+
 };
 
-std::vector<point> convex_hull(int* matrix, size_t n);
+std::vector<point> find_hull(std::vector<std::vector<point>> cmpnts);
+std::vector<std::vector<point>> marking(int* matrix, int size);
 
 #endif  // TASKS_TASK_3_SHARAPOV_G_CONV_HULL_CONN_COMP_CONVEX_HULL_H_
