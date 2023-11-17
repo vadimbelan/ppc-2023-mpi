@@ -35,7 +35,7 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
             inp_pos[cur] = a[i];
             cur++;
         } else {
-            inp_neg[i - cur] = a[i];
+            inp_neg[i - cur] = -a[i];
         }
     }
     CountingSort(inp_pos, tmp_pos, 0, n - cnt_neg);
