@@ -1,6 +1,5 @@
-#include <random>
-#include <mpi.h>
-#include "task_1\morgachev_s_average_of_vector_elements\average_of_vector_elements.h"
+// Copyright 2023 Morgachev Stepan
+#include "task_1/morgachev_s_average_of_vector_elements/average_of_vector_elements.h"
 
 std::vector<int> fillVectorRandomNumbers(size_t size, int min, int max) {
     std::vector<int> vector(size);
@@ -12,7 +11,7 @@ std::vector<int> fillVectorRandomNumbers(size_t size, int min, int max) {
     return vector;
 }
 
-int calculatePartialSum(std::vector<int>& vec) {
+int calculatePartialSum(const std::vector<int>& vec) {
     int sum = 0;
 
     for (int i : vec) {
@@ -22,7 +21,7 @@ int calculatePartialSum(std::vector<int>& vec) {
     return sum;
 }
 
-double calculateAverageOfVectorElements(std::vector<int>& vector) {
+double calculateAverageOfVectorElements(const std::vector<int>& vector) {
     int sizeWorld = 0;
     int rank = 0;
     size_t vectorSize = vector.size();
@@ -41,8 +40,7 @@ double calculateAverageOfVectorElements(std::vector<int>& vector) {
     for (int i = 0; i < sizeWorld; i++) {
         if (i < remainder) {
             sendCounts[i] = chunkSize + 1;
-        }
-        else {
+        } else {
             sendCounts[i] = chunkSize;
         }
         displacement[i] = dif;
@@ -60,5 +58,5 @@ double calculateAverageOfVectorElements(std::vector<int>& vector) {
     MPI_Reduce(&partialSum, &totalSum, 1, MPI_INT, MPI_SUM, 0,
         MPI_COMM_WORLD);
 
-    return totalSum / (double)vectorSize;
+    return totalSum / static_cast<double>(vectorSize);
 }

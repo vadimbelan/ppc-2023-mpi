@@ -1,7 +1,5 @@
-#include <vector>
-#include <iostream>
+// Copyright 2023 Morgachev Stepan
 #include <gtest/gtest.h>
-#include <mpi.h>
 #include "./average_of_vector_elements.h"
 
 TEST(Average_Of_Vector_Elements, Test_only_positive_data) {
@@ -11,10 +9,11 @@ TEST(Average_Of_Vector_Elements, Test_only_positive_data) {
 
     std::vector<int> vector{ 11, 8, 3, 9 , 23, 2, 4, 30, 10, 41};
 
-    int result = calculateAverageOfVectorElements(vector);
+    double result = calculateAverageOfVectorElements(vector);
 
     if (rank == 0) {
-        int resSeq = calculatePartialSum(vector) / (double) vector.size();
+        double resSeq = calculatePartialSum(vector) /
+            static_cast<double> (vector.size());
         ASSERT_EQ(result, resSeq);
     }
 }
@@ -26,10 +25,11 @@ TEST(Average_Of_Vector_Elements, Test_only_negative_data) {
 
     std::vector<int> vector{ -11, -8, -3, -9 , -23, -2, -4, -30, -10, -41 };
 
-    int result = calculateAverageOfVectorElements(vector);
+    double result = calculateAverageOfVectorElements(vector);
 
     if (rank == 0) {
-        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        double resSeq = calculatePartialSum(vector) /
+            static_cast<double> (vector.size());
         ASSERT_EQ(result, resSeq);
     }
 }
@@ -41,10 +41,11 @@ TEST(Average_Of_Vector_Elements, Test_only_one_number) {
 
     std::vector<int> vector{ 1};
 
-    int result = calculateAverageOfVectorElements(vector);
+    double result = calculateAverageOfVectorElements(vector);
 
     if (rank == 0) {
-        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        double resSeq = calculatePartialSum(vector) /
+            static_cast<double> (vector.size());
         ASSERT_EQ(result, resSeq);
     }
 }
@@ -56,10 +57,11 @@ TEST(Average_Of_Vector_Elements, Test_only_zero) {
 
     std::vector<int> vector{ 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0 };
 
-    int result = calculateAverageOfVectorElements(vector);
+    double result = calculateAverageOfVectorElements(vector);
 
     if (rank == 0) {
-        int resSeq = calculatePartialSum(vector) / (double)vector.size();
+        double resSeq = calculatePartialSum(vector) /
+            static_cast<double> (vector.size());
         ASSERT_EQ(result, resSeq);
     }
 }
@@ -73,11 +75,14 @@ TEST(Average_Of_Vector_Elements, Test_random) {
     const int lowerBound = -100000;
     const int upperBound = 100000;
 
-    std::vector<int> vector(fillVectorRandomNumbers(sizeVector, lowerBound, upperBound));
-    int result_par = calculateAverageOfVectorElements(vector);
+    std::vector<int> vector(fillVectorRandomNumbers(sizeVector,
+        lowerBound,
+        upperBound));
+    double result_par = calculateAverageOfVectorElements(vector);
 
     if (rank == 0) {
-        int result_seq = calculatePartialSum(vector) / (double) vector.size();
+        double result_seq = calculatePartialSum(vector) /
+            static_cast<double> (vector.size());
         ASSERT_EQ(result_par, result_seq);
     }
 }
