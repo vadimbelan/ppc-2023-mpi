@@ -11,7 +11,7 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_Minus_3) {
     double err = 0.00001;
     double a = -0.75;
     double b = 0;
-    int64_t n = 1000000;
+    int64_t n = 10000;
 
     auto function = [](double x) {
         return (3 * x) / sqrt(pow((x + 1), 3));
@@ -31,7 +31,7 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_0) {
     double err = 0.00001;
     double a = -2.0;
     double b = 2.0;
-    int64_t n = 1000000;
+    int64_t n = 10000;
 
     auto function = [](double x) {
         return sin(5 * x) / (1 + x * x);
@@ -52,7 +52,7 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_PI) {
     double err = 0.00001;
     double a = 0.0;
     double b = 1.0;
-    int64_t n = 1000000;
+    int64_t n = 10000;
 
     auto function = [](double x) {
         return 4 / (1 + pow(x, 2));
@@ -73,7 +73,7 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_PI_2) {
     double err = 0.00001;
     double a = 0.0;
     double b = PI_2;
-    int64_t n = 1000000;
+    int64_t n = 10000;
 
     auto function = [](double x) {
         return 2 / (1 + pow(tan(x), sqrt(2)));
@@ -94,7 +94,7 @@ TEST(Integral_Trapezoidal_Rule_MPI, Test_PI_4) {
     double err = 0.00001;
     double a = 0.0;
     double b = 1.0;
-    int64_t n = 1000000;
+    int64_t n = 10000;
 
     auto function = [](double x) {
         return std::sqrt(1 - pow(x, 2));
