@@ -4,7 +4,6 @@
 
 #include <mpi.h>
 
-#include <algorithm>
 #include <vector>
 
 std::vector<int> getRandomMatrix(int columns, int lines, int l, int r);

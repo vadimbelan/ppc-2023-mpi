@@ -1,7 +1,7 @@
 // Copyright 2023 Sredneva Anastasiya
+#include "task_1/sredneva_a_sum_values_of_matrix_columns/sum_values.h"
 #include <vector>
 #include <random>
-#include "task_1/sredneva_a_sum_values_of_matrix_columns/sum_values.h "
 
 std::vector<int> getRandomMatrix(int columns, int lines, int l, int r) {
     int size = columns * lines;
