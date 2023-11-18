@@ -122,10 +122,8 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     if (delta == 0) {
        return piece;
     }
-    sort(a.begin(), a.end());
-    return a;
-    /*
     int cnt = 1;
+    std::vector<double>to;
     while (cnt < countProc) {
         if (rank % (2 * cnt) == 0) {
             if (rank + cnt < countProc) {
@@ -142,22 +140,23 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
 //                std::cout<<"Sz:"<<sz<<'\n';
 //                std::cout<<"Cur count:"<<piece.size()<<'\n';
 //                std::cout<<"Count:"<<sz * delta<<'\n';
-                std::vector<double> buf(sz * delta);
                 MPI_Status *status;
-                MPI_Recv(buf.data(), buf.size(), MPI_DOUBLE, rank + cnt, 0, MPI_COMM_WORLD, status);
-                piece = merge(piece, buf);
+                to.resize(sz * delta);
+                MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, status);
+                piece = merge(piece, to);
 //                std::cout<<"New count:"<<piece.size()<<'\n';
 //                std::cout<<"==================\n";
             }
         } else if (rank % cnt == 0) {
             // right proc
-            MPI_Send(piece.data(), piece.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
+            to = piece;
+            MPI_Send(to.data(), to.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
         }
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
     }
-    */
-//    return piece;
+
+    return piece;
 }
 
 std::vector<double> getRandomInput(int n, double fMin, double fMax) {
