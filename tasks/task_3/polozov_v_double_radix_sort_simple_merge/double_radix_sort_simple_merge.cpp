@@ -70,7 +70,7 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
     return a;
 }
 
-std::vector<double> merge(std::vector<double> a, std::vector<double> b) {
+std::vector<double> merge(const std::vector<double>& a, const std::vector<double>& b) {
     std::vector<double> ans(a.size() + b.size());
     int l = 0;
     int r = 0;
@@ -133,15 +133,22 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
                 } else {
                     sz = cnt;
                 }
+//                std::cout<<"CNT:"<<cnt<<'\n';
+//                std::cout<<"Left:"<<rank<<'\n';
+//                std::cout<<"Right:"<<rank+cnt<<'\n';
+//                std::cout<<"Sz:"<<sz<<'\n';
+//                std::cout<<"Cur count:"<<piece.size()<<'\n';
+//                std::cout<<"Count:"<<sz * delta<<'\n';
                 std::vector<double> buf(sz * delta);
                 MPI_Status *status;
                 MPI_Recv(buf.data(), buf.size(), MPI_DOUBLE, rank + cnt, 0, MPI_COMM_WORLD, status);
                 piece = merge(piece, buf);
+//                std::cout<<"New count:"<<piece.size()<<'\n';
+//                std::cout<<"==================\n";
             }
         } else if (rank % cnt == 0) {
             // right proc
             MPI_Send(piece.data(), piece.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
-            piece.clear();
         }
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
