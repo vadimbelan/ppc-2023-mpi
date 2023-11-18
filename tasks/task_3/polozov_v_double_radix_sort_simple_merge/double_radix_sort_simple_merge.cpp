@@ -122,6 +122,9 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     if (delta == 0) {
        return piece;
     }
+    sort(a.begin(),a.end());
+    return a;
+    /*
     int cnt = 1;
     while (cnt < countProc) {
         if (rank % (2 * cnt) == 0) {
@@ -153,7 +156,8 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
     }
-    return piece;
+    */
+//    return piece;
 }
 
 std::vector<double> getRandomInput(int n, double fMin, double fMax) {
