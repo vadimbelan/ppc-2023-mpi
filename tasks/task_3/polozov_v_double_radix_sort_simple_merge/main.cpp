@@ -22,7 +22,6 @@ TEST(MPI_TESTS, Test1) {
     std::vector<double>a, b;
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
-        print_array(a, n);
         b = a;
         sort(b.begin(), b.end());
     }
@@ -34,7 +33,6 @@ TEST(MPI_TESTS, Test1) {
     }
 }
 
-/*
 TEST(MPI_TESTS, Test2) {
     int rank = 0;
     int countProc = 0;
@@ -118,7 +116,6 @@ TEST(MPI_TESTS, Test_big_size) {
         }
     }
 }
-*/
 
 int main(int argc, char** argv) {
     int result = 0;

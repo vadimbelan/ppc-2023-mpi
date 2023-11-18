@@ -100,9 +100,6 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    if (rank == 0) {
-        std::cout << "START!!!\n";
-    }
     int size, offset;
     int delta = n / countProc;
     int remain = n % countProc;
@@ -121,24 +118,13 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     }
     MPI_Scatterv(a.data(), sendcounts.data(), displs.data(), MPI_DOUBLE, piece.data(), piece.size(),
                  MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//    piece = SequenceRadixSortDouble(piece, piece.size());
-    sort(piece.begin(), piece.end());
+    piece = SequenceRadixSortDouble(piece, piece.size());
     if (delta == 0) {
         return piece;
     }
     int cnt = 1;
     std::vector<double> to;
-    if (rank == 0) {
-        std::cout << "COUNTPROC NOW:" << countProc << '\n';
-    }
     while (cnt < countProc) {
-        std::cout << "RANK:" << rank << '\n';
-        std::cout << "HAVE DATA:\n";
-        for (int i = 0; i < piece.size(); i++) {
-            std::cout << piece[i] << ' ';
-        }
-        std::cout << "\n";
-        std::cout << "countProc:" << countProc << " cnt: " << cnt << '\n';
         if (rank % (2 * cnt) == 0) {
             if (rank + cnt < countProc) {
                 // left proc
@@ -148,41 +134,18 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
                 } else {
                     sz = cnt;
                 }
-                std::cout << "CNT:" << cnt << '\n';
-                std::cout << "Left:" << rank << '\n';
-                std::cout << "Right:" << rank + cnt << '\n';
-                std::cout << "Sz:" << sz << '\n';
-                std::cout << "Cur count:" << piece.size() << '\n';
-                std::cout << "Count:" << sz * delta << '\n';
-                MPI_Status status;
                 to.resize(sz * delta);
+                MPI_Status status;
                 MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-                std::cout << "Prinyal dannue\n";
                 piece = merge(piece, to);
-                std::cout << "smerjil\n";
-//                std::cout<<"New count:"<<piece.size()<<'\n';
-//                std::cout<<"==================\n";
             }
         } else if (rank % cnt == 0) {
             // right proc
-            std::cout << "CNT:" << cnt << '\n';
-            std::cout << "otpravitel:" << rank << '\n';
-            std::cout << "kuda:" << rank - cnt << '\n';
-            std::cout << "Count:" << piece.size() << '\n';
             to = piece;
-            std::cout << "DATA SEND:\n";
-            for (int i = 0; i < to.size(); i++) {
-                std::cout << to[i] << ' ';
-            }
-            std::cout << "\n";
             MPI_Send(to.data(), to.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
-            std::cout << "SENDED!!!\n";
         }
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
-    }
-    if (rank == 0) {
-        std::cout << "END!!!\n";
     }
     return piece;
 }
