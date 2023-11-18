@@ -154,9 +154,9 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
                 std::cout << "Sz:" << sz << '\n';
                 std::cout << "Cur count:" << piece.size() << '\n';
                 std::cout << "Count:" << sz * delta << '\n';
-                MPI_Status *status;
+                MPI_Status status;
                 to.resize(sz * delta);
-                MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, status);
+                MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
                 std::cout << "Prinyal dannue\n";
                 piece = merge(piece, to);
                 std::cout << "smerjil\n";
