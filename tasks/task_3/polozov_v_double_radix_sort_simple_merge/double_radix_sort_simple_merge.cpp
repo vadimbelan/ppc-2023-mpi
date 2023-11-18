@@ -71,7 +71,8 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
 }
 
 std::vector<double> merge(const std::vector<double> &a, const std::vector<double> &b) {
-    std::vector<double> ans(a.size() + b.size());
+    int sz = a.size() + b.size();
+    std::vector<double> ans(sz);
     int l = 0;
     int r = 0;
     for (int i = 0; i < a.size() + b.size(); i++) {
@@ -151,7 +152,9 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
                 MPI_Status *status;
                 to.resize(sz * delta);
                 MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, status);
+                std::cout << "Prinyal dannue\n";
                 piece = merge(piece, to);
+                std::cout << "smerjil\n";
 //                std::cout<<"New count:"<<piece.size()<<'\n';
 //                std::cout<<"==================\n";
             }
