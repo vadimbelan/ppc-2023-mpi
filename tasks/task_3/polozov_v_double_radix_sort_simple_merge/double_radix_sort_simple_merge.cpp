@@ -122,7 +122,7 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     if (delta == 0) {
        return piece;
     }
-    sort(a.begin(),a.end());
+    sort(a.begin(), a.end());
     return a;
     /*
     int cnt = 1;
