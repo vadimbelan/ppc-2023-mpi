@@ -22,6 +22,7 @@ TEST(MPI_TESTS, Test1) {
     std::vector<double>a, b;
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
+        print_array(a, n);
         b = a;
         sort(b.begin(), b.end());
     }

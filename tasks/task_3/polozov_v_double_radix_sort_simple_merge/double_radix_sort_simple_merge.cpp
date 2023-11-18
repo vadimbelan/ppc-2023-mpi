@@ -133,6 +133,11 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     }
     while (cnt < countProc) {
         std::cout << "RANK:" << rank << '\n';
+        std::cout << "HAVE DATA:\n";
+        for (int i = 0; i < piece.size(); i++) {
+            std::cout << piece[i] << ' ';
+        }
+        std::cout << "\n";
         std::cout << "countProc:" << countProc << " cnt: " << cnt << '\n';
         if (rank % (2 * cnt) == 0) {
             if (rank + cnt < countProc) {
@@ -165,6 +170,11 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
             std::cout << "kuda:" << rank - cnt << '\n';
             std::cout << "Count:" << piece.size() << '\n';
             to = piece;
+            std::cout << "DATA SEND:\n";
+            for (int i = 0; i < to.size(); i++) {
+                std::cout << to[i] << ' ';
+            }
+            std::cout << "\n";
             MPI_Send(to.data(), to.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
         }
         cnt *= 2;
