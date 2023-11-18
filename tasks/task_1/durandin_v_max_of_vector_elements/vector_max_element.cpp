@@ -5,6 +5,7 @@ int64_t sub_get_max_element_of_vector(const std::vector<int64_t>& _vector) {
   int64_t max_value = _vector.front();
   for (auto it = _vector.cbegin() + 1ull; it != _vector.cend(); ++it)
     if (*it > max_value) max_value = *it;
+
   return max_value;
 }
 
