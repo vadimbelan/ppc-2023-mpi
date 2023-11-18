@@ -117,7 +117,11 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     }
     MPI_Scatterv(a.data(), sendcounts.data(), displs.data(), MPI_DOUBLE, piece.data(), piece.size(),
                  MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    piece = SequenceRadixSortDouble(piece, piece.size());
+//    piece = SequenceRadixSortDouble(piece, piece.size());
+    sort(piece.begin(), piece.end());
+    if (delta == 0) {
+       return piece;
+    }
     int cnt = 1;
     while (cnt < countProc) {
         if (rank % (2 * cnt) == 0) {

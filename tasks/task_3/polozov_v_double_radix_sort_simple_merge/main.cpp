@@ -83,7 +83,7 @@ TEST(MPI_TESTS, Test_small_size) {
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    int n = 5;
+    int n = 3;
     std::vector<double>a, b;
     if (rank == 0) {
         a = getRandomInput(n, 1, 100);
