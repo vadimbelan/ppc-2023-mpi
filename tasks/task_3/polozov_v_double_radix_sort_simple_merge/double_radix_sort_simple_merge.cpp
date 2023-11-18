@@ -95,6 +95,7 @@ std::vector<double> merge(const std::vector<double>& a, const std::vector<double
 }
 
 std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
+    std::cout << "START!!!\n";
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -124,7 +125,9 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
     }
     int cnt = 1;
     std::vector<double>to;
+    std::cout << "COUNTPROC NOW:" << countProc << '\n';
     while (cnt < countProc) {
+        std::cout << "countProc:" << countProc << "cnt: " << cnt << '\n';
         if (rank % (2 * cnt) == 0) {
             if (rank + cnt < countProc) {
                 // left proc
@@ -155,7 +158,7 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
     }
-
+    std::cout << "END!!!\n";
     return piece;
 }
 
