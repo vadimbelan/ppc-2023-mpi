@@ -33,7 +33,7 @@ TEST(MPI_TESTS, Test1) {
     }
 }
 
-/*
+
 TEST(MPI_TESTS, Test2) {
     int rank = 0;
     int countProc = 0;
@@ -117,7 +117,6 @@ TEST(MPI_TESTS, Test_big_size) {
         }
     }
 }
-*/
 
 int main(int argc, char** argv) {
     int result = 0;
