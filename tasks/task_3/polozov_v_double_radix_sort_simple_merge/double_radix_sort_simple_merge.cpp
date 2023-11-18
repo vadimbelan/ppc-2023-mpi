@@ -176,6 +176,7 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
             }
             std::cout << "\n";
             MPI_Send(to.data(), to.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
+            std::cout << "SENDED!!!\n";
         }
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
