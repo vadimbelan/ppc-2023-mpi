@@ -58,7 +58,7 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
     CountingSort(tmp_neg, inp_neg, 7, cnt_neg);
 
     for (int i = cnt_neg - 1; i >= 0; i--) {
-        a[cnt_neg-1 - i] = -inp_neg[i];
+        a[cnt_neg - 1 - i] = -inp_neg[i];
     }
     for (int i = 0; i < n - cnt_neg; i++) {
         a[i + cnt_neg] = inp_pos[i];
@@ -70,7 +70,7 @@ std::vector<double> SequenceRadixSortDouble(std::vector<double> a, int n) {
     return a;
 }
 
-std::vector<double> merge(const std::vector<double>& a, const std::vector<double>& b) {
+std::vector<double> merge(const std::vector<double> &a, const std::vector<double> &b) {
     std::vector<double> ans(a.size() + b.size());
     int l = 0;
     int r = 0;
@@ -95,11 +95,13 @@ std::vector<double> merge(const std::vector<double>& a, const std::vector<double
 }
 
 std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
-    std::cout << "START!!!\n";
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
+    if (rank == 0) {
+        std::cout << "START!!!\n";
+    }
     int size, offset;
     int delta = n / countProc;
     int remain = n % countProc;
@@ -121,13 +123,16 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
 //    piece = SequenceRadixSortDouble(piece, piece.size());
     sort(piece.begin(), piece.end());
     if (delta == 0) {
-       return piece;
+        return piece;
     }
     int cnt = 1;
-    std::vector<double>to;
-    std::cout << "COUNTPROC NOW:" << countProc << '\n';
+    std::vector<double> to;
+    if (rank == 0) {
+        std::cout << "COUNTPROC NOW:" << countProc << '\n';
+    }
     while (cnt < countProc) {
-        std::cout << "countProc:" << countProc << "cnt: " << cnt << '\n';
+        std::cout << "RANK:" << rank << '\n';
+        std::cout << "countProc:" << countProc << " cnt: " << cnt << '\n';
         if (rank % (2 * cnt) == 0) {
             if (rank + cnt < countProc) {
                 // left proc
@@ -137,12 +142,12 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
                 } else {
                     sz = cnt;
                 }
-//                std::cout<<"CNT:"<<cnt<<'\n';
-//                std::cout<<"Left:"<<rank<<'\n';
-//                std::cout<<"Right:"<<rank+cnt<<'\n';
-//                std::cout<<"Sz:"<<sz<<'\n';
-//                std::cout<<"Cur count:"<<piece.size()<<'\n';
-//                std::cout<<"Count:"<<sz * delta<<'\n';
+                std::cout << "CNT:" << cnt << '\n';
+                std::cout << "Left:" << rank << '\n';
+                std::cout << "Right:" << rank + cnt << '\n';
+                std::cout << "Sz:" << sz << '\n';
+                std::cout << "Cur count:" << piece.size() << '\n';
+                std::cout << "Count:" << sz * delta << '\n';
                 MPI_Status *status;
                 to.resize(sz * delta);
                 MPI_Recv(to.data(), sz * delta, MPI_DOUBLE, rank + cnt, MPI_ANY_TAG, MPI_COMM_WORLD, status);
@@ -152,13 +157,19 @@ std::vector<double> ParallelRadixSortDouble(std::vector<double> a, int n) {
             }
         } else if (rank % cnt == 0) {
             // right proc
+            std::cout << "CNT:" << cnt << '\n';
+            std::cout << "otpravitel:" << rank << '\n';
+            std::cout << "kuda:" << rank - cnt << '\n';
+            std::cout << "Count:" << piece.size() << '\n';
             to = piece;
             MPI_Send(to.data(), to.size(), MPI_DOUBLE, rank - cnt, 0, MPI_COMM_WORLD);
         }
         cnt *= 2;
         MPI_Barrier(MPI_COMM_WORLD);
     }
-    std::cout << "END!!!\n";
+    if (rank == 0) {
+        std::cout << "END!!!\n";
+    }
     return piece;
 }
 
