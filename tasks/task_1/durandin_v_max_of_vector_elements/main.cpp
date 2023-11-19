@@ -1,3 +1,4 @@
+// Copyright 2023 Durandin Vladimir
 #include <gtest/gtest.h>
 
 #include "task_1/durandin_v_max_of_vector_elements/vector_max_element.h"
@@ -31,10 +32,10 @@ TEST(MPI_TESTS, vector_of_zeros) {
 TEST(MPI_TESTS, vector_with_a_tail) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int64_t> vector;
 
-  create_random_vector(vector, 10'007ll, -100ll,
-                       100ll);  // 10'007 is a prime number
+  std::vector<int64_t> vector(
+      create_random_vector(10'007ll, -100ll,
+                           100ll));  // 10'007 is a prime number
   const int64_t par_max = par_get_max_element_of_vector(vector);
 
   if (rank == 0) {
@@ -46,9 +47,8 @@ TEST(MPI_TESTS, vector_with_a_tail) {
 TEST(MPI_TESTS, vector_with_even_size) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int64_t> vector;
 
-  create_random_vector(vector, 100'000ll, -100ll, 100ll);
+  std::vector<int64_t> vector(create_random_vector(100'000ll, -100ll, 100ll));
   const int64_t par_max = par_get_max_element_of_vector(vector);
 
   if (rank == 0) {
@@ -60,9 +60,8 @@ TEST(MPI_TESTS, vector_with_even_size) {
 TEST(MPI_TESTS, vector_with_negative_values) {
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  std::vector<int64_t> vector;
 
-  create_random_vector(vector, 100'000ll, -10'000ll, -1ll);
+  std::vector<int64_t> vector(create_random_vector(100'000ll, -10'000ll, -1ll));
   const int64_t par_max = par_get_max_element_of_vector(vector);
 
   if (rank == 0) {

@@ -1,3 +1,4 @@
+// Copyright 2023 Durandin Vladimir
 #include "task_1/durandin_v_max_of_vector_elements/vector_max_element.h"
 
 int64_t sub_get_max_element_of_vector(const std::vector<int64_t>& _vector) {
@@ -38,14 +39,14 @@ int64_t par_get_max_element_of_vector(const std::vector<int64_t>& _vector) {
   return global_max;
 }
 
-void create_random_vector(std::vector<int64_t>& _vector, const size_t size,
-                          const int64_t min, const int64_t max) {
-  if (size == (size_t)0) return;
+std::vector<int64_t> create_random_vector(const size_t size, const int64_t min,
+                                          const int64_t max) {
+  if (size == 0ull) return std::vector<int64_t>();
   std::random_device rand_dev;
   std::mt19937 generator(rand_dev());
   std::uniform_int_distribution<int64_t> distance(min, max);
 
-  _vector.resize(size);
-  for (size_t i = (size_t)0; i < _vector.size(); ++i)
-    _vector[i] = distance(generator);
+  std::vector<int64_t> vector(size);
+  for (size_t i = 0ull; i < size; ++i) vector[i] = distance(generator);
+  return vector;
 }
