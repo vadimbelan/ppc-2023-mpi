@@ -28,6 +28,24 @@ inline void copy_matrix_cols(T* matrix, int rows, int cols, int col_start, int c
 }
 
 template<typename T>
+inline T* find_matrix_col_min_sequential(T* matrix, int rows, int cols, MPI_Datatype mpi_type = MPI_INT) {
+  T* res = new T[cols];
+  int matrix_sz = cols * rows;
+  int i, j;
+  T tmp;
+  for (i = 0; i < cols; i++) {
+    tmp = matrix[i];
+    for (j = i; j < matrix_sz; j += cols) {
+      if (tmp > matrix[j]) {
+        tmp = matrix[j];
+      }
+    }
+    res[i] = tmp;
+  }
+  return res;
+}
+
+template<typename T>
 inline T* find_matrix_col_min_parallel(T* matrix, int rows, int cols, MPI_Datatype mpi_type = MPI_INT) {
   int i, j;
   int proc_rank, proc_num;
@@ -79,24 +97,6 @@ inline T* find_matrix_col_min_parallel(T* matrix, int rows, int cols, MPI_Dataty
       delete[] res;
       res = nullptr;
     }
-  }
-  return res;
-}
-
-template<typename T>
-inline T* find_matrix_col_min_sequential(T* matrix, int rows, int cols, MPI_Datatype mpi_type = MPI_INT) {
-  T* res = new T[cols];
-  int matrix_sz = cols * rows;
-  int i, j;
-  T tmp;
-  for (i = 0; i < cols; i++) {
-    tmp = matrix[i];
-    for (j = i; j < matrix_sz; j += cols) {
-      if (tmp > matrix[j]) {
-        tmp = matrix[j];
-      }
-    }
-    res[i] = tmp;
   }
   return res;
 }
