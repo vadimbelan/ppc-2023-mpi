@@ -1,6 +1,6 @@
 // Copyright 2023 Suren Simonyan
 #include "task_1/simonyan_a_integrating_rectangle_method/integrating_rect.h"
-
+#include <math.h>
 double sin_f(double x) { return sin(x); }
 double cos_f(double x) { return cos(x); }
 double hardfn_f(double x) { return 3 * x / std::sqrt(std::pow(x + 1, 3)); }
