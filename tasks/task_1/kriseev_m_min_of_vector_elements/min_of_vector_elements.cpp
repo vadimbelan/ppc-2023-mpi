@@ -23,7 +23,7 @@ int MinElementsInVectorParallel(const std::vector<int>& vec) {
     int commSize = world.size();
     std::vector<int> sizes(commSize, vec.size() / commSize);
     if (vec.size() % commSize) {
-        sizes.back() = vec.size() % commSize;
+        sizes.back() = vec.size() - ((commSize - 1) * sizes.front());
     }
     std::vector<int> local(sizes[rank], 0);
     boost::mpi::scatterv(world, vec, sizes, local.data(), 0);

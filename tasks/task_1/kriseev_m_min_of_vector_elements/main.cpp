@@ -86,7 +86,26 @@ TEST(Min_Of_Vector_Elements_MPI, random_matrix_non_divisible_by_world_size) {
     }
 }
 
+TEST(Min_Of_Vector_Elements_MPI, last_element_is_min) {
+    std::uniform_int_distribution distribution(2, 100);
+    std::random_device random;
 
+    boost::mpi::communicator world;
+    std::vector<int> data(100);
+    int vector_size = (world.size() + 1) * (world.size() + 1);
+
+    for (int i = 0; i < vector_size; ++i) {
+        data.emplace_back(distribution(random));
+    }
+    data.back() = -1;
+    int parallelResult = MinElementsInVectorParallel(data);
+
+    if (world.rank() == 0) {
+	ASSERT_EQ(parallelResult, -1);
+        int sequentialResult = MinElementsInVectorSequential(data);
+        ASSERT_EQ(parallelResult, sequentialResult);
+    }
+}
 
 int main(int argc, char** argv) {
     boost::mpi::environment env(argc, argv);
