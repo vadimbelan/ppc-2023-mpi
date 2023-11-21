@@ -1,5 +1,6 @@
 // Copyright 2023 Yurin Andrey
 #include <algorithm>
+#include <boost/mpi/status.hpp>
 #include "task_2/yurin_a_readers_writers/readers_writers.h"
 
 
