@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <math.h>
 #include "task_2/simonyan_s_allreduce/Allreduce.h"
-#define ESTIMATE 0.01
+#define ESTIMATE 0.0001
 
 TEST(Allreduce, test_MPI_Double) {
     int rank = 0;
@@ -182,7 +182,7 @@ TEST(Allreduce, test_time) {
         MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     double t4 = MPI_Wtime();
     if (return_code == MPI_SUCCESS && rank == root) {
-        ASSERT_GT(t2-t1, t4-t3);
+        ASSERT_LE(std::abs((t2 - t1)- (t4 - t3)), ESTIMATE);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 }
