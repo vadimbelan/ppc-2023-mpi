@@ -3,11 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include "./simple_iteration_method.h"
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
+#include "./simple_iteration_method.h"
 
-using namespace std;
+using std::vector;
 
 vector<double> A;
 vector<double> b;

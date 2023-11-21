@@ -1,12 +1,18 @@
 // Copyright 2023 Petrov Maksim
-#include "task_2/petrov_m_simple_iteration_method/simple_iteration_method.h"
-#include <boost/mpi/communicator.hpp>
-#include <boost/mpi/collectives.hpp>
 #include <random>
 #include <cmath>
 #include <cstring>
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/collectives.hpp>
+#include "task_2/petrov_m_simple_iteration_method/simple_iteration_method.h"
 
-using namespace std;
+using std::vector;
+using std::mt19937_64;
+using std::random_device;
+using std::uniform_real_distribution;
+using std::abs;
+using std::max;
+using std::memcpy;
 
 vector<double> get_rand_vec(int n) {
     vector<double> vec(n);
@@ -79,8 +85,7 @@ vector<double> get_parallel_simple_iteration_method(const vector<double>& A_vect
             world.send(i, 0, A + pos_begin * n, (pos_end - pos_begin) * n);
             world.send(i, 1, b + pos_begin, pos_end - pos_begin);
         }
-    }
-    else {
+    } else {
         world.recv(0, 0, A_local_row, block_size * n);
         world.recv(0, 1, b_local, block_size);
     }
@@ -119,8 +124,7 @@ vector<double> get_parallel_simple_iteration_method(const vector<double>& A_vect
             for (int i = 1; i < size; ++i) {
                 world.recv(i, 2, x_cur + i * n / size, (i + 1) * n / size - i * n / size);
             }
-        }
-        else {
+        } else {
             world.send(0, 2, x_local, block_size);
         }
         broadcast(world, x_cur, n, 0);
