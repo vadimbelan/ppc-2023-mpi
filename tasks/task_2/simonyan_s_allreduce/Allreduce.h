@@ -5,7 +5,7 @@
 #include <mpi.h>
 #include <iostream>
 
-int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
+int My_AllReduce(const void* sendbuf, void* recvbuf, int count,
     MPI_Datatype datatype, MPI_Op  op, int root, MPI_Comm comm);
 
 template <typename T>

@@ -1,7 +1,9 @@
 // Copyright 2023 Suren Simonyan
+
+
 #include "Allreduce.h"
 
-int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
+int My_AllReduce(const void* sendbuf, void* recvbuf, int count,
     MPI_Datatype datatype, MPI_Op  op, int root, MPI_Comm comm) {
     int ProcRank, ProcNum;
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
@@ -52,7 +54,6 @@ int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
         MPI_Recv(recvbuf, count, datatype, 0, 0, comm,
             MPI_STATUS_IGNORE);
     }
-    
     MPI_Barrier(comm);
     return MPI_SUCCESS;
 }
