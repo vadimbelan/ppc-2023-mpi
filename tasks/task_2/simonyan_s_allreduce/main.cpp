@@ -29,8 +29,6 @@ TEST(Allreduce, test_MPI_Double) {
         MPI_Send(&sum, 1, MPI_DOUBLE, root, 0, MPI_COMM_WORLD);
     }
     if (rank == root) {
-        std::cout << t2 - t1 << std::endl;
-        std::cout << t4 - t3 << std::endl;
         for (int i = 0; i < world_size; ++i) {
             if (i != root) {
                 MPI_Recv(another + i, 1, MPI_DOUBLE, MPI_ANY_SOURCE,
@@ -123,6 +121,68 @@ TEST(Allreduce, test_MPI_Int) {
             max = std::max(another[i], another[i + 1]);
         }
         ASSERT_EQ(min == max, sum == value * world_size);
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+}
+
+TEST(Allreduce, test_Multiplycate) {
+    int rank = 0;
+    int world_size = 0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+    double value = 5;
+    double multi = 0;
+    double* another = new double[world_size];
+    int root = 0;
+    int return_code = My_AllReduce(&value, &multi, 1,
+        MPI_DOUBLE, MPI_PROD, root, MPI_COMM_WORLD);
+    if (rank != root) {
+        MPI_Send(&multi, 1, MPI_DOUBLE, root, 0, MPI_COMM_WORLD);
+    }
+    if (rank == root) {
+        for (int i = 0; i < world_size; ++i) {
+            if (i != root) {
+                MPI_Recv(another + i, 1, MPI_DOUBLE, MPI_ANY_SOURCE,
+                    0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+        }
+        another[root] = multi;
+    }
+    if (return_code == MPI_SUCCESS && rank == root) {
+        double min = another[0];
+        double max = another[0];
+        for (int i = 0; i < world_size - 1; ++i) {
+            min = std::min(another[i], another[i + 1]);
+            max = std::max(another[i], another[i + 1]);
+        }
+        ASSERT_EQ(min == max, multi == pow(value, world_size));
+    }
+    MPI_Barrier(MPI_COMM_WORLD);
+}
+
+
+TEST(Allreduce, test_time) {
+    int rank = 0;
+    int world_size = 0;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+
+    double value = 10.0;
+    double sum = 0;
+    int root = 0;
+    double t1 = MPI_Wtime();
+    int return_code = My_AllReduce(&value, &sum, 1,
+        MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
+    double t2 = MPI_Wtime();
+    double t3 = MPI_Wtime();
+    return_code = MPI_Allreduce(&value, &sum, 1,
+        MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    double t4 = MPI_Wtime();
+    if (return_code == MPI_SUCCESS && rank == root) {
+        ASSERT_GT(t2-t1, t4-t3);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 }
