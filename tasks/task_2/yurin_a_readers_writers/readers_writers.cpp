@@ -14,7 +14,7 @@
 
 
 void StartNewReaders(const boost::mpi::communicator& world, size_t* localReaderCount) {
-    boost::mpi::status status = world.recv(boost::mpi::any_source, boost::mpi::any_tag);
+    boost::mpi::status status = world.recv(boost::mpi::any_source, READER_READY_TAG);
     world.send(status.source(), READER_START_TAG);
     (*localReaderCount)++;
 }
