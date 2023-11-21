@@ -1,5 +1,4 @@
 // Copyright 2023 Lysanova Julia
-#include <utility>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include "task_2/lysanova_j_rdrs_wrtrs/rdrs_wrtrs.h"
@@ -8,8 +7,7 @@
 
 std::pair<std::queue<std::pair<int, int>>, std::vector<int>> rdrs_wrtrs_boost() {
     boost::mpi::communicator world;
-    int shared_data = 0;
-    int role;
+    int shared_data = 0, role;
 
     if (world.rank() == 0) {
         std::queue<std::pair<int, int>> q;
