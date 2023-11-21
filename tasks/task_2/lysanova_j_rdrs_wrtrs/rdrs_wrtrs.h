@@ -1,7 +1,6 @@
 // Copyright 2023 Lysanova Julia
 #ifndef TASKS_TASK_2_LYSANOVA_J_RDRS_WRTRS_RDRS_WRTRS_H_
 #define TASKS_TASK_2_LYSANOVA_J_RDRS_WRTRS_RDRS_WRTRS_H_
-
 #include <vector>
 #include <queue>
 
