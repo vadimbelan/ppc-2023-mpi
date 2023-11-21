@@ -2,6 +2,7 @@
 #include <random>
 #include <cmath>
 #include <cstring>
+#include <algorithm>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 #include "task_2/petrov_m_simple_iteration_method/simple_iteration_method.h"
