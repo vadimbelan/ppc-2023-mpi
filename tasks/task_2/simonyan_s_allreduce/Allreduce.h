@@ -12,21 +12,14 @@ template <typename T>
 void operation(void* buf, void* recvbuf, MPI_Op op) {
     T& buf_val = *reinterpret_cast<T*>(buf);
     T& recvbuf_val = *reinterpret_cast<T*>(recvbuf);
-    switch (op) {
-    case MPI_MAX:
+    if (op == MPI_MAX) {
         if (buf_val > recvbuf_val) recvbuf_val = buf_val;
-        break;
-    case MPI_MIN:
+    } else if (op == MPI_MIN) {
         if (buf_val < recvbuf_val) recvbuf_val = buf_val;
-        break;
-    case MPI_SUM:
+    } else if (op == MPI_SUM) {
         recvbuf_val += buf_val;
-        break;
-    case MPI_PROD:
+    } else if (op == MPI_PROD) {
         recvbuf_val *= buf_val;
-        break;
-    default:
-        break;
     }
 }
 

@@ -2,6 +2,7 @@
 
 
 #include "Allreduce.h"
+#include <cstring>
 
 int My_AllReduce(const void* sendbuf, void* recvbuf, int count,
     MPI_Datatype datatype, MPI_Op  op, int root, MPI_Comm comm) {
@@ -23,22 +24,17 @@ int My_AllReduce(const void* sendbuf, void* recvbuf, int count,
         size_t bytes = static_cast<size_t>(sizeof_type * count);
         void* buf = std::malloc(bytes);
 
-        std::memcpy(buf, sendbuf, bytes);
-        std::memcpy(recvbuf, sendbuf, bytes);
+        memcpy(buf, sendbuf, bytes);
+        memcpy(recvbuf, sendbuf, bytes);
         for (int i = 0; i < ProcNum - 1; ++i) {
             MPI_Recv(buf, count, datatype, MPI_ANY_SOURCE, 0, comm,
                 MPI_STATUS_IGNORE);
-            switch (datatype) {
-            case MPI_INT:
+            if (datatype == MPI_INT) {
                 operation<int>(buf, recvbuf, op);
-                break;
-            case MPI_FLOAT:
+            } else if (datatype == MPI_FLOAT) {
                 operation<float>(buf, recvbuf, op);
-                break;
-            case MPI_DOUBLE:
+            } else if (datatype == MPI_DOUBLE) {
                 operation<double>(buf, recvbuf, op);
-            default:
-                break;
             }
         }
         for (int i = 0; i <= ProcNum - 1; i++) {
