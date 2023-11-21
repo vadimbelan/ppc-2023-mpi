@@ -8,6 +8,7 @@
 
 TEST(Readers_Writers_Problem, RWT_1) {
     boost::mpi::communicator world;
+    rdrs_wrtrs_boost();
 }
 
 
