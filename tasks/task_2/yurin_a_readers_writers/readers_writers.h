@@ -3,7 +3,9 @@
 #define TASKS_TASK_2_YURIN_A_READERS_WRITERS_READERS_WRITERS_H_
 
 #include <utility>
-#include <boost/mpi.hpp>
+#include <boost/mpi/communicator.hpp>
+#include <boost/mpi/environment.hpp>
+
 
 void Controller(const boost::mpi::communicator& world, const size_t& readerCount, const size_t& writerCount);
 void Writer(const boost::mpi::communicator& world);

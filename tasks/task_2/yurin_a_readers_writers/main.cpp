@@ -1,8 +1,6 @@
 // Copyright 2023 Yurin Andrey
 #include <gtest/gtest.h>
 #include "task_2/yurin_a_readers_writers/readers_writers.h"
-#include <boost/mpi/environment.hpp>
-#include <boost/mpi/communicator.hpp>
 
 TEST(Parallel_Operations_MPI, T1) {
 }
