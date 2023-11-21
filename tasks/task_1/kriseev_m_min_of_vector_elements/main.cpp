@@ -101,7 +101,7 @@ TEST(Min_Of_Vector_Elements_MPI, last_element_is_min) {
     int parallelResult = MinElementsInVectorParallel(data);
 
     if (world.rank() == 0) {
-	ASSERT_EQ(parallelResult, -1);
+        ASSERT_EQ(parallelResult, -1);
         int sequentialResult = MinElementsInVectorSequential(data);
         ASSERT_EQ(parallelResult, sequentialResult);
     }
