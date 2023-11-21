@@ -11,13 +11,34 @@ TEST(Allreduce, test1) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
 
-    double value = 5;
+    double value = 10.5;
     double sum = 0;
+    double* another = new double[world_size];
     int root = 0;
     int return_code = MPI_Allreduce(&value, &sum, 1, MPI_DOUBLE, MPI_SUM, root, MPI_COMM_WORLD);
-
+    if (rank != root)
+    {
+        MPI_Send(&sum, 1, MPI_DOUBLE, root, 0, MPI_COMM_WORLD);
+    }
+    if (rank == root)
+    {
+        for (int i = 0; i < world_size; ++i)
+        {
+            if (i != root) {
+                MPI_Recv(another + i, 1, MPI_DOUBLE, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            }
+        }
+        another[root] = sum;
+    }
     if (return_code == MPI_SUCCESS && rank == root) {
-        ASSERT_EQ(sum, world_size * value);
+        double min = another[0];
+        double max = another[0];
+        for (int i = 0; i < world_size - 1; ++i) {
+            min = std::min(another[i], another[i + 1]);
+            max = std::max(another[i], another[i + 1]);
+        }
+
+        ASSERT_EQ(min == max, sum == value * world_size);
     }
 }
 

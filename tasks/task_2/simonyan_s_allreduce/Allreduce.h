@@ -8,12 +8,10 @@
 int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
     MPI_Datatype datatype, MPI_Op  op, int root, MPI_Comm comm);
 
-
 template <typename T>
 void operation(void* buf, void* recvbuf, MPI_Op op) {
     T& buf_val = *reinterpret_cast<T*>(buf);
     T& recvbuf_val = *reinterpret_cast<T*>(recvbuf);
-
     switch (op) {
     case MPI_MAX:
         if (buf_val > recvbuf_val) recvbuf_val = buf_val;

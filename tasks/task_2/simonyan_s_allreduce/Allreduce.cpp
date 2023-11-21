@@ -41,7 +41,7 @@ int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
         }
         for (int i = 0; i <= ProcNum - 1; i++) {
             if (i != root) {
-                MPI_Send(buf, count, datatype, i, 0, comm);
+                MPI_Send(recvbuf, count, datatype, i, 0, comm);
             }
         }
     } else {
@@ -52,7 +52,7 @@ int MPI_Allreduce(const void* sendbuf, void* recvbuf, int count,
         MPI_Recv(recvbuf, count, datatype, 0, 0, comm,
             MPI_STATUS_IGNORE);
     }
-
+    
     MPI_Barrier(comm);
     return MPI_SUCCESS;
 }
