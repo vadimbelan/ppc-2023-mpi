@@ -45,6 +45,56 @@ vector<double> get_rand_matrix(int n) {
     return matrix;
 }
 
+vector<double> get_sequential_simple_iteration_method(const vector<double>& A_authentic,
+    const vector<double>& b_authentic, int n, int max_numb_iter, double eps) {
+    vector<double> x_final(n);
+    const double* A;
+    const double* b;
+    double* x_cur;
+    double* A_copy;
+    double* b_copy;
+    double* x_new;
+
+    A = A_authentic.data();
+    b = b_authentic.data();
+    x_cur = x_final.data();
+    A_copy = new double[n * n];
+    b_copy = new double[n];
+    x_new = new double[n];
+
+    memcpy(A_copy, A, n * n * sizeof(double));
+    memcpy(b_copy, b, n * sizeof(double));
+
+    double diff;
+
+    for (int i = 0; i < n; ++i) {
+        double diag_elem = A_copy[(n + 1) * i];
+        A_copy[(n + 1) * i] = 0.0;
+        b_copy[i] /= diag_elem;
+        for (int j = 0; j < n; ++j)
+            A_copy[i * n + j] /= diag_elem;
+    }
+
+    for (int iter = 0; iter < max_numb_iter; ++iter) {
+        for (int i = 0; i < n; ++i) {
+            x_new[i] = b_copy[i];
+            for (int j = 0; j < n; ++j)
+                x_new[i] -= A_copy[i * n + j] * x_cur[j];
+        }
+        diff = 0.0;
+        for (int i = 0; i < n; ++i)
+            diff = max(diff, abs(x_new[i] - x_cur[i]));
+        if (diff < eps)
+            break;
+        memcpy(x_cur, x_new, n * sizeof(double));
+    }
+
+    delete[] A_copy;
+    delete[] b_copy;
+    delete[] x_new;
+    return x_final;
+}
+
 vector<double> get_parallel_simple_iteration_method(const vector<double>& A_vector,
     const vector<double>& b_vector, int n, int max_numb_iter, double epsilon) {
     vector<double> x_final(n);
@@ -134,56 +184,6 @@ vector<double> get_parallel_simple_iteration_method(const vector<double>& A_vect
     delete[] A_local_row;
     delete[] b_local;
     delete[] x_local;
-    return x_final;
-}
-
-vector<double> get_sequential_simple_iteration_method(const vector<double>& A_authentic,
-    const vector<double>& b_authentic, int n, int max_numb_iter, double eps) {
-    vector<double> x_final(n);
-    const double* A;
-    const double* b;
-    double* x_cur;
-    double* A_copy;
-    double* b_copy;
-    double* x_new;
-
-    A = A_authentic.data();
-    b = b_authentic.data();
-    x_cur = x_final.data();
-    A_copy = new double[n * n];
-    b_copy = new double[n];
-    x_new = new double[n];
-
-    memcpy(A_copy, A, n * n * sizeof(double));
-    memcpy(b_copy, b, n * sizeof(double));
-
-    double diff;
-
-    for (int i = 0; i < n; ++i) {
-        double diag_elem = A_copy[(n + 1) * i];
-        A_copy[(n + 1) * i] = 0.0;
-        b_copy[i] /= diag_elem;
-        for (int j = 0; j < n; ++j)
-            A_copy[i * n + j] /= diag_elem;
-    }
-
-    for (int iter = 0; iter < max_numb_iter; ++iter) {
-        for (int i = 0; i < n; ++i) {
-            x_new[i] = b_copy[i];
-            for (int j = 0; j < n; ++j)
-                x_new[i] -= A_copy[i * n + j] * x_cur[j];
-        }
-        diff = 0.0;
-        for (int i = 0; i < n; ++i)
-            diff = max(diff, abs(x_new[i] - x_cur[i]));
-        if (diff < eps)
-            break;
-        memcpy(x_cur, x_new, n * sizeof(double));
-    }
-
-    delete[] A_copy;
-    delete[] b_copy;
-    delete[] x_new;
     return x_final;
 }
 
