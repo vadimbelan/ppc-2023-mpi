@@ -4,7 +4,11 @@
 
 #include <vector>
 
-std::vector<int> getRandomVector(int sz);
+std::vector<double> getRandomVector(int n);
+std::vector<double> getRandomMatrix(int n);
+double getNormOfDifference(const std::vector<double>& a, const std::vector<double>& b);
+std::vector<double> getSequentialIter(const std::vector<double>& A, const std::vector<double> b, int n);
+std::vector<double> getParallelIter(const std::vector<double>& A, const std::vector<double> b, int n);
 int getSequentialDotProduct(const std::vector<int>& A, const std::vector<int>& B);
 int getParallelDotProduct(const std::vector<int>& A,
                           const std::vector<int>& B, int vector_size);

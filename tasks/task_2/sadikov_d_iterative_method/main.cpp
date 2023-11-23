@@ -5,8 +5,20 @@
 #include <boost/mpi/environment.hpp>
 #include <boost/mpi/communicator.hpp>
 
+TEST(Parallel_Sequential_Iter_MPI, Test_Seq) {
+    const int n = 3;
+    std::vector<double> A{
+        1.0, 0.3, -0.5,
+        -0.2, 1, 0.3,
+        0.8, 0.1, 1
+    };
+    std::vector<double> b{ 1.0, 2.0, 3.0 };
+    std::vector<double> ans{ 1.34921, 1.74603, 1.74603 };
+    ASSERT_TRUE(getNormOfDifference(ans, getSequentialIter(A, b, n)) < 1e-4);
+}
+
 TEST(Parallel_Dot_Product_MPI, Test_Random) {
-    boost::mpi::communicator world;
+    /*boost::mpi::communicator world;
     std::vector<int> A, B;
     const int vector_size = 120;
 
@@ -20,11 +32,11 @@ TEST(Parallel_Dot_Product_MPI, Test_Random) {
     if (world.rank() == 0) {
         int reference_sum = getSequentialDotProduct(A, B);
         ASSERT_EQ(reference_sum, global_sum);
-    }
+    }*/
 }
 
 TEST(Parallel_Dot_Product_MPI, Test_Random_Small_Vector) {
-    boost::mpi::communicator world;
+    /*boost::mpi::communicator world;
     std::vector<int> A, B;
     const int vector_size = 3;
 
@@ -38,11 +50,11 @@ TEST(Parallel_Dot_Product_MPI, Test_Random_Small_Vector) {
     if (world.rank() == 0) {
         int reference_sum = getSequentialDotProduct(A, B);
         ASSERT_EQ(reference_sum, global_sum);
-    }
+    }*/
 }
 
 TEST(Parallel_Dot_Product_MPI, Test_Random_Empty_Vector) {
-    boost::mpi::communicator world;
+    /*boost::mpi::communicator world;
     std::vector<int> A, B;
     const int vector_size = 0;
 
@@ -56,11 +68,11 @@ TEST(Parallel_Dot_Product_MPI, Test_Random_Empty_Vector) {
     if (world.rank() == 0) {
         int reference_sum = getSequentialDotProduct(A, B);
         ASSERT_EQ(reference_sum, global_sum);
-    }
+    }*/
 }
 
 TEST(Parallel_Dot_Product_MPI, Test_Random_Bigger_Vector) {
-    boost::mpi::communicator world;
+    /*boost::mpi::communicator world;
     std::vector<int> A, B;
     const int vector_size = 10'007;
 
@@ -74,11 +86,11 @@ TEST(Parallel_Dot_Product_MPI, Test_Random_Bigger_Vector) {
     if (world.rank() == 0) {
         int reference_sum = getSequentialDotProduct(A, B);
         ASSERT_EQ(reference_sum, global_sum);
-    }
+    }*/
 }
 
 TEST(Parallel_Dot_Product_MPI, Test_Specified_Vector) {
-    boost::mpi::communicator world;
+    /*boost::mpi::communicator world;
     std::vector<int> A;
     std::vector<int> B;
     int vector_size = 5;
@@ -93,7 +105,7 @@ TEST(Parallel_Dot_Product_MPI, Test_Specified_Vector) {
     if (world.rank() == 0) {
         int reference_sum = 2346;
         ASSERT_EQ(reference_sum, global_sum);
-    }
+    }*/
 }
 
 int main(int argc, char** argv) {

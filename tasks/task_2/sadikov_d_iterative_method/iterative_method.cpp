@@ -2,22 +2,73 @@
 #include <vector>
 #include <random>
 #include <numeric>
-#include <functional>
+#include <cmath>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
-#include "examples/test_mpi/ops_mpi.h"
 
 #include "task_2/sadikov_d_iterative_method/iterative_method.h"
 
-std::vector<int> getRandomVector(int sz) {
+std::vector<double> getRandomVector(int n) {
     std::random_device dev;
-    std::mt19937 gen(dev());
-    std::uniform_int_distribution<int> dist(-100, 100);
-    std::vector<int> vec(sz);
+    std::mt19937_64 gen(dev());
+    std::uniform_real_distribution<double> dist(-10, 10);
+    std::vector<double> vec(n);
     for (auto& i : vec) {
         i = dist(gen);
     }
     return vec;
+}
+
+std::vector<double> getRandomMatrix(int n) {
+    // A[i][i] == 1.0, |A[i][i]| > sum{j!=i}|A[i][j]|
+    std::vector<double> ret = getRandomVector(n * n);
+    for (int i = 0; i < n; i++) {
+        ret[i * n + i] = 1.0;
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                ret[i * n + i] += std::abs(ret[i * n + j]);
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                ret[i * n + j] /= ret[i * i + i];
+            }
+        }
+        ret[i * n + i] = 1.0;
+    }
+    return ret;
+}
+
+double getNormOfDifference(const std::vector<double>& a, const std::vector<double>& b) {
+    double ret = 0.0;
+    for (int i = 0; i < a.size(); i++) {
+        ret += std::abs(a[i] - b[i]);
+    }
+    return ret;
+}
+
+std::vector<double> getSequentialIter(const std::vector<double>& A, const std::vector<double> b, int n) {
+    // A[i][i] == 1.0, |A[i][i]| > sum{j!=i}|A[i][j]|
+    double epsilon = 1e-5;
+    std::vector<double> x(n, 0.0);
+    std::vector<double> x_new(n, 0.0);
+    do {
+        std::swap(x, x_new);
+        x_new = b;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    x_new[i] -= A[i * n + j] * x[j];
+                }
+            }
+        }
+    } while (getNormOfDifference(x_new, x) > epsilon);
+    return x;
+}
+
+std::vector<double> getParallelIter(const std::vector<double>& A, const std::vector<double> b, int n) {
+    // TODO
+    return {};
 }
 
 int getSequentialDotProduct(const std::vector<int>& A, const std::vector<int>& B) {
