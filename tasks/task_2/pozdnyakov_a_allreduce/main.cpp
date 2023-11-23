@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <mpi.h>
 #include <cmath>
-#include "./my_allreduce.h"
+#include "./allreduce.h"
 
 TEST(Allreduce, test_int_sum) {
     int rank = 0;

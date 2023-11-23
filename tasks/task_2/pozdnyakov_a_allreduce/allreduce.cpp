@@ -1,5 +1,5 @@
 // Copyright 2023 Pozdnyakov Vasya
-#include "task_2/pozdnyakov_a_allreduce/my_allreduce.h"
+#include "task_2/pozdnyakov_a_allreduce/allreduce.h"
 int local_reduce(const void *sendbuf, void *recvbuf, int count,
     MPI_Datatype datatype, MPI_Op op) {
         if (datatype == MPI_CHAR) {
