@@ -50,12 +50,13 @@ void Controller(const boost::mpi::communicator& world, const size_t& readerCount
             size_t localReaderCount = 1;
             world.send(status.source(), READER_START_TAG);
 
-            while ((world.iprobe(boost::mpi::any_source, READER_READY_TAG)).has_value() &&
-            !((world.iprobe(boost::mpi::any_source, WRITER_READY_TAG)).has_value())) {
+            while (!((world.iprobe(boost::mpi::any_source, WRITER_READY_TAG)).has_value()) && localReaderCount != 0) {
                 if (world.iprobe(boost::mpi::any_source, READER_END_TAG).has_value()) {
                     FinishCompletedReaders(world, &localReaderCount, &processesLeft);
                 }
-                StartNewReaders(world, &localReaderCount);
+                if (world.iprobe(boost::mpi::any_source, READER_READY_TAG).has_value()) {
+                    StartNewReaders(world, &localReaderCount);
+                }
             }
 
             while (localReaderCount) {
