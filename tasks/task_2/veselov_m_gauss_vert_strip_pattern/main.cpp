@@ -11,7 +11,6 @@ TEST(Gaussian_method_vertical, test_1) {
     std::vector<double> coefs;
     const size_t rows = 2;
     const size_t columns = 3;
-
     if (procId == 0) {
         coefs = {
             -1, 1, 5,
@@ -34,7 +33,6 @@ TEST(Gaussian_method_vertical, test_2) {
     std::vector<double> coefs;
     const size_t rows = 3;
     const size_t columns = 4;
-
     if (procId == 0) {
         coefs = {
             2, 3, -4, 9,
@@ -58,7 +56,6 @@ TEST(Gaussian_method_vertical, test_3) {
     std::vector<double> coefs;
     const size_t rows = 3;
     const size_t columns = 4;
-
     if (procId == 0) {
         coefs = {
             2, 3, -1, 9,
@@ -76,7 +73,6 @@ TEST(Gaussian_method_vertical, test_4) {
     std::vector<double> coefs;
     const size_t rows = 3;
     const size_t columns = 4;
-
     if (procId == 0) {
         coefs = {
             2, 3, -1, 9,
@@ -96,7 +92,6 @@ TEST(Gaussian_method_vertical, test_5) {
     std::vector<double> coefs;
     const size_t rows = 3;
     const size_t columns = 4;
-
     if (procId == 0) {
         coefs = {
             2, 3, -1,
@@ -110,7 +105,6 @@ TEST(Gaussian_method_vertical, test_5) {
 
 int main(int argc, char** argv) {
     int result_code = 0;
-
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::TestEventListeners& listeners =
         ::testing::UnitTest::GetInstance()->listeners();
@@ -118,6 +112,5 @@ int main(int argc, char** argv) {
     if (MPI_Init(&argc, &argv) != MPI_SUCCESS) MPI_Abort(MPI_COMM_WORLD, -1);
     result_code = RUN_ALL_TESTS();
     MPI_Finalize();
-
     return result_code;
 }
