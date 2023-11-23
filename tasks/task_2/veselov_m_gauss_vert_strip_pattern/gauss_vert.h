@@ -1,6 +1,6 @@
 // Copyright 2023 Veselov Mihail
-#ifndef TASKS_TASK_2_VESELOV_M_GAUSS_VERT_H_
-#define TASKS_TASK_2_VESELOV_M_GAUSS_VERT_H_
+#ifndef TASKS_TASK_2_VESELOV_M_GAUSS_VERT_STRIP_PATTERN_GAUSS_VERT_H_
+#define TASKS_TASK_2_VESELOV_M_GAUSS_VERT_STRIP_PATTERN_GAUSS_VERT_H_
 
 #include <mpi.h>
 #include <cassert>
@@ -20,4 +20,4 @@ std::vector <double> ParSolution(const std::vector <double> &coefs,
 bool checkSolution(const std::vector <double> &coefs, size_t rows, size_t columns,
                     const std::vector <double> &xAns);
 
-#endif  // TASKS_TASK_2_VESELOV_M_GAUSS_VERT_H_
+#endif  // TASKS_TASK_2_VESELOV_M_GAUSS_VERT_STRIP_PATTERN_GAUSS_VERT_H_

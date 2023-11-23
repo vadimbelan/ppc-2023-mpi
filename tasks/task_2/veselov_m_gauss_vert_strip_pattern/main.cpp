@@ -4,7 +4,6 @@
 #include <mpi.h>
 #include "./gauss_vert.h"
 
-
 TEST(Gaussian_method_vertical, test_1) {
     int procId;
     MPI_Comm_rank(MPI_COMM_WORLD, &procId);
