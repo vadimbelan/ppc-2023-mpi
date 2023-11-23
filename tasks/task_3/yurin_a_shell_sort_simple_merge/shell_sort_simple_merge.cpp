@@ -12,7 +12,7 @@
 #define DEFAULT_TAG 0
 
 void CombineInOneProcess(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         std::vector<int>* array,
         const std::vector<int>& localArray,
         const std::vector<int>& sizes
@@ -45,7 +45,7 @@ std::vector<int> RecalculateProcessesInvolved(std::vector<int> processesInvolved
 }
 
 void GetSortedArrayInNullProcess(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         std::vector<int>* array,
         const std::vector<int>& localArray
         ) {
@@ -61,7 +61,7 @@ void GetSortedArrayInNullProcess(
 }
 
 void SendLocalArray(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         const std::vector<int>& localArray,
         const int& dest
         ) {
@@ -70,7 +70,7 @@ void SendLocalArray(
 }
 
 void RecvLocalArrayAndSort(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         std::vector<int>* localArray,
         const int& dest
         ) {
@@ -82,7 +82,7 @@ void RecvLocalArrayAndSort(
 }
 
 void OneStepForCombineByPair(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         std::vector<int>* localArray,
         const std::vector<int>& processesInvolved
         ) {
@@ -99,7 +99,7 @@ void OneStepForCombineByPair(
 }
 
 void CombineByPair(
-        boost::mpi::communicator world,
+        const boost::mpi::communicator& world,
         std::vector<int>* array,
         std::vector<int> localArray
         ) {
