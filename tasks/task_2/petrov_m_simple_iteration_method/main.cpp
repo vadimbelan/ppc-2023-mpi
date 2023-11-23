@@ -46,14 +46,15 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_1) {
         for (int i = 0; i < n; ++i)
             ASSERT_DOUBLE_EQ(x_parallel[i], x_sequential[i]);
         for (int i = 0; i < n; ++i)
-            ASSERT_NEAR(b[i], b_check[i], epsilon); // Ax - b < epsilon
+            ASSERT_NEAR(b[i], b_check[i], epsilon); //   Ax - b < epsilon
     }
     world.barrier();
 
     reduce(world, &diff1, 1, &sum, std::plus<double>(), 0);
 
-    if(rank == 0)
-    cout << double(diff2 / sum) << " - time boost " << endl;
+    if (rank == 0) {
+        cout << double(diff2 / sum) << " - time boost " << endl;
+    }
 }
 
 TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_2) {
@@ -91,8 +92,9 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_2) {
 
     reduce(world, &diff1, 1, &sum, std::plus<double>(), 0);
 
-    if (rank == 0)
+    if (rank == 0) {
         cout << double(diff2 / sum) << " - time boost " << endl;
+    }
 }
 
 TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_3) {
@@ -130,8 +132,9 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_3) {
 
     reduce(world, &diff1, 1, &sum, std::plus<double>(), 0);
 
-    if (rank == 0)
+    if (rank == 0) {
         cout << double(diff2 / sum) << " - time boost " << endl;
+    }
 }
 
 TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_4) {
@@ -169,8 +172,9 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_4) {
 
     reduce(world, &diff1, 1, &sum, std::plus<double>(), 0);
 
-    if (rank == 0)
+    if (rank == 0) {
         cout << double(diff2 / sum) << " - time boost " << endl;
+    }
 }
 
 TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_5) {
@@ -208,8 +212,9 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_5) {
 
     reduce(world, &diff1, 1, &sum, std::plus<double>(), 0);
 
-    if (rank == 0)
+    if (rank == 0) {
         cout << double(diff2 / sum) << " - time boost " << endl;
+    }
 }
 
 int main(int argc, char** argv) {
