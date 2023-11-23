@@ -1,7 +1,8 @@
 // Copyright 2023 Veselov Mihail
 #include <gtest/gtest.h>
-#include <vector>
 #include <mpi.h>
+#include <vector>
+
 #include "./gauss_vert.h"
 
 TEST(Gaussian_method_vertical, test_1) {
