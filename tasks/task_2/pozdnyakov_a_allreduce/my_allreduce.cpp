@@ -2,51 +2,37 @@
 #include "task_2/pozdnyakov_a_allreduce/my_allreduce.h"
 int local_reduce(const void *sendbuf, void *recvbuf, int count,
     MPI_Datatype datatype, MPI_Op op) {
-        switch (datatype) {
-            case MPI_CHAR: {
-                return operation_int<char>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_UNSIGNED_CHAR: {
-                return operation_int<unsigned char>(sendbuf, recvbuf,
-                count, op);
-            }
-            case MPI_SHORT: {
-                return operation_int<int16_t>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_UNSIGNED_SHORT: {
-                return operation_int<uint16_t>(sendbuf, recvbuf,
-                count, op);
-            }
-            case MPI_INT: {
-                return operation_int<int>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_UNSIGNED: {
-                return operation_int<unsigned int>(sendbuf, recvbuf,
-                count, op);
-            }
-            case MPI_LONG: {
-                return operation_int<int32_t>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_UNSIGNED_LONG: {
-                return operation_int<uint32_t>(sendbuf, recvbuf,
-                count, op);
-            }
-            case MPI_LONG_LONG: {
-                return operation_int<int64_t>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_UNSIGNED_LONG_LONG: {
-                return operation_int<uint64_t>(sendbuf, recvbuf,
-                count, op);
-            }
-            case MPI_FLOAT: {
-                return operation<float>(sendbuf, recvbuf, count, op);
-            }
-            case MPI_DOUBLE: {
-                return operation<double>(sendbuf, recvbuf, count, op);
-            }
-            default: {
-                return MPI_ERR_TYPE;
-            }
+        if (datatype == MPI_CHAR) {
+            return operation_int<char>(sendbuf, recvbuf, count, op);
+        } else if (datatype == MPI_UNSIGNED_CHAR) {
+            return operation_int<unsigned char>(sendbuf, recvbuf,
+            count, op);
+        } else if (datatype ==  MPI_SHORT) {
+            return operation_int<int16_t>(sendbuf, recvbuf, count, op);
+        } else if (datatype ==  MPI_UNSIGNED_SHORT) {
+            return operation_int<uint16_t>(sendbuf, recvbuf,
+            count, op);
+        } else if (datatype ==  MPI_INT) {
+            return operation_int<int>(sendbuf, recvbuf, count, op);
+        } else if (datatype ==  MPI_UNSIGNED) {
+            return operation_int<unsigned int>(sendbuf, recvbuf,
+            count, op);
+        } else if (datatype ==  MPI_LONG) {
+            return operation_int<int32_t>(sendbuf, recvbuf, count, op);
+        } else if (datatype ==  MPI_UNSIGNED_LONG) {
+            return operation_int<uint32_t>(sendbuf, recvbuf,
+            count, op);
+        } else if (datatype ==  MPI_LONG_LONG) {
+            return operation_int<int64_t>(sendbuf, recvbuf, count, op);
+        } else if (datatype ==  MPI_UNSIGNED_LONG_LONG) {
+            return operation_int<uint64_t>(sendbuf, recvbuf,
+            count, op);
+        } else if (datatype ==  MPI_FLOAT) {
+            return operation<float>(sendbuf, recvbuf, count, op);
+        } else if (datatype ==  MPI_DOUBLE) {
+            return operation<double>(sendbuf, recvbuf, count, op);
+        } else {
+            return MPI_ERR_TYPE;
         }
     }
 
