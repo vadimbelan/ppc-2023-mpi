@@ -1,6 +1,6 @@
 // Copyright 2023 Pozdnyakov Vasya
-#ifndef TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_MY_ALLREDUCE_H_
-#define TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_MY_ALLREDUCE_H_
+#ifndef TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_ALLREDUCE_H_
+#define TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_ALLREDUCE_H_
 
 #include <mpi.h>
 #include <cstdlib>
@@ -71,4 +71,4 @@ int operation(const void* inbuf, void* accbuf, int count, MPI_Op op) {
     return ret_status;
 }
 
-#endif  // TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_MY_ALLREDUCE_H_
+#endif  // TASKS_TASK_2_POZDNYAKOV_A_ALLREDUCE_ALLREDUCE_H_
