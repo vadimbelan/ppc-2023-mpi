@@ -5,7 +5,6 @@
 #include <functional>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
-#include "examples/test_mpi/ops_mpi.h"
 
 #include "task_1/sadikov_d_dot_product/dot_product.h"
 
