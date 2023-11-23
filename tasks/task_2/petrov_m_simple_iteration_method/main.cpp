@@ -46,7 +46,7 @@ TEST(Simple_Iteration_Method, Simple_Iteration_Method_test_1) {
         for (int i = 0; i < n; ++i)
             ASSERT_DOUBLE_EQ(x_parallel[i], x_sequential[i]);
         for (int i = 0; i < n; ++i)
-            ASSERT_NEAR(b[i], b_check[i], epsilon); //   Ax - b < epsilon
+            ASSERT_NEAR(b[i], b_check[i], epsilon);     //   Ax - b < epsilon
     }
     world.barrier();
 
