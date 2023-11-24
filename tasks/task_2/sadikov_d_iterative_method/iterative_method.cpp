@@ -3,6 +3,8 @@
 #include <random>
 #include <numeric>
 #include <cmath>
+#include <functional>
+#include <utility>
 #include <boost/mpi/communicator.hpp>
 #include <boost/mpi/collectives.hpp>
 
@@ -31,7 +33,7 @@ std::vector<double> getRandomMatrix(int n) {
         }
         for (int j = 0; j < n; j++) {
             if (j != i) {
-                ret[i * n + j] /= ret[i * i + i];
+                ret[i * n + j] /= ret[i * n + i];
             }
         }
         ret[i * n + i] = 1.0;
@@ -39,7 +41,7 @@ std::vector<double> getRandomMatrix(int n) {
     return ret;
 }
 
-double getNormOfDifference(const std::vector<double>& a, const std::vector<double>& b) {
+double NormOfDifference(const std::vector<double>& a, const std::vector<double>& b) {
     double ret = 0.0;
     for (int i = 0; i < a.size(); i++) {
         ret += std::abs(a[i] - b[i]);
@@ -47,13 +49,12 @@ double getNormOfDifference(const std::vector<double>& a, const std::vector<doubl
     return ret;
 }
 
-std::vector<double> getSequentialIter(const std::vector<double>& A, const std::vector<double> b, int n) {
-    // A[i][i] == 1.0, |A[i][i]| > sum{j!=i}|A[i][j]|
-    double epsilon = 1e-5;
+std::vector<double> SequentialIter(const std::vector<double>& A, const std::vector<double>& b, int n) {
+    constexpr double epsilon = 1e-5;
     std::vector<double> x(n, 0.0);
     std::vector<double> x_new(n, 0.0);
-    do {
-        std::swap(x, x_new);
+    bool ok = true;
+    while (ok) {
         x_new = b;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -62,46 +63,71 @@ std::vector<double> getSequentialIter(const std::vector<double>& A, const std::v
                 }
             }
         }
-    } while (getNormOfDifference(x_new, x) > epsilon);
+        ok = NormOfDifference(x, x_new) > epsilon;
+        std::swap(x, x_new);
+    }
     return x;
 }
 
-std::vector<double> getParallelIter(const std::vector<double>& A, const std::vector<double> b, int n) {
-    // TODO
-    return {};
-}
-
-int getSequentialDotProduct(const std::vector<int>& A, const std::vector<int>& B) {
-    return std::inner_product(A.begin(), A.end(), B.begin(), 0);
-}
-
-int getParallelDotProduct(const std::vector<int>& A,
-                          const std::vector<int>& B, int vector_size) {
+std::vector<double> ParallelIter(const std::vector<double>& A, const std::vector<double>& b, int n) {
+    constexpr double epsilon = 1e-5;
     boost::mpi::communicator world;
-    const int delta = vector_size / world.size() + (world.rank() < vector_size % world.size() ? 1 : 0);
+    int world_size = world.size();
+    int world_rank = world.rank();
 
-    if (world.rank() == 0) {
-        int off = delta;
-        for (int proc = 1; proc < world.size(); proc++) {
-            int proc_delta = vector_size / world.size() + (proc < vector_size % world.size() ? 1 : 0);
-            world.send(proc, 0, A.data() + off, proc_delta);
-            world.send(proc, 1, B.data() + off, proc_delta);
-            off += proc_delta;
+    std::vector<int> x_local_sizes(world_size);
+    std::vector<int> x_local_displs(world_size);
+    for (int i = 0; i < world_size; i++) {
+        x_local_sizes[i] = n / world_size + (i < n % world_size ? 1 : 0);
+        if (i > 0) {
+            x_local_displs[i] = x_local_displs[i - 1] + x_local_sizes[i - 1];
         }
     }
 
-    std::vector<int> local_A(delta);
-    std::vector<int> local_B(delta);
-    if (world.rank() == 0) {
-        local_A = std::vector<int>(A.begin(), A.begin() + delta);
-        local_B = std::vector<int>(B.begin(), B.begin() + delta);
-    } else {
-        world.recv(0, 0, local_A.data(), delta);
-        world.recv(0, 1, local_B.data(), delta);
+    std::vector<int> A_local_sizes;
+    std::vector<int> A_local_displs;
+    A_local_sizes.resize(world_size);
+    A_local_displs.resize(world_size);
+    for (int i = 0; i < world_size; i++) {
+        A_local_sizes[i] = n * x_local_sizes[i];
+        if (i > 0) {
+            A_local_displs[i] = A_local_displs[i - 1] + A_local_sizes[i - 1];
+        }
     }
 
-    int global_sum = 0;
-    int local_sum = getSequentialDotProduct(local_A, local_B);
-    reduce(world, local_sum, global_sum, std::plus<int>(), 0);
-    return global_sum;
+    std::vector<double> A_local(A_local_sizes[world_rank]);
+    boost::mpi::scatterv(world, A, A_local_sizes, A_local_displs, A_local.data(), A_local_sizes[world_rank], 0);
+    std::vector<double> b_local(A_local_sizes[world_rank]);
+    boost::mpi::scatterv(world, b, x_local_sizes, x_local_displs, b_local.data(), x_local_sizes[world_rank], 0);
+
+    std::vector<double> x(n, 0.0);
+    std::vector<double> x_new(n, 0.0);
+    bool ok = true;
+    while (ok) {
+        std::vector<double> x_local = b_local;
+        for (int i = 0; i < x_local.size(); i++) {
+            for (int j = 0; j < n; j++) {
+                if (x_local_displs[world_rank] + i != j) {
+                    x_local[i] -= A_local[i * n + j] * x[j];
+                }
+            }
+        }
+
+        boost::mpi::all_gatherv(world, x_local, x_new, x_local_sizes, x_local_displs);
+        
+        double dif_local = 0.0;
+        for (int i = x_local_displs[world_rank]; i < x_local_displs[world_rank] + x_local_sizes[world_rank]; i++) {
+            dif_local += std::abs(x[i] - x_new[i]);
+        }
+        double dif;
+        boost::mpi::reduce(world, dif_local, dif, std::plus<double>(), 0);
+
+        if (world_rank == 0) {
+            ok = dif > epsilon;
+        }
+
+        boost::mpi::broadcast(world, ok, 0);
+        swap(x, x_new);
+    }
+    return x;
 }
