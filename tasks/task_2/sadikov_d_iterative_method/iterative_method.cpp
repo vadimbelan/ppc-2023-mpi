@@ -114,7 +114,7 @@ std::vector<double> ParallelIter(const std::vector<double>& A, const std::vector
         }
 
         boost::mpi::all_gatherv(world, x_local, x_new, x_local_sizes, x_local_displs);
-        
+
         double dif_local = 0.0;
         for (int i = x_local_displs[world_rank]; i < x_local_displs[world_rank] + x_local_sizes[world_rank]; i++) {
             dif_local += std::abs(x[i] - x_new[i]);
