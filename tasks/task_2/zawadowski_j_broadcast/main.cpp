@@ -3,83 +3,66 @@
 #include "./broadcast.h"
 
 TEST(Broadcast, Test_MPI_INT) {
-    int sizeWorld, rank, sum = 0,
-        root = 0, size = 10;
+    std::vector<int> vector = { 1, 4, 3, 7, 5, 9 }, local;
+    int sizeWorld, rank, root = 0, vectorSize = vector.size();
     MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    std::vector<int> vector(size);
 
-    if (rank == root) {
-        for (int i = 0; i < size; i++)
-            vector[i] = 0;
+    if (rank == 0) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(0, sizeWorld - 1);
+        root = dist(gen);
     }
-    broadcast(vector.data(), size, MPI_INT, root, MPI_COMM_WORLD);
-    vector[rank] = 1;
-
-    MPI_Reduce(&vector[rank],
-               &sum,
-               1,
-               MPI_INT,
-               MPI_SUM,
-               root,
-               MPI_COMM_WORLD);
-
+    broadcast(&root, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (rank == root) local = std::vector<int>(vector.begin(), vector.end());
+    else
+        local.resize(vectorSize);
+    broadcast(local.data(), vectorSize, MPI_INT, root, MPI_COMM_WORLD);
     if (rank == root)
-        ASSERT_EQ(sum, sizeWorld);
+        ASSERT_EQ(vector, local);
 }
 
 TEST(Broadcast, Test_MPI_FLOAT) {
-    int sizeWorld, rank,
-        root = 0, size = 15;
+    std::vector<float> vector = { 0.4, 4.6, 3.2, 7.9, 5.1, 10.3 }, local;
+    int sizeWorld, rank, root = 0, vectorSize = vector.size();
     MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    float sum = 0.0;
-    std::vector<float> vector(size);
 
-    if (rank == root) {
-        for (int i = 0; i < size; i++)
-            vector[i] = 0.0;
+    if (rank == 0) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(0, sizeWorld - 1);
+        root = dist(gen);
     }
-    broadcast(vector.data(), size, MPI_FLOAT, root, MPI_COMM_WORLD);
-    vector[rank] = 1.0;
-
-    MPI_Reduce(&vector[rank],
-               &sum,
-               1,
-               MPI_FLOAT,
-               MPI_SUM,
-               root,
-               MPI_COMM_WORLD);
-
+    broadcast(&root, 1, MPI_FLOAT, 0, MPI_COMM_WORLD);
+    if (rank == root) local = std::vector<float>(vector.begin(), vector.end());
+    else
+        local.resize(vectorSize);
+    broadcast(local.data(), vectorSize, MPI_FLOAT, root, MPI_COMM_WORLD);
     if (rank == root)
-        ASSERT_EQ(sum, sizeWorld);
+        ASSERT_EQ(vector, local);
 }
 
 TEST(Broadcast, Test_MPI_DOUBLE) {
-    int sizeWorld, rank,
-        root = 0, size = 20;
+    std::vector<double> vector = { 1.4, 2.3, 7.1, 4.5, 8.6, 7.0 }, local;
+    int sizeWorld, rank, root = 0, vectorSize = vector.size();
     MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    double sum = 0.0;
-    std::vector<double> vector(size);
 
-    if (rank == root) {
-        for (int i = 0; i < size; i++)
-            vector[i] = 0.0;
+    if (rank == 0) {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(0, sizeWorld - 1);
+        root = dist(gen);
     }
-    broadcast(vector.data(), size, MPI_DOUBLE, root, MPI_COMM_WORLD);
-    vector[rank] = 1.0;
-
-    MPI_Reduce(&vector[rank],
-               &sum,
-               1,
-               MPI_DOUBLE,
-               MPI_SUM,
-               root,
-               MPI_COMM_WORLD);
-
+    broadcast(&root, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    if (rank == root) local = std::vector<double>(vector.begin(), vector.end());
+    else
+        local.resize(vectorSize);
+    broadcast(local.data(), vectorSize, MPI_DOUBLE, root, MPI_COMM_WORLD);
     if (rank == root)
-        ASSERT_EQ(sum, sizeWorld);
+        ASSERT_EQ(vector, local);
 }
 
 TEST(Broadcast, Test_time) {
@@ -105,8 +88,8 @@ TEST(Broadcast, Test_time) {
     MPI_Bcast(vector.data(), size, MPI_INT, root, MPI_COMM_WORLD);
     t4 = MPI_Wtime();
     if (rank == root) {
-        std::cout << "My Broadcast time: " << t2 - t1 <<
-            '\n' << "MPI_Bcast time: " << t4 - t3 << '\n';
+        // std::cout << "My Broadcast time: " << t2 - t1 <<
+        //     '\n' << "MPI_Bcast time: " << t4 - t3 << '\n';
         ASSERT_EQ(sum, size);
     }
 }
