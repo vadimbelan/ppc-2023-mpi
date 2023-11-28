@@ -1,104 +1,111 @@
-// Copyright 2023 Nesterov Alexander
+// Copyright 2023 Morgachev Stepan
 #include <gtest/gtest.h>
-#include <vector>
 #include "./hypercube.h"
-#include <boost/mpi/environment.hpp>
-#include <boost/mpi/communicator.hpp>
 
-TEST(Parallel_Operations_MPI, Test_Sum) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const int count_size_vector = 120;
+TEST(Hypercube, Test_Calculate_Next_Vertex) {
+    int rank, size;
 
-    if (world.rank() == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int global_sum = getParallelOperations(global_vec, count_size_vector, "+");
+    int next = calculateNextVertex(0, 5);
 
-    if (world.rank() == 0) {
-        int reference_sum = getSequentialOperations(global_vec, "+");
-        ASSERT_EQ(reference_sum, global_sum);
+    ASSERT_EQ(next, 1);
+}
+
+TEST(Hypercube, Test_Send_0_1) {
+    int rank, size;
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size >= 2) {
+        int data = 0;
+        if (rank == 0) {
+            data = 100;
+        }
+
+        HypercubeSend(&data, 1, MPI_INT, 0, 1, 0, MPI_COMM_WORLD);
+
+        if (rank == 1) {
+            ASSERT_EQ(data, 100);
+        }
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Diff) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const int count_size_vector = 120;
+TEST(Hypercube, Test_Send_0_3) {
+    int rank, size;
 
-    if (world.rank() == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int global_diff = getParallelOperations(global_vec, count_size_vector, "-");
+    if (size >= 4) {
+        int data = 0;
+        if (rank == 0) {
+            data = 100;
+        }
 
-    if (world.rank() == 0) {
-        int reference_diff = getSequentialOperations(global_vec, "-");
-        ASSERT_EQ(reference_diff, global_diff);
-    }
-}
+        HypercubeSend(&data, 1, MPI_INT, 0, 3, 0, MPI_COMM_WORLD);
 
-TEST(Parallel_Operations_MPI, Test_Diff_2) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const int count_size_vector = 120;
-
-    if (world.rank() == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_diff = getParallelOperations(global_vec, count_size_vector, "-");
-
-    if (world.rank() == 0) {
-        int reference_diff = getSequentialOperations(global_vec, "-");
-        ASSERT_EQ(reference_diff, global_diff);
+        if (rank == 3) {
+            ASSERT_EQ(data, 100);
+        }
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Max) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const int count_size_vector = 120;
+TEST(hypercube_mpi, Test_Send_1_0) {
+    int rank, size;
 
-    if (world.rank() == 0) {
-        global_vec = getRandomVector(count_size_vector);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size >= 2) {
+        int data = 0;
+        if (rank == 1) {
+            data = 100;
+        }
+
+        HypercubeSend(&data, 1, MPI_INT, 1, 0, 0, MPI_COMM_WORLD);
+
+        if (rank == 0) {
+            ASSERT_EQ(data, 100);
+        }
     }
+}
 
-    int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector, "max");
+TEST(hypercube_mpi, Test_Send_Array_1_6) {
+    int rank, size;
 
-    if (world.rank() == 0) {
-        int reference_max = getSequentialOperations(global_vec, "max");
-        ASSERT_EQ(reference_max, global_max);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size >= 8) {
+        int data = 100;
+        if (rank == 1) {
+            data = 100;
+        }
+
+        HypercubeSend(&data, 1, MPI_INT, 1, 6, 0, MPI_COMM_WORLD);
+
+        if (rank == 6) {
+            ASSERT_EQ(data, 100);
+        }
     }
 }
 
-TEST(Parallel_Operations_MPI, Test_Max_2) {
-    boost::mpi::communicator world;
-    std::vector<int> global_vec;
-    const int count_size_vector = 120;
 
-    if (world.rank() == 0) {
-        global_vec = getRandomVector(count_size_vector);
-    }
-
-    int global_max;
-    global_max = getParallelOperations(global_vec, count_size_vector, "max");
-
-    if (world.rank() == 0) {
-        int reference_max = getSequentialOperations(global_vec, "max");
-        ASSERT_EQ(reference_max, global_max);
-    }
-}
 
 int main(int argc, char** argv) {
-    boost::mpi::environment env(argc, argv);
-    boost::mpi::communicator world;
+    int result_code = 0;
+
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
-    if (world.rank() != 0) {
-        delete listeners.Release(listeners.default_result_printer());
-    }
-    return RUN_ALL_TESTS();
+    ::testing::TestEventListeners& listeners =
+        ::testing::UnitTest::GetInstance()->listeners();
+
+    if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
+        MPI_Abort(MPI_COMM_WORLD, -1);
+    result_code = RUN_ALL_TESTS();
+    MPI_Finalize();
+
+    return result_code;
 }
