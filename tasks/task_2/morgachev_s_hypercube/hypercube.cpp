@@ -38,7 +38,7 @@ void sendDataInHyperCube(void* buffer,
     int tag,
     MPI_Comm comm) {
     int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank(comm, &rank);
 
     if (rank == sender) {
         MPI_Send(buffer, count, datatype, dest, tag, comm);
