@@ -38,14 +38,14 @@ TEST(Matrix_Cannon_multiply, Test_2) {
         b = {{-3.56, 14.73, -92.92}, {-29.93, 38.93, -0.01}, {23.92, 98.34, -8.08}};
     }
     std::vector<std::vector<double>> res_par = Cannon_multiply(a, b, size);
-    std::vector<std::vector<double>> res_seq = Matrix_multiply(a, b, size);
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++) {
-            res_par[i][j] = round(res_par[i][j] / 10000) * 10000;
-            res_seq[i][j] = round(res_seq[i][j] / 10000) * 10000;
-        }
-
     if (world.rank() == 0) {
+        std::vector<std::vector<double>> res_seq = Matrix_multiply(a, b, size);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                res_par[i][j] = round(res_par[i][j] / 10000) * 10000;
+                res_seq[i][j] = round(res_seq[i][j] / 10000) * 10000;
+            }
+        }
         ASSERT_EQ(res_seq, res_par);
     }
 }
@@ -62,14 +62,15 @@ TEST(Matrix_Cannon_multiply, Test_3) {
         b = GetRandomMatrix(size);
     }
     std::vector<std::vector<double>> res_par = Cannon_multiply(a, b, size);
-    std::vector<std::vector<double>> res_seq = Matrix_multiply(a, b, size);
-    for (int i = 0; i < size; i++)
-        for (int j = 0; j < size; j++) {
-            res_par[i][j] = round(res_par[i][j] / 10000) * 10000;
-            res_seq[i][j] = round(res_seq[i][j] / 10000) * 10000;
-        }
 
     if (world.rank() == 0) {
+        std::vector<std::vector<double>> res_seq = Matrix_multiply(a, b, size);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                res_par[i][j] = round(res_par[i][j] / 10000) * 10000;
+                res_seq[i][j] = round(res_seq[i][j] / 10000) * 10000;
+            }
+        }
         ASSERT_EQ(res_seq, res_par);
     }
 }
