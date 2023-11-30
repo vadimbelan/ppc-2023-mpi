@@ -8,7 +8,9 @@
 #include <boost/mpi/collectives.hpp>
 
 std::vector<std::vector<double>> GetRandomMatrix(int size);
-std::vector<std::vector<double>> Matrix_multiply(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B, size_t matrix_dimension);
-std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B, size_t mat_size);
+std::vector<std::vector<double>> Matrix_multiply(const std::vector<std::vector<double>>& A,
+    const std::vector<std::vector<double>>& B, size_t matrix_dimension);
+std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<double>>& A,
+    const std::vector<std::vector<double>>& B, size_t mat_size);
 
 #endif  // TASKS_TASK_3_POZDNYAKOV_A_CANNON_MULTIPLY_CANNON_MULTIPLY_H_

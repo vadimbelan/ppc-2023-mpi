@@ -5,13 +5,14 @@ std::vector<std::vector<double>> GetRandomMatrix(int size) {
     std::vector<std::vector<double>> res(size, std::vector<double>(size));
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            res[i][j] = round(((static_cast<double>(rand()) / RAND_MAX * 100) - 50) * 10) / 10;
+            res[i][j] = round(((static_cast<double>(std::rand()) / RAND_MAX * 100) - 50) * 10) / 10;
         }
     }
     return res;
 }
 
-std::vector<std::vector<double>> Matrix_multiply(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B, size_t matrix_dimension) {
+std::vector<std::vector<double>> Matrix_multiply(const std::vector<std::vector<double>>& A,
+    const std::vector<std::vector<double>>& B, size_t matrix_dimension) {
     std::vector<std::vector<double>> res(matrix_dimension, std::vector<double>(matrix_dimension, 0));
     for (int i = 0; i < matrix_dimension; i++) {
         for (int j = 0; j < matrix_dimension; j++) {
@@ -23,7 +24,8 @@ std::vector<std::vector<double>> Matrix_multiply(const std::vector<std::vector<d
     return res;
 }
 
-std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<double>>& A, const std::vector<std::vector<double>>& B, size_t matrix_dimension) {
+std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<double>>& A,
+    const std::vector<std::vector<double>>& B, size_t matrix_dimension) {
     boost::mpi::communicator world;
     int proc_rank = world.rank();
     int sqrt_proc_num = 0;
@@ -32,11 +34,14 @@ std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<d
         sqrt_proc_num++;
     sqrt_proc_num--;
 
-    int used_matrix_dimension = matrix_dimension % sqrt_proc_num == 0 ? matrix_dimension : matrix_dimension + (sqrt_proc_num - matrix_dimension % sqrt_proc_num);
-    std::vector<int> local_matrix_sizes(world.size(), (used_matrix_dimension / sqrt_proc_num) * (used_matrix_dimension / sqrt_proc_num));
+    int used_matrix_dimension = matrix_dimension % sqrt_proc_num == 0 ? matrix_dimension : matrix_dimension
+        + (sqrt_proc_num - matrix_dimension % sqrt_proc_num);
+    std::vector<int> local_matrix_sizes(world.size(), (used_matrix_dimension / sqrt_proc_num)
+        * (used_matrix_dimension / sqrt_proc_num));
     for (int i = sqrt_proc_num * sqrt_proc_num; i < world.size(); i++)
         local_matrix_sizes[i] = 0;
-    std::vector<double> local_A(local_matrix_sizes[proc_rank]), local_B(local_matrix_sizes[proc_rank]), gather_result(used_matrix_dimension * used_matrix_dimension);
+    std::vector<double> local_A(local_matrix_sizes[proc_rank]), local_B(local_matrix_sizes[proc_rank]),
+        gather_result(used_matrix_dimension * used_matrix_dimension);
     int local_matrix_dimension = sqrt(local_matrix_sizes[proc_rank]);
 
     if (proc_rank == 0) {
@@ -48,7 +53,8 @@ std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<d
                 for (int i = 0; i < local_matrix_dimension; i++) {
                     for (int j = 0; j < local_matrix_dimension; j++) {
                         int k = (x + y) % sqrt_proc_num;
-                        int new_index = (x * sqrt_proc_num + y) * local_matrix_dimension * local_matrix_dimension + (i * local_matrix_dimension + j);
+                        int new_index = (x * sqrt_proc_num + y) * local_matrix_dimension *
+                            local_matrix_dimension + (i * local_matrix_dimension + j);
                         int old_x_A = x * local_matrix_dimension + i;
                         int old_y_A = k * local_matrix_dimension + j;
                         int old_x_B = k * local_matrix_dimension + i;
@@ -82,7 +88,8 @@ std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<d
             for (int i = 0; i < local_matrix_dimension; i++)
                 for (int j = 0; j < local_matrix_dimension; j++)
                     for (int k = 0; k < local_matrix_dimension; k++)
-                        local_res[i * local_matrix_dimension + j] += local_A[i * local_matrix_dimension + k] * local_B[k * local_matrix_dimension + j];
+                        local_res[i * local_matrix_dimension + j] += local_A[i * local_matrix_dimension + k]
+                            * local_B[k * local_matrix_dimension + j];
             if (sqrt_proc_num - q != 1) {
                 int x = proc_rank / sqrt_proc_num;
                 int y = proc_rank % sqrt_proc_num;
@@ -110,7 +117,8 @@ std::vector<std::vector<double>> Cannon_multiply(const std::vector<std::vector<d
             for (int y = 0; y < sqrt_proc_num; y++) {
                 for (int i = 0; i < used_matrix_dimension / sqrt_proc_num; i++) {
                     for (int j = 0; j < used_matrix_dimension / sqrt_proc_num; j++) {
-                        old_index = (x * sqrt_proc_num + y) * local_matrix_dimension * local_matrix_dimension + (i * local_matrix_dimension + j);
+                        old_index = (x * sqrt_proc_num + y) * local_matrix_dimension *
+                            local_matrix_dimension + (i * local_matrix_dimension + j);
                         new_x = x * local_matrix_dimension + i;
                         new_y = y * local_matrix_dimension + j;
                         if (new_x < matrix_dimension && new_y < matrix_dimension) {
