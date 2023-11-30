@@ -1,6 +1,6 @@
 // Copyright 2023 Yurin Andrey
 #include <algorithm>
-#include <boost/mpi/status.hpp>
+#include <iostream>
 #include "task_2/yurin_a_readers_writers/readers_writers.h"
 
 
@@ -13,84 +13,117 @@
 #define WRITER_END_TAG 6
 
 
-void StartNewReaders(const boost::mpi::communicator& world, size_t* localReaderCount) {
-    boost::mpi::status status = world.recv(boost::mpi::any_source, READER_READY_TAG);
-    world.send(status.source(), READER_START_TAG);
+void StartNewReaders(size_t* localReaderCount) {
+    MPI_Status status;
+    int in = 0;
+    int out = 1;
+
+    MPI_Recv(&in, 1, MPI_INT, MPI_ANY_SOURCE, READER_READY_TAG, MPI_COMM_WORLD, &status);
+    MPI_Send(&out, 1, MPI_INT, status.MPI_SOURCE, READER_START_TAG, MPI_COMM_WORLD);
+
     (*localReaderCount)++;
 }
 
 void FinishCompletedReaders(
-        const boost::mpi::communicator& world,
         size_t* localReaderCount,
         size_t* processesLeft
         ) {
-    world.recv(boost::mpi::any_source, READER_END_TAG);
+    int in = 0;
+    MPI_Recv(&in, 1, MPI_INT, MPI_ANY_SOURCE, READER_END_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     (*localReaderCount)--;
     (*processesLeft)--;
 }
 
-void ExecuteWriter(const boost::mpi::communicator& world, const int& dest, size_t* processesLeft) {
-    world.send(dest, WRITER_START_TAG);
-    world.recv(dest, WRITER_END_TAG);
+void ExecuteWriter(const int& dest, size_t* processesLeft) {
+    int in = 0;
+    int out = 1;
+    MPI_Send(&out, 1, MPI_INT, dest, WRITER_START_TAG, MPI_COMM_WORLD);
+    MPI_Recv(&in, 1, MPI_INT, dest, WRITER_END_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     (*processesLeft)--;
 }
 
-void Controller(const boost::mpi::communicator& world, const size_t& readerCount, const size_t& writerCount) {
-    size_t processesLeft = std::min(readerCount + writerCount, static_cast<size_t>(world.size() - 1));
-    while (processesLeft) {
-        boost::mpi::status status;
+void Controller(const size_t& readerCount, const size_t& writerCount) {
+    int in = 0;
+    int out = 1;
 
-        if ((world.iprobe(boost::mpi::any_source, WRITER_READY_TAG)).has_value()) {
-            status = (world.recv(boost::mpi::any_source, WRITER_READY_TAG));
+    int sizeWorld = 0;
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
+
+    size_t processesLeft = std::min(readerCount + writerCount, static_cast<size_t>(sizeWorld - 1));
+    while (processesLeft) {
+        MPI_Status status;
+        int flag = 0;
+
+        MPI_Iprobe(MPI_ANY_SOURCE, WRITER_READY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
+        if (flag) {
+            MPI_Recv(&in, 1, MPI_INT, MPI_ANY_SOURCE, WRITER_READY_TAG, MPI_COMM_WORLD, &status);
         } else {
-            status = world.recv(boost::mpi::any_source, boost::mpi::any_tag);
+            MPI_Recv(&in, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         }
 
-        if (status.tag() == READER_READY_TAG) {
+        if (status.MPI_TAG == READER_READY_TAG) {
             size_t localReaderCount = 1;
-            world.send(status.source(), READER_START_TAG);
+            MPI_Send(&out, 1, MPI_INT, status.MPI_SOURCE, READER_START_TAG, MPI_COMM_WORLD);
 
-            while (!((world.iprobe(boost::mpi::any_source, WRITER_READY_TAG)).has_value()) && localReaderCount != 0) {
-                if (world.iprobe(boost::mpi::any_source, READER_END_TAG).has_value()) {
-                    FinishCompletedReaders(world, &localReaderCount, &processesLeft);
+            MPI_Iprobe(MPI_ANY_SOURCE, WRITER_READY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
+            while (!flag && localReaderCount != 0) {
+                int readerEndFlag = 0;
+                MPI_Iprobe(MPI_ANY_SOURCE, READER_END_TAG, MPI_COMM_WORLD, &readerEndFlag, MPI_STATUS_IGNORE);
+                if (readerEndFlag) {
+                    FinishCompletedReaders(&localReaderCount, &processesLeft);
                 }
-                if (world.iprobe(boost::mpi::any_source, READER_READY_TAG).has_value()) {
-                    StartNewReaders(world, &localReaderCount);
+
+                int readerReadyFlag = 0;
+                MPI_Iprobe(MPI_ANY_SOURCE, READER_READY_TAG, MPI_COMM_WORLD, &readerReadyFlag, MPI_STATUS_IGNORE);
+                if (readerReadyFlag) {
+                    StartNewReaders(&localReaderCount);
                 }
+
+                MPI_Iprobe(MPI_ANY_SOURCE, WRITER_READY_TAG, MPI_COMM_WORLD, &flag, MPI_STATUS_IGNORE);
             }
 
             while (localReaderCount) {
-                FinishCompletedReaders(world, &localReaderCount, &processesLeft);
+                FinishCompletedReaders(&localReaderCount, &processesLeft);
             }
 
-        } else if (status.tag() == WRITER_READY_TAG) {
-            ExecuteWriter(world, status.source(), &processesLeft);
+        } else if (status.MPI_TAG == WRITER_READY_TAG) {
+            ExecuteWriter(status.MPI_SOURCE, &processesLeft);
         }
     }
 }
 
-void Reader(const boost::mpi::communicator& world) {
-    world.send(0, READER_READY_TAG);
-    world.recv(0, READER_START_TAG);
+void Reader() {
+    int in = 0;
+    int out = 1;
+    MPI_Send(&out, 1, MPI_INT, 0, READER_READY_TAG, MPI_COMM_WORLD);
+    MPI_Recv(&in, 1, MPI_INT, 0, READER_START_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
     // critical section
-    world.send(0, READER_END_TAG);
+    MPI_Send(&out, 1, MPI_INT, 0, READER_END_TAG, MPI_COMM_WORLD);
 }
 
-void Writer(const boost::mpi::communicator& world) {
-    world.send(0, WRITER_READY_TAG);
-    world.recv(0, WRITER_START_TAG);
+void Writer() {
+    int in = 0;
+    int out = 1;
+    MPI_Send(&out, 1, MPI_INT, 0, WRITER_READY_TAG, MPI_COMM_WORLD);
+    MPI_Recv(&in, 1, MPI_INT, 0, WRITER_START_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
     // critical section
-    world.send(0, WRITER_END_TAG);
+    MPI_Send(&out, 1, MPI_INT, 0, WRITER_END_TAG, MPI_COMM_WORLD);
 }
 
 void ReadersWriters(const size_t readerCount, const size_t writerCount) {
-    boost::mpi::communicator world;
+    int rank = 0;
+    int sizeWorld = 0;
 
-    if (world.rank() == 0) {
-        Controller(world, readerCount, writerCount);
-    } else if (world.rank() <= readerCount) {
-        Reader(world);
-    } else if (world.rank() <= readerCount + writerCount) {
-        Writer(world);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeWorld);
+
+    if (rank == 0) {
+        Controller(readerCount, writerCount);
+    } else if (rank <= readerCount) {
+        Reader();
+    } else if (rank <= readerCount + writerCount) {
+        Writer();
     }
 }
