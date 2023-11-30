@@ -14,7 +14,7 @@ TEST(Star_Topology_MPI, Test_Send_Through_Master) {
     int receiver = world_size - 1;
     int data = 0;
 
-    if (world_rank == source)
+    if (world_rank == source || world_size == 1)
         data = 200;
 
     sendDataStar(MPI_COMM_WORLD, master, source, receiver, 0, &data, MPI_INT);
@@ -78,7 +78,7 @@ TEST(Star_Topology_MPI, Test_Send_To_Yourself) {
     int receiver = master;
     int data = 0;
 
-    if (world_rank == source)
+    if (world_rank == source || world_size == 1)
         data = 1000;
 
     sendDataStar(MPI_COMM_WORLD, master, source, receiver, 0, &data, MPI_INT);
@@ -99,7 +99,7 @@ TEST(Star_Topology_MPI, Test_For_One_Processor) {
     int receiver = 0;
     int data = 0;
 
-    if (world_rank == source)
+    if (world_rank == source || world_size == 1)
         data = 200;
 
     sendDataStar(MPI_COMM_WORLD, master, source, receiver, 0, &data, MPI_INT);
@@ -120,7 +120,7 @@ TEST(Star_Topology_MPI, Test_For_Two_Processors) {
     int receiver = 1;
     int data = 0;
 
-    if (world_rank == source)
+    if (world_rank == source || world_size == 1)
         data = 200;
 
     sendDataStar(MPI_COMM_WORLD, master, source, receiver, 0, &data, MPI_INT);

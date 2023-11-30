@@ -16,6 +16,7 @@ void sendDataStar(
     MPI_Comm_size(world, &world_size);
     MPI_Comm_rank(world, &world_rank);
 
+
     if (!(source < world_size && receiver < world_size)) return;
     if (receiver - source == 0) return;
 
@@ -32,8 +33,12 @@ void sendDataStar(
             MPI_Send(data, 1, datatype, master, tag, world);
         }
     } else if (world_rank == master) {
-        MPI_Recv(data, 1, datatype, source, tag, world, MPI_STATUS_IGNORE);
-        MPI_Send(data, 1, datatype, receiver, tag, world);
+        if (master != receiver) {
+            MPI_Recv(data, 1, datatype, source, tag, world, MPI_STATUS_IGNORE);
+            MPI_Send(data, 1, datatype, receiver, tag, world);
+        } else {
+            MPI_Recv(data, 1, datatype, source, tag, world, MPI_STATUS_IGNORE);
+        }
     } else if (world_rank == receiver) {
         MPI_Recv(data, 1, datatype, master, tag, world, MPI_STATUS_IGNORE);
     }
