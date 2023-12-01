@@ -20,80 +20,75 @@ std::vector<int> GetMatrixRand(int n) {
       matrix[i * n + j] = gen() % 5;
     }
   }
-return matrix;
+  return matrix;
 }
 std::vector<int> SequentialMulMatrix(const std::vector<int>& a,
-const std::vector<int>& b, int n) {
-  std::vector<int> c(n * n, 0);
+  const std::vector<int>& b, int n, int m, int m1) {
+  int n1 = m;
+  std::vector<int> c(n * m1, 0);
   for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int k = 0; k < n; ++k) {
-        c[i * n + j] += a[i * n + k] * b[k * n + j];
+    for (int j = 0; j < m1; ++j) {
+      for (int k = 0; k < m; ++k) {
+        c[i * m1 + j] += a[i * n1 + k] * b[k * m1 + j];
       }
     }
   }
   return c;
 }
-std::vector<int> parallelMatrixMul(std::vector<int>* c,
-std::vector<int>* d, int sz) {
+  std::vector<int> parallelMatrixMul(std::vector<int>* c,
+  std::vector<int>* d, int an, int am) {
   std::vector<int>& a = *c;
   std::vector<int>& b = *d;
   int comSize;
   int comRank;
-  MPI_Status status;
   MPI_Comm_size(MPI_COMM_WORLD, &comSize);
   MPI_Comm_rank(MPI_COMM_WORLD, &comRank);
-  if (sz < comSize || comSize == 1) {
+
+  if (an < comSize || comSize == 1) {
     if (comRank == 0) {
-      return SequentialMulMatrix(a, b, sz);
+      return SequentialMulMatrix(a, b, an, am, an);
+    } else {
+        return std::vector<int>{};
       }
   }
-  int n = sz / comSize;
-  int ost = sz % comSize;
-  std::vector<int> sendcounts(comSize);
-  std::vector<int> displs(comSize);
-
-  for (int i = 0; i < comSize; ++i) {
-    sendcounts[i] = (i < ost) ? (n + 1) * sz : n * sz;
-    displs[i] = (i == 0) ? 0 : (displs[i - 1] + (sendcounts[i - 1]));
-  }
-  MPI_Bcast(b.data(), sz * sz, MPI_INT, 0, MPI_COMM_WORLD);
-
+  int bn = am;
+  int bm = an;
+  int n = an / comSize;
+  int reminder = an % comSize;
+  MPI_Bcast(b.data(), bn * bm, MPI_INT, 0, MPI_COMM_WORLD);
+    std::vector<int> loc_v;
   if (comRank == 0) {
     if (n > 0) {
-      for (int i = 1; i < comSize; ++i) {
-        MPI_Send(a.data() + displs[i], sendcounts[i], MPI_INT, i, 0, MPI_COMM_WORLD);
+      for (int process = 1; process < comSize; ++process) {
+        MPI_Send(a.data() + reminder * am + process * n * am,
+          am * n, MPI_INT, process, 0, MPI_COMM_WORLD);
       }
     }
   }
-  std::vector<int> loc_buf;
+
   if (comRank == 0) {
-      loc_buf = std::vector<int>(a.begin(), a.begin() + sendcounts[0]);
+    loc_v = std::vector<int>(a.begin(), a.begin() + n * am + reminder * am);
   } else {
       if (n > 0) {
-          loc_buf.resize(sendcounts[comRank]);
-          MPI_Recv(loc_buf.data(), sendcounts[comRank],
-              MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        loc_v.resize(am * n);
+        MPI_Status status;
+        MPI_Recv(loc_v.data(), am * n, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
       }
     }
 
-  std::vector<int> loc_mul(sendcounts[comRank]);
-  int tmpSize = sendcounts[comRank] / sz;
-
-  for (int i = 0; i < tmpSize; ++i) {
-    for (int j = 0; j < sz; ++j) {
-      for (int k = 0; k < sz; ++k) {
-        loc_mul[i * sz + j] += loc_buf[i * sz + k] * b[k * sz + j];
-      }
-    }
+  std::vector<int> loc_res = SequentialMulMatrix(loc_v, b, loc_v.size() / am, am, bm);
+  std::vector<int> res(an * bm);
+  std::vector<int> sendcounts(comSize);
+  std::vector<int> displs(comSize);
+  for (int i = 0; i < comSize; ++i) {
+    sendcounts[i] = (i == 0) ? n * am + reminder * am : n * am;
+    displs[i] = (i == 0) ? 0 : (displs[i - 1] + sendcounts[i - 1]);
   }
-  int resultSize = std::accumulate(sendcounts.begin(), sendcounts.end(), 0);
-  std::vector<int> result;
+  MPI_Gatherv(loc_res.data(), sendcounts[comRank], MPI_INT, res.data(),
+    sendcounts.data(), displs.data(), MPI_INT, 0, MPI_COMM_WORLD);
   if (comRank == 0) {
-    result.resize(resultSize);
-  }
-  MPI_Gatherv(loc_mul.data(), sendcounts[comRank],
-  MPI_INT, result.data(), sendcounts.data(), displs.data(),
-  MPI_INT, 0, MPI_COMM_WORLD);
-  return result;
+    return res;
+  } else {
+      return std::vector<int> {};
+    }
 }
