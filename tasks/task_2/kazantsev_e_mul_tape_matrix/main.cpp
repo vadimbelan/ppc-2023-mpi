@@ -31,7 +31,6 @@ TEST(Parallel_tape_matrix_mul, test_2) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   int n = 11, m = 11;
   std::vector<int> A(n * m), B(n * m);
-
   if (rank == 0) {
     A = GetMatrixRand(n);
     B = GetMatrixRand(n);
