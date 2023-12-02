@@ -1,6 +1,7 @@
 // Copyright 2023 Sredneva Anastasiya
 #include "task_3/sredneva_a_sobel_operator/sobel_operator.h"
 #include <random>
+#include <algorithm>
 
 int getSobelX(int i) {
     std::vector<int> kernelX = { -1, 0, 1, -2, 0, 2, -1, 0, 1};
@@ -22,8 +23,7 @@ std::vector<uint8_t> getRandomPicture(int n, int m, uint8_t l, uint8_t r) {
         for (int j = 0; j < m + 2; j++) {
             if (i == 0 || i == (n + 1) || j == 0 || j == (m + 1)) {
                 pict[i * (m + 2) + j] = 0;
-            }
-            else {
+            }else {
                 pict[i * (m + 2) + j] = distrib(gen);
             }
         }
@@ -77,7 +77,7 @@ std::vector<uint8_t> getParallelSobel(const std::vector<uint8_t>& pict, int n, i
     std::vector<int> displs(ProcNum);
     std::vector<int> recvcounts(ProcNum);
     std::vector<int> displs2(ProcNum);
-    std::vector<uint8_t> pict2((size + 2) * mn); 
+    std::vector<uint8_t> pict2((size + 2) * mn);
     if (ProcRank == 0) {
         displs[0] = 0;
         displs2[0] = 0;
@@ -91,7 +91,8 @@ std::vector<uint8_t> getParallelSobel(const std::vector<uint8_t>& pict, int n, i
         }
         pict2.resize((size + ost + 2) * mn);
     }
-    MPI_Scatterv(pict.data(), sendcounts.data(), displs.data(), MPI_UINT8_T, pict2.data(), pict2.size(), MPI_UINT8_T, 0, MPI_COMM_WORLD);
+    MPI_Scatterv(pict.data(), sendcounts.data(), displs.data(), MPI_UINT8_T, pict2.data(),
+        pict2.size(), MPI_UINT8_T, 0, MPI_COMM_WORLD);
 
      std::vector<uint8_t> pict3(n * m);
 
@@ -99,7 +100,8 @@ std::vector<uint8_t> getParallelSobel(const std::vector<uint8_t>& pict, int n, i
 
      pict3 = getSequentialSobel(pict2, k - 2, m);
 
-     MPI_Gatherv(pict3.data(), pict3.size(), MPI_UINT8_T, pictRes.data(), recvcounts.data(), displs2.data(), MPI_UINT8_T, 0, MPI_COMM_WORLD);
+     MPI_Gatherv(pict3.data(), pict3.size(), MPI_UINT8_T, pictRes.data(), recvcounts.data(),
+         displs2.data(), MPI_UINT8_T, 0, MPI_COMM_WORLD);
 
     return pictRes;
 }
