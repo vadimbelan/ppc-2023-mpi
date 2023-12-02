@@ -16,10 +16,10 @@ TEST(Gauss_Horizontal, Test_1) {
     std::vector<double> matrix(size * (size + 1));
     std::vector<double> res(size);
 
-    rand_matr(matrix, size);
-    gauss_algo(matrix, res, size);
+    rand_matr(&matrix, size);
+    gauss_algo(&matrix, &res, size);
 
-    if (rankProc == 0) ASSERT_EQ(check_res(matrix, res, size), true);
+    if (rankProc == 0) ASSERT_EQ(check_res(&matrix, &res, size), true);
 }
 
 TEST(Gauss_Horizontal, Test_2) {
@@ -32,10 +32,10 @@ TEST(Gauss_Horizontal, Test_2) {
     std::vector<double> matrix(size * (size + 1));
     std::vector<double> res(size);
 
-    rand_matr(matrix, size);
-    gauss_algo(matrix, res, size);
+    rand_matr(&matrix, size);
+    gauss_algo(&matrix, &res, size);
 
-    if (rankProc == 0) ASSERT_EQ(check_res(matrix, res, size), true);
+    if (rankProc == 0) ASSERT_EQ(check_res(&matrix, &res, size), true);
 }
 
 TEST(Gauss_Horizontal, Test_3) {
@@ -48,10 +48,10 @@ TEST(Gauss_Horizontal, Test_3) {
     std::vector<double> matrix(size * (size + 1));
     std::vector<double> res(size);
 
-    rand_matr(matrix, size);
-    gauss_algo(matrix, res, size);
+    rand_matr(&matrix, size);
+    gauss_algo(&matrix, &res, size);
 
-    if (rankProc == 0) ASSERT_EQ(check_res(matrix, res, size), true);
+    if (rankProc == 0) ASSERT_EQ(check_res(&matrix, &res, size), true);
 }
 
 TEST(Gauss_Horizontal, Test_4) {
@@ -64,10 +64,10 @@ TEST(Gauss_Horizontal, Test_4) {
     std::vector<double> matrix(size * (size + 1));
     std::vector<double> res(size);
 
-    rand_matr(matrix, size);
-    gauss_algo(matrix, res, size);
+    rand_matr(&matrix, size);
+    gauss_algo(&matrix, &res, size);
 
-    if (rankProc == 0) ASSERT_EQ(check_res(matrix, res, size), true);
+    if (rankProc == 0) ASSERT_EQ(check_res(&matrix, &res, size), true);
 }
 
 TEST(Gauss_Horizontal, Test_5) {
@@ -80,10 +80,10 @@ TEST(Gauss_Horizontal, Test_5) {
     std::vector<double> matrix(size * (size + 1));
     std::vector<double> res(size);
 
-    rand_matr(matrix, size);
-    gauss_algo(matrix, res, size);
+    rand_matr(&matrix, size);
+    gauss_algo(&matrix, &res, size);
 
-    if (rankProc == 0) ASSERT_EQ(check_res(matrix, res, size), true);
+    if (rankProc == 0) ASSERT_EQ(check_res(&matrix, &res, size), true);
 }
 
 int main(int argc, char **argv) {
