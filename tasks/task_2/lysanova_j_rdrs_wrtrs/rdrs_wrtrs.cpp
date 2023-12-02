@@ -6,13 +6,13 @@
 #include "task_2/lysanova_j_rdrs_wrtrs/rdrs_wrtrs.h"
 
 #define SUPERVIZOR 0
-const enum TAGS {
+enum TAGS {
     READY,
     DATA,
     DONE
 };
 
-const enum ROLES {
+enum ROLES {
     READER,
     WRITER
 };
