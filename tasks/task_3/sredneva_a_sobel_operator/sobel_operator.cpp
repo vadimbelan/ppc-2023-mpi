@@ -23,7 +23,7 @@ std::vector<uint8_t> getRandomPicture(int n, int m, uint8_t l, uint8_t r) {
         for (int j = 0; j < m + 2; j++) {
             if (i == 0 || i == (n + 1) || j == 0 || j == (m + 1)) {
                 pict[i * (m + 2) + j] = 0;
-            }else {
+            } else {
                 pict[i * (m + 2) + j] = distrib(gen);
             }
         }
