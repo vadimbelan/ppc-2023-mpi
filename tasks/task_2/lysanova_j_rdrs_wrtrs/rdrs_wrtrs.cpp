@@ -59,7 +59,6 @@ std::pair<std::queue<std::pair<int, int>>, std::vector<int>> rdrs_wrtrs_boost() 
                     working_readers[status.source()] = world.irecv(status.source(), DONE);
                 }
             }
-
         }
 
 
