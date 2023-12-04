@@ -28,15 +28,15 @@ TEST(QUICKSORT, test_comparison_with_stdSort) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_EQ(ch, n);
+        ASSERT_EQ(ch, n);
 }
-TEST(QUICKSORT, test_rand_array_sort) {
+TEST(QUICKSORT, test_comparison_with_linery_quicksort) {
     int ProcRank;
     std::random_device rd;
     std::mt19937 rng(rd());
-    std::uniform_real_distribution<> dis(0, 10000);
+    std::uniform_real_distribution<> dis(0, 100);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-    int n = 10;
+    int n = 100;
     double* arr1 = new double[n];
     double* arr2 = new double[n];
     for (int i = 0; i < n; i++) {
@@ -44,35 +44,32 @@ TEST(QUICKSORT, test_rand_array_sort) {
         arr2[i] = arr1[i];
     }
     double* arr3 = new double[n];
+    auto start1 = std::chrono::steady_clock::now();
     arr3 = Sort(arr1, n);
-    std::sort(arr2, arr2 + n);
-    int ch = 0;
-    for (int i = 0; i < n; ++i) {
-        if (arr3[i] == arr2[i])
-            ch++;
-    }
+    auto end1 = std::chrono::steady_clock::now();
+    auto diff1 = end1 - start1;
+    auto start2 = std::chrono::steady_clock::now();
+    quickSortFunction(arr2, 0, n - 1);
+    auto end2 = std::chrono::steady_clock::now();
+    auto diff2 = end2 - start2;
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_EQ(ch, n);
-    }
-    
+    ASSERT_GT(diff1, diff2);
+}
+
 TEST(QUICKSORT, test_sort_sorted_array) {
     int ProcRank;
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_real_distribution<> dis(0, 10000);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     int n = 10;
     double* arr1 = new double[n];
     double* arr2 = new double[n];
     for (int i = 0; i < n; i++) {
-        arr1[i] = dis(rng);
+        arr1[i] = i;
         arr2[i] = arr1[i];
     }
     double* arr3 = new double[n];
     arr3 = Sort(arr1, n);
-    std::sort(arr2, arr2 + n);
     int ch = 0;
     for (int i = 0; i < n; ++i) {
         if (arr3[i] == arr2[i])
@@ -81,25 +78,21 @@ TEST(QUICKSORT, test_sort_sorted_array) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_EQ(ch, n);
-    }
-    
+        ASSERT_EQ(ch, n);
+}
+
 TEST(QUICKSORT, test_sort_reverce_array) {
     int ProcRank;
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_real_distribution<> dis(0, 10000);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     int n = 10;
     double* arr1 = new double[n];
     double* arr2 = new double[n];
     for (int i = 0; i < n; i++) {
-        arr1[i] = dis(rng);
-        arr2[i] = arr1[i];
+        arr1[i] = n-i-1;
+        arr2[i] = i;
     }
     double* arr3 = new double[n];
     arr3 = Sort(arr1, n);
-    std::sort(arr2, arr2 + n);
     int ch = 0;
     for (int i = 0; i < n; ++i) {
         if (arr3[i] == arr2[i])
@@ -108,25 +101,21 @@ TEST(QUICKSORT, test_sort_reverce_array) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_EQ(ch, n);
-    }
-    
+        ASSERT_EQ(ch, n);
+}
+
 TEST(QUICKSORT, test_sort_array_of_nulls) {
     int ProcRank;
-    std::random_device rd;
-    std::mt19937 rng(rd());
-    std::uniform_real_distribution<> dis(0, 10000);
     MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
     int n = 10;
     double* arr1 = new double[n];
     double* arr2 = new double[n];
     for (int i = 0; i < n; i++) {
-        arr1[i] = dis(rng);
+        arr1[i] = 0;
         arr2[i] = arr1[i];
     }
     double* arr3 = new double[n];
     arr3 = Sort(arr1, n);
-    std::sort(arr2, arr2 + n);
     int ch = 0;
     for (int i = 0; i < n; ++i) {
         if (arr3[i] == arr2[i])
@@ -135,103 +124,8 @@ TEST(QUICKSORT, test_sort_array_of_nulls) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_EQ(ch, n);
-    }
-//TEST(QUICKSORT, test_rand_array_sort) {
-//    int ProcRank;
-//    std::random_device rd;
-//    std::mt19937 rng(rd());
-//    std::uniform_real_distribution<> dis(0, 10000);
-//    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-//    int n = 10;
-//    double* arr1 = new double[n];
-//    double* arr2 = new double[n];
-//    for (int i = 0; i < n; i++) {
-//        arr1[i] = dis(rng);
-//        arr2[i] = arr1[i];
-//    }
-//    double* arr3 = new double[n];
-//    arr3 = Sort(arr1, n);
-//    quickSortFunction(arr2, 0, n-1);
-//    int ch = 0;
-//    for (int i = 0; i < n; ++i) {
-//        if (arr3[i] == arr2[i])
-//            ch++;
-//    }
-//    delete[]arr1;
-//    delete[]arr2;
-//    delete[]arr3;
-//    ASSERT_EQ(ch, n);
-//}
-//
-//TEST(QUICKSORT, test_sort_sorted_array) {
-//    int ProcRank;
-//    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-//    int n = 10;
-//    double* arr1 = new double[n];
-//    double* arr2 = new double[n];
-//    for (int i = 0; i < n; i++) {
-//        arr1[i] = i;
-//        arr2[i] = arr1[i];
-//    }
-//    double* arr3 = new double[n];
-//    arr3 = Sort(arr1, n);
-//    int ch = 0;
-//    for (int i = 0; i < n; ++i) {
-//        if (arr3[i] == arr2[i])
-//            ch++;
-//    }
-//    delete[]arr1;
-//    delete[]arr2;
-//    delete[]arr3;
-//    ASSERT_EQ(ch, n);
-//}
-//
-//TEST(QUICKSORT, test_sort_reverce_array) {
-//    int ProcRank;
-//    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-//    int n = 10;
-//    double* arr1 = new double[n];
-//    double* arr2 = new double[n];
-//    for (int i = 0; i < n; i++) {
-//        arr1[i] = n-i-1;
-//        arr2[i] = i;
-//    }
-//    double* arr3 = new double[n];
-//    arr3 = Sort(arr1, n);
-//    int ch = 0;
-//    for (int i = 0; i < n; ++i) {
-//        if (arr3[i] == arr2[i])
-//            ch++;
-//    }
-//    delete[]arr1;
-//    delete[]arr2;
-//    delete[]arr3;
-//    ASSERT_EQ(ch, n);
-//}
-//
-//TEST(QUICKSORT, test_sort_array_of_nulls) {
-//    int ProcRank;
-//    MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-//    int n = 10;
-//    double* arr1 = new double[n];
-//    double* arr2 = new double[n];
-//    for (int i = 0; i < n; i++) {
-//        arr1[i] = 0;
-//        arr2[i] = arr1[i];
-//    }
-//    double* arr3 = new double[n];
-//    arr3 = Sort(arr1, n);
-//    int ch = 0;
-//    for (int i = 0; i < n; ++i) {
-//        if (arr3[i] == arr2[i])
-//            ch++;
-//    }
-//    delete[]arr1;
-//    delete[]arr2;
-//    delete[]arr3;
-//    ASSERT_EQ(ch, n);
-//}
+        ASSERT_EQ(ch, n);
+}
 
 int main(int argc, char** argv) {
     int result_code = 0;
