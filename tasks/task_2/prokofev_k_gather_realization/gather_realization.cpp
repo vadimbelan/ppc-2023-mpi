@@ -27,18 +27,15 @@ int Gather(const void* sbuf, int scount, MPI_Datatype stype, void* rbuf,
           MPI_Recv(reinterpret_cast<char*>(tmpBuf) + 1 * rcount * sizeofType, rcount * (numProc - rankProc - 1),
             stype, son, 0, comm, MPI_STATUS_IGNORE);
           MPI_Send(tmpBuf, scount * (numProc - rankProc), stype, father, 0, comm);
-        }
-        else {
+        } else {
           MPI_Send(tmpBuf, scount, stype, father, 0, comm);
         }
-      }
-      else {
+      } else {
         MPI_Recv(reinterpret_cast<char*>(tmpBuf) + 1 * rcount * sizeofType, rcount * (numProc - rankProc - 1),
           stype, son, 0, comm, MPI_STATUS_IGNORE);
         if (rankProc == root) {
           std::memcpy(rbuf, tmpBuf, bytes * (numProc - rankProc));
-        }
-        else {
+        } else {
           MPI_Send(tmpBuf, scount * numProc, stype, root, 0, comm);
         }
       }
