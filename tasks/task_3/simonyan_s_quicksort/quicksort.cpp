@@ -116,19 +116,17 @@ double* Sort(double* arr, int n) {
                 MPI_DOUBLE, ProcRank + step, 0,
                 MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             data = merge(buf, size, recvbuf, othersizeofbuf);
-            size = size + othersizeofbuf;
             delete[] recvbuf;
             delete[] buf;
-
-            ost = n % ProcNum;
-            offset = std::min(ProcRank, ost);
-            position = ProcRank * size + offset;
+            size = size + othersizeofbuf;
             buf = new double[size];
-            memcpy(buf, &data[position], size * sizeof(double));
-            buf = data;
+            memcpy(buf, data, size * sizeof(double));
+            delete[] data;
         }
     }
+    data = new double[n];
     if (ProcRank == 0) {
+        data = buf;
         for (int i = 1; i < ProcNum; ++i) {
             MPI_Send(data, n, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
         }
