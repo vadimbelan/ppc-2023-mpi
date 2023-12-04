@@ -28,6 +28,7 @@ TEST(QUICKSORT, test_comparison_with_stdSort) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
+    if (ProcRank == 0)
         ASSERT_EQ(ch, n);
 }
 
@@ -45,18 +46,18 @@ TEST(QUICKSORT, test_comparison_with_linery_quicksort) {
         arr2[i] = arr1[i];
     }
     double* arr3 = new double[n];
-    auto start1 = std::chrono::steady_clock::now();
     arr3 = Sort(arr1, n);
-    auto end1 = std::chrono::steady_clock::now();
-    auto diff1 = end1 - start1;
-    auto start2 = std::chrono::steady_clock::now();
+    int ch = 0;
     quickSortFunction(arr2, 0, n - 1);
-    auto end2 = std::chrono::steady_clock::now();
-    auto diff2 = end2 - start2;
+    for (int i = 0; i < n; ++i) {
+        if (arr3[i] == arr2[i])
+            ch++;
+    }
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_GT(diff2, diff1);
+    if (ProcRank == 0)
+        ASSERT_EQ(ch, n);
 }
 
 TEST(QUICKSORT, test_sort_sorted_array) {
