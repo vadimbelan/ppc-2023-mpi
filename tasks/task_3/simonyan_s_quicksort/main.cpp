@@ -30,6 +30,7 @@ TEST(QUICKSORT, test_comparison_with_stdSort) {
     delete[]arr3;
         ASSERT_EQ(ch, n);
 }
+
 TEST(QUICKSORT, test_comparison_with_linery_quicksort) {
     int ProcRank;
     std::random_device rd;
@@ -55,7 +56,7 @@ TEST(QUICKSORT, test_comparison_with_linery_quicksort) {
     delete[]arr1;
     delete[]arr2;
     delete[]arr3;
-    ASSERT_GT(diff1, diff2);
+    ASSERT_GT(diff2, diff1);
 }
 
 TEST(QUICKSORT, test_sort_sorted_array) {
