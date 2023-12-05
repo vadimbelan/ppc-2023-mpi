@@ -124,7 +124,6 @@ int my_scatter::Binary_MPI_Scatter(const void* sendbuf, int sendcount,
       // std::cout << "send * data_size = " << size_of_send * data_type_size <<
       // std::endl; std::vector<char> my_send_buf(size_of_send *
       // data_type_size);
-      // //size_of_send - ���������� ������������ ��������� (�� � ������)
       // std::memcpy(my_send_buf.data(), sendbuf, my_send_buf.size());
       // std::vector<int64_t> tmp(size_of_send);
       // for (int i = 0; i < tmp.size(); ++i)
@@ -354,15 +353,16 @@ int my_scatter::Binary_Search(int left, int right, const int* rank,
         r = (r - l) / 2;
     } else {
       *_position -= ((right - left) / 2 + 1) * (*_recvcount) * (*_type_size);
-      //_position -= ((right - left) * _recvcount * _type_size / 2) + _recvcount
-      //* _type_size;
+      // _position -= ((right - left) * _recvcount * _type_size / 2) +
+      // _recvcount
+      // * _type_size;
       left = mid + 1;
       // l = (r - l + 1) / 2;
       if ((r - l) % 2 != 0)
         l = (r - l) / 2 - (r - l) % 2 + 1;
       else
         l = (r - l) / 2;
-      //_position = _position - l * _type_size;
+      // _position = _position - l * _type_size;
 
       // if (rank == 1)
       //  std::cout << "V binare position = " << _position << std::endl;

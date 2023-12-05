@@ -1,6 +1,6 @@
 // Copyright 2023 Durandin Vladimir
-#ifndef TASKS_TASK_2_DURANDIN_V_SCATTER_H_
-#define TASKS_TASK_2_DURANDIN_V_SCATTER_H_
+#ifndef TASKS_TASK_2_DURANDIN_V_MY_SCATTER_SCATTER_H_
+#define TASKS_TASK_2_DURANDIN_V_MY_SCATTER_SCATTER_H_
 
 #include <mpi.h>
 
@@ -31,4 +31,4 @@ std::vector<double> create_random_vector_double(const size_t size,
                                                 const int64_t min,
                                                 const int64_t max);
 
-#endif  // TASKS_TASK_2_DURANDIN_V_SCATTER_H_
+#endif  // TASKS_TASK_2_DURANDIN_V_MY_SCATTER_SCATTER_H_
