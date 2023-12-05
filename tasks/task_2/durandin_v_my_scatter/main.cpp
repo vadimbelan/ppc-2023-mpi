@@ -102,11 +102,14 @@ TEST(scatter_tests, empty_root_vector) {
     vector = create_random_vector_int64(vector_size, -100ll,
                                         100ll);  // 10'007 is a prime number
 
-  ASSERT_EQ(MPI_ERR_BUFFER,
-            my_scatter::MPI_Scatter(vector.data(), send_count, MPI_INT64_T,
-                                    recv_buf_my_scatter.data(),
-                                    recv_buf_my_scatter.size(), MPI_INT64_T, 0,
-                                    MPI_COMM_WORLD));
+  int result = my_scatter::MPI_Scatter(
+      vector.data(), send_count, MPI_INT64_T, recv_buf_my_scatter.data(),
+      recv_buf_my_scatter.size(), MPI_INT64_T, 0, MPI_COMM_WORLD);
+
+  if (rank == 0)
+    ASSERT_EQ(MPI_ERR_BUFFER, result);
+  else
+    ASSERT_EQ(MPI_ERR_COUNT, result);
 }
 
 TEST(scatter_tests, small_vector) {
