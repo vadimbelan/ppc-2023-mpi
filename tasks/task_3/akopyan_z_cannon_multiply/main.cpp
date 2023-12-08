@@ -5,7 +5,7 @@
 #include <boost/mpi/communicator.hpp>
 #include "./cannon_multiply.h"
 
-TEST(multiply_tests,first) {
+TEST(multiply_tests, first) {
     boost::mpi::communicator world;
     int size = 7;
     std::vector<std::vector<double>> a(size, std::vector<double>(size));
@@ -27,7 +27,7 @@ TEST(multiply_tests,first) {
     }
 }
 
-TEST(multiply_tests,second) {
+TEST(multiply_tests, second) {
     boost::mpi::communicator world;
     int size = 3;
     std::vector<std::vector<double>> a;
@@ -51,7 +51,7 @@ TEST(multiply_tests,second) {
 }
 
 
-TEST(multiply_tests,third) {
+TEST(multiply_tests, third) {
     boost::mpi::communicator world;
     int size = 10;
     std::vector<std::vector<double>> a;
@@ -75,7 +75,7 @@ TEST(multiply_tests,third) {
     }
 }
 
-TEST(multiply_tests,fourth) {
+TEST(multiply_tests, fourth) {
     boost::mpi::communicator world;
     int size = 6;
     std::vector<std::vector<double>> a(size, std::vector<double>(size));
@@ -97,7 +97,7 @@ TEST(multiply_tests,fourth) {
     }
 }
 
-TEST(multiply_tests,fifth) {
+TEST(multiply_tests, fifth) {
     boost::mpi::communicator world;
     int size = 7;
     std::vector<std::vector<double>> a(size, std::vector<double>(size));
