@@ -1,4 +1,4 @@
-// Copyright 2023 Petrov Maksim
+п»ї// Copyright 2023 Petrov Maksim
 #include <mpi.h>
 #include <vector>
 #include <string>
@@ -16,7 +16,7 @@ void generate_rand_matrix(std::vector<double>* matrix, std::vector<double>::size
     }
 }
 
-int calculate_matrix_size(int old_size, std::vector<double>::size_type matrix_size) { // для разбиения матрицы на блоки
+int calculate_matrix_size(int old_size, std::vector<double>::size_type matrix_size) {   // РґР»СЏ СЂР°Р·Р±РёРµРЅРёСЏ РјР°С‚СЂРёС†С‹ РЅР° Р±Р»РѕРєРё
     int sqrt_size = static_cast<int>(sqrt(old_size));
     while ((matrix_size % sqrt_size) && sqrt_size > 1)
         --sqrt_size;
@@ -69,7 +69,7 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         return global_res;
 
     int count_parts = static_cast<int>(sqrt(actual_size));
-    std::vector<double>::size_type local_size = matrix_size / count_parts; // размер каждого блока
+    std::vector<double>::size_type local_size = matrix_size / count_parts;   // СЂР°Р·РјРµСЂ РєР°Р¶РґРѕРіРѕ Р±Р»РѕРєР°
 
     if (rank == 0) {
         for (int proc = 1; proc < actual_size; ++proc) {
@@ -99,14 +99,15 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
 
     if (rank == 0) {
         for (std::vector<double>::size_type i = 0; i < local_size * local_size; ++i) {
-            std::vector<double>::size_type global_offset = matrix_size * (i / local_size); // для вычисления начального индекса каждого блока
-            std::vector<double>::size_type local_offset = i % local_size; // для вычисления индексов элементов внутри каждого блока
+            // РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ РЅР°С‡Р°Р»СЊРЅРѕРіРѕ РёРЅРґРµРєСЃР° РєР°Р¶РґРѕРіРѕ Р±Р»РѕРєР°
+            std::vector<double>::size_type global_offset = matrix_size * (i / local_size);
+            // РґР»СЏ РІС‹С‡РёСЃР»РµРЅРёСЏ РёРЅРґРµРєСЃРѕРІ СЌР»РµРјРµРЅС‚РѕРІ РІРЅСѓС‚СЂРё РєР°Р¶РґРѕРіРѕ Р±Р»РѕРєР°
+            std::vector<double>::size_type local_offset = i % local_size;
 
             local_first_matrix[i] = first_matrix[local_offset + global_offset];
             local_second_matrix[i] = second_matrix[local_offset + global_offset];
         }
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(local_first_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, 0, 1, actual_proc, &status);
@@ -114,46 +115,42 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
             MPI_DOUBLE, 0, 2, actual_proc, &status);
     }
 
-    int proc_number_row = rank / count_parts; // номер строки в сетке процессов
+    int proc_number_row = rank / count_parts;   // РЅРѕРјРµСЂ СЃС‚СЂРѕРєРё РІ СЃРµС‚РєРµ РїСЂРѕС†РµСЃСЃРѕРІ
     int proc_number_col = rank % count_parts;
 
-    // начальные получатели и отправители(пары связи между процессами)
+     // РЅР°С‡Р°Р»СЊРЅС‹Рµ РїРѕР»СѓС‡Р°С‚РµР»Рё Рё РѕС‚РїСЂР°РІРёС‚РµР»Рё(РїР°СЂС‹ СЃРІСЏР·Рё РјРµР¶РґСѓ РїСЂРѕС†РµСЃСЃР°РјРё)
     int init_recipient_a;
     if ((rank - proc_number_row) / count_parts == proc_number_row && rank - proc_number_row >= 0) {
         init_recipient_a = rank - proc_number_row;
-    }
-    else {
+    } else {
         init_recipient_a = rank + count_parts - proc_number_row;
     }
     int init_recipient_b;
     if (rank - proc_number_col * count_parts >= 0) {
         init_recipient_b = rank - proc_number_col * count_parts;
-    }
-    else {
+    } else {
         init_recipient_b = actual_size + (rank - proc_number_col * count_parts);
     }
     int init_sender_a;
     if ((rank + proc_number_row) / count_parts == proc_number_row) {
         init_sender_a = rank + proc_number_row;
-    }
-    else {
+    } else {
         init_sender_a = rank - count_parts + proc_number_row;
     }
 
     int init_sender_b;
     if (rank + proc_number_col * count_parts < actual_size) {
         init_sender_b = rank + proc_number_col * count_parts;
-    }
-    else {
+    } else {
         init_sender_b = (rank + proc_number_col * count_parts) - actual_size;
     }
 
-    std::vector<double> local_res_vector(local_size * local_size, 0.0); // для временного хранения частичных результатов
-    std::vector<double> local_res_matrix(matrix_size * matrix_size, 0.0); // для окончательного результата умножения
+    std::vector<double> local_res_vector(local_size * local_size, 0.0);  // РґР»СЏ РІСЂРµРјРµРЅРЅРѕРіРѕ С…СЂР°РЅРµРЅРёСЏ С‡Р°СЃС‚РёС‡РЅС‹С… СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
+    std::vector<double> local_res_matrix(matrix_size * matrix_size, 0.0);  // РґР»СЏ РѕРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕРіРѕ СЂРµР·СѓР»СЊС‚Р°С‚Р° СѓРјРЅРѕР¶РµРЅРёСЏ
 
     MPI_Status status;
 
-    // обмен данными по строкам и столбцам в сетке процессов
+     // РѕР±РјРµРЅ РґР°РЅРЅС‹РјРё РїРѕ СЃС‚СЂРѕРєР°Рј Рё СЃС‚РѕР»Р±С†Р°Рј РІ СЃРµС‚РєРµ РїСЂРѕС†РµСЃСЃРѕРІ
     if (proc_number_row > 0) {
         MPI_Sendrecv_replace(local_first_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, init_recipient_a, 1, init_sender_a, 1, actual_proc, &status);
@@ -163,33 +160,29 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         MPI_Sendrecv_replace(local_second_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, init_recipient_b, 2, init_sender_b, 2, actual_proc, &status);
     }
-     // Для обмена данными с ближайшими процессами в сетке процессов (для завершения умножения блоков)
+      // Р”Р»СЏ РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё СЃ Р±Р»РёР¶Р°Р№С€РёРјРё РїСЂРѕС†РµСЃСЃР°РјРё РІ СЃРµС‚РєРµ РїСЂРѕС†РµСЃСЃРѕРІ (РґР»СЏ Р·Р°РІРµСЂС€РµРЅРёСЏ СѓРјРЅРѕР¶РµРЅРёСЏ Р±Р»РѕРєРѕРІ)
     int recipient_a;
     if ((rank - 1) / count_parts == proc_number_row && rank - 1 >= 0) {
         recipient_a = rank - 1;
-    }
-    else {
+    } else {
         recipient_a = rank + count_parts - 1;
     }
     int recipient_b;
     if (rank - count_parts >= 0) {
         recipient_b = rank - count_parts;
-    }
-    else {
+    } else {
         recipient_b = actual_size + (rank - count_parts);
     }
     int sender_a;
     if ((rank + 1) / count_parts == proc_number_row) {
         sender_a = rank + 1;
-    }
-    else {
+    } else {
         sender_a = rank - count_parts + 1;
     }
     int sender_b;
     if (rank + count_parts < actual_size) {
         sender_b = rank + count_parts;
-    }
-    else {
+    } else {
         sender_b = (rank + count_parts) - actual_size;
     }
 
