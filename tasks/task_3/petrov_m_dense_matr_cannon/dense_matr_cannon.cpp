@@ -16,7 +16,7 @@ void generate_rand_matrix(std::vector<double>* matrix, std::vector<double>::size
     }
 }
 
-// для разбиения матрицы на блоки
+//  to split the matrix into blocks
 int calculate_matrix_size(int old_size, std::vector<double>::size_type matrix_size) {
     int sqrt_size = static_cast<int>(sqrt(old_size));
     while ((matrix_size % sqrt_size) && sqrt_size > 1)
@@ -70,7 +70,7 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         return global_res;
 
     int count_parts = static_cast<int>(sqrt(actual_size));
-    std::vector<double>::size_type local_size = matrix_size / count_parts;   // размер каждого блока
+    std::vector<double>::size_type local_size = matrix_size / count_parts;   //  the size of each block
 
     if (rank == 0) {
         for (int proc = 1; proc < actual_size; ++proc) {
@@ -100,9 +100,9 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
 
     if (rank == 0) {
         for (std::vector<double>::size_type i = 0; i < local_size * local_size; ++i) {
-            // для вычисления начального индекса каждого блока
+            //  to calculate the initial index of each block
             std::vector<double>::size_type global_offset = matrix_size * (i / local_size);
-            // для вычисления индексов элементов внутри каждого блока
+            //  to calculate the indexes of the elements inside each block
             std::vector<double>::size_type local_offset = i % local_size;
 
             local_first_matrix[i] = first_matrix[local_offset + global_offset];
@@ -116,10 +116,10 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
             MPI_DOUBLE, 0, 2, actual_proc, &status);
     }
 
-    int proc_number_row = rank / count_parts;   // номер строки в сетке процессов
+    int proc_number_row = rank / count_parts;   //  line number in the process grid
     int proc_number_col = rank % count_parts;
 
-     // начальные получатели и отправители(пары связи между процессами)
+     //  initial recipients and senders (communication pairs between processes)
     int init_recipient_a;
     if ((rank - proc_number_row) / count_parts == proc_number_row && rank - proc_number_row >= 0) {
         init_recipient_a = rank - proc_number_row;
@@ -147,13 +147,13 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
     }
 
     std::vector<double> local_res_vector(local_size * local_size, 0.0);
-    // для временного хранения частичных результатов
+    //  for temporary storage of partial results
     std::vector<double> local_res_matrix(matrix_size * matrix_size, 0.0);
-    // для окончательного результата умножения
+    //  for the final result of the multiplication
 
     MPI_Status status;
 
-     // обмен данными по строкам и столбцам в сетке процессов
+     //  data exchange by rows and columns in the process grid
     if (proc_number_row > 0) {
         MPI_Sendrecv_replace(local_first_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, init_recipient_a, 1, init_sender_a, 1, actual_proc, &status);
@@ -163,7 +163,8 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         MPI_Sendrecv_replace(local_second_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, init_recipient_b, 2, init_sender_b, 2, actual_proc, &status);
     }
-      // Для обмена данными с ближайшими процессами в сетке процессов (для завершения умножения блоков)
+      //  To exchange data with the nearest processes in the process grid 
+      //  (to complete the multiplication of blocks)
     int recipient_a;
     if ((rank - 1) / count_parts == proc_number_row && rank - 1 >= 0) {
         recipient_a = rank - 1;
