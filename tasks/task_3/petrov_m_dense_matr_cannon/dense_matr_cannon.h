@@ -1,4 +1,4 @@
-// Copyright 2023 Petrov Maksim
+//  Copyright 2023 Petrov Maksim  
 #ifndef TASKS_TASK_3_PETROV_M_DENSE_MATR_CANNON_DENSE_MATR_CANNON_H_
 #define TASKS_TASK_3_PETROV_M_DENSE_MATR_CANNON_DENSE_MATR_CANNON_H_
 #include <vector>

@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Petrov Maksim
+﻿//  Copyright 2023 Petrov Maksim  
 #include <mpi.h>
 #include <vector>
 #include <string>
@@ -16,7 +16,8 @@ void generate_rand_matrix(std::vector<double>* matrix, std::vector<double>::size
     }
 }
 
-int calculate_matrix_size(int old_size, std::vector<double>::size_type matrix_size) {   // для разбиения матрицы на блоки
+// для разбиения матрицы на блоки
+int calculate_matrix_size(int old_size, std::vector<double>::size_type matrix_size) {
     int sqrt_size = static_cast<int>(sqrt(old_size));
     while ((matrix_size % sqrt_size) && sqrt_size > 1)
         --sqrt_size;
