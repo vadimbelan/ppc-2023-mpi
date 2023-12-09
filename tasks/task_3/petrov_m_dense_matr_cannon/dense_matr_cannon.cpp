@@ -145,8 +145,10 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         init_sender_b = (rank + proc_number_col * count_parts) - actual_size;
     }
 
-    std::vector<double> local_res_vector(local_size * local_size, 0.0);  // для временного хранения частичных результатов
-    std::vector<double> local_res_matrix(matrix_size * matrix_size, 0.0);  // для окончательного результата умножения
+    std::vector<double> local_res_vector(local_size * local_size, 0.0);
+    // для временного хранения частичных результатов
+    std::vector<double> local_res_matrix(matrix_size * matrix_size, 0.0);
+    // для окончательного результата умножения
 
     MPI_Status status;
 
@@ -194,7 +196,7 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         MPI_Sendrecv_replace(local_second_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, recipient_b, 2, sender_b, 2, actual_proc, &status);
     }
-    
+
     for (std::vector<double>::size_type i = 0; i < local_res_vector.size(); i++) {
         std::vector<double>::size_type row = (rank / count_parts) * local_size + i / local_size;
         std::vector<double>::size_type column = (rank % count_parts) * local_size + i % local_size;

@@ -1,7 +1,7 @@
 // Copyright 2023 Petrov Maksim
 #include <gtest/gtest.h>
-#include <vector>
 #include <mpi.h>
+#include <vector>
 #include "./dense_matr_cannon.h"
 
 TEST(SEQUENTIAL_OPERATIONS, sequential_operations_example_4x4) {
