@@ -163,7 +163,7 @@ std::vector<double> getParallelOperations(const std::vector<double>& first_matri
         MPI_Sendrecv_replace(local_second_matrix.data(), static_cast<int>(local_size * local_size),
             MPI_DOUBLE, init_recipient_b, 2, init_sender_b, 2, actual_proc, &status);
     }
-      //  To exchange data with the nearest processes in the process grid 
+      //  To exchange data with the nearest processes in the process grid
       //  (to complete the multiplication of blocks)
     int recipient_a;
     if ((rank - 1) / count_parts == proc_number_row && rank - 1 >= 0) {
