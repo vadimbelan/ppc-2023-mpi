@@ -1,4 +1,4 @@
-﻿//   Copyright 2023 Petrov Maksim
+﻿// Copyright 2023 Petrov Maksim
 #include <mpi.h>
 #include <vector>
 #include <string>
