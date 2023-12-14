@@ -292,30 +292,27 @@ sparse_ccs sparse_ccs::transpose() const {
   }
   int i, j;
   sparse_ccs_props res;
-  int* temp_cols_count_arr;
   res.rows = props.cols;
   res.cols = props.rows;
   res.vals = props.vals;
-  temp_cols_count_arr = new int[res.cols + 2];
+  // that's okay if we use a bit more memory (+1 element)
+  res.cols_count_arr = new int[res.cols + 2];
   res.rows_ind_arr = new int[res.vals];
   res.vals_arr = new double[res.vals];
-  std::memset(temp_cols_count_arr, 0, (res.cols + 2) * sizeof(int));
+  std::memset(res.cols_count_arr, 0, (res.cols + 2) * sizeof(int));
   for (i = 0; i < props.vals; i++) {
-    temp_cols_count_arr[props.rows_ind_arr[i] + 2]++;
+    res.cols_count_arr[props.rows_ind_arr[i] + 2]++;
   }
   for (i = 2; i < res.cols + 2; i++) {
-    temp_cols_count_arr[i] += temp_cols_count_arr[i-1];
+    res.cols_count_arr[i] += res.cols_count_arr[i-1];
   }
   for (i = 0; i < props.cols; i++) {
     for (j = props.cols_count_arr[i]; j < props.cols_count_arr[i+1]; j++) {
-      const int ind = temp_cols_count_arr[props.rows_ind_arr[j] + 1]++;
+      const int ind = res.cols_count_arr[props.rows_ind_arr[j] + 1]++;
       res.vals_arr[ind] = props.vals_arr[j];
       res.rows_ind_arr[ind] = i;
     }
   }
-  res.cols_count_arr = new int[res.cols + 1];
-  std::copy(temp_cols_count_arr, temp_cols_count_arr + res.cols + 1, res.cols_count_arr);
-  delete[] temp_cols_count_arr;
   return sparse_ccs(&res, true);
 }
 
