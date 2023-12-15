@@ -1,6 +1,6 @@
 // Copyright 2023 Veselov Mihail
-#ifndef TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA
-#define TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA
+#ifndef TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA_H_
+#define TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA_H_
 #include <cmath>
 
 double f1(double x, double y);
@@ -64,4 +64,4 @@ resultTwoVar solveTwoVarSequential(const double& _a1, const double& _b1, const d
 double(*func)(double x, double y), const double& _eps = 0.1, const int& _Nmax = 100, const double& _epsOneVar = 0.1,
 const int& _NmaxOneVar = 100, const double& _r_par = 2.0);
 
-#endif  // TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA
+#endif  // TASKS_TASK_3_VESELOV_M_GLOB_OPT_BY_DIVID_AREA_GLOB_OPT_BY_DIVID_AREA_H_
