@@ -2,98 +2,118 @@
 
 #include <gtest/gtest.h>
 #include <mpi.h>
-#include "./gauss_jordan_method.h"
+#include "./double_radix_sort_simple_merge.h"
+
+void print_array(std::vector<double> a, int n) {
+    std::cout << "================\n";
+    for (int i = 0; i < n; i++) {
+        std::cout << a[i] << ' ';
+    }
+    std::cout << "\n";
+    std::cout << "================\n";
+}
 
 TEST(MPI_TESTS, Test1) {
-    int n = 4;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    std::vector<double> matr;
+    int n = 16;
+    std::vector<double>a, b;
     if (rank == 0) {
-        matr = {3, 1, 2, 5, -6, 3, 1, 0, 2, 10, 6, 4, 11, 11, -27, -3, -2, -2, -10, 1};
-        // matr = {3, -2, 4, 12, 3, 4, -2, 6, 2, -1, -1, -9};
+        a = getRandomInput(n, 1, 100);
+        b = a;
+        sort(b.begin(), b.end());
     }
-    std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
+    a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
-        std::vector<double>ans = getSequentialGaussJordan(matr, n);
-        ASSERT_EQ(ans, parallel_ans);
+        for (int i = 0; i < n; i++) {
+            ASSERT_EQ(a[i], b[i]);
+        }
     }
 }
 
-
 TEST(MPI_TESTS, Test2) {
-    int n = 5;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    std::vector<double> matr;
+    int n = 45;
+    std::vector<double>a, b;
     if (rank == 0) {
-        matr = generateMatrix(n);
+        a = getRandomInput(n, 1, 100);
+        b = a;
+        sort(b.begin(), b.end());
     }
-    std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
+    a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
-        std::vector<double>ans = getSequentialGaussJordan(matr, n);
-        ASSERT_EQ(ans, parallel_ans);
+        for (int i = 0; i < n; i++) {
+            ASSERT_EQ(a[i], b[i]);
+        }
     }
 }
 
 
 TEST(MPI_TESTS, Test_all_neg) {
-    int n = 7;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    std::vector<double> matr;
+    int n = 58;
+    std::vector<double>a, b;
     if (rank == 0) {
-        matr = generateMatrix(n);
-        for (auto& x : matr) {
-            if (x > 0) {
-                x*=-1.0;
-            }
+        a = getRandomInput(n, 1, 100);
+        for (int i = 0; i < n; i++) {
+            a[i] *= -1;
         }
+        b = a;
+        sort(b.begin(), b.end());
     }
-    std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
+    a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
-        std::vector<double>ans = getSequentialGaussJordan(matr, n);
-        ASSERT_EQ(ans, parallel_ans);
+        for (int i = 0; i < n; i++) {
+            ASSERT_EQ(a[i], b[i]);
+        }
     }
 }
 
 TEST(MPI_TESTS, Test_small_size) {
-    int n = 1;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    std::vector<double> matr;
+    int n = 3;
+    std::vector<double>a, b;
     if (rank == 0) {
-        matr = generateMatrix(n);
+        a = getRandomInput(n, 1, 100);
+        b = a;
+        sort(b.begin(), b.end());
     }
-    std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
+    a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
-        std::vector<double>ans = getSequentialGaussJordan(matr, n);
-        ASSERT_EQ(ans, parallel_ans);
+        for (int i = 0; i < n; i++) {
+            ASSERT_EQ(a[i], b[i]);
+        }
     }
 }
 
 TEST(MPI_TESTS, Test_big_size) {
-    int n = 20;
     int rank = 0;
     int countProc = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &countProc);
-    std::vector<double> matr;
+    int n = 450;
+    std::vector<double>a, b;
     if (rank == 0) {
-        matr = generateMatrix(n);
+        a = getRandomInput(n, 1, 100);
+        b = a;
+        sort(b.begin(), b.end());
     }
-    std::vector<double>parallel_ans = getParallelGaussJordan(matr, n);
+    a = ParallelRadixSortDouble(a, n);
     if (rank == 0) {
-        std::vector<double>ans = getSequentialGaussJordan(matr, n);
-        ASSERT_EQ(ans, parallel_ans);
+        for (int i = 0; i < n; i++) {
+            ASSERT_EQ(a[i], b[i]);
+        }
     }
 }
 
