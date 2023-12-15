@@ -2,6 +2,8 @@ cmake_minimum_required( VERSION 3.25 )
 
 message( STATUS "Parallel Programming Course" )
 
+project("mpi")
+
 include(cmake/configure.cmake)
 include(cmake/gtest.cmake)
 
