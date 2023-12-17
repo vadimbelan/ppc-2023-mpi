@@ -1,5 +1,6 @@
 // Copyright 2023 Durandin Vladimir
-#include "./Strongin_global_search.h"
+
+#include "tasks/task_3/durandin_v_Strongin_global_search/Strongin_global_search.h"
 
 double f(double x) { return x * x; }
 
