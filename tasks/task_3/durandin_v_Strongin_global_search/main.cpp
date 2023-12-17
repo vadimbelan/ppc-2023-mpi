@@ -1,7 +1,8 @@
 // Copyright 2023 Durandin Vladimir
 
-#include "tasks/task_3/durandin_v_Strongin_global_search/Strongin_global_search.h"
 #include <gtest/gtest.h>
+#include "tasks/task_3/durandin_v_Strongin_global_search/Strongin_global_search.h"
+
 
 TEST(Parallel_Operations_MPI, parallel_sum_in_10_elements_matrix) {
   int rank;
