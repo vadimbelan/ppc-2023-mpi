@@ -53,4 +53,3 @@ int My_AllReduce(const void* sendbuf, void* recvbuf, int count,
     MPI_Barrier(comm);
     return MPI_SUCCESS;
 }
-
